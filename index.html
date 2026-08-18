@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="weather.css">
+  <link rel="stylesheet" href="oracle-cards.css">
 </head>
 <body>
   <div class="app-shell">
@@ -77,6 +78,18 @@
           </div>
         </article>
 
+        <article class="card oracle-daily-card" id="dailyOracleCard" hidden>
+          <button class="oracle-daily-image-button" type="button" aria-label="Open today’s card full screen">
+            <img class="oracle-daily-image" id="dailyOracleImage" alt="">
+          </button>
+          <div class="oracle-daily-copy">
+            <p class="eyebrow">JOHN’S CARD FOR TODAY</p>
+            <h3 id="dailyOracleTitle">Today’s card</h3>
+            <p>Tap the card to read it bigger. Turn the phone sideways when the tiny words start acting their age.</p>
+            <button class="text-button" id="openDailyOracle" type="button">Open full screen →</button>
+          </div>
+        </article>
+
         <article class="card wisdom-feature" id="dailyWisdomCard">
           <div class="card-icon">🐻</div>
           <div class="card-content">
@@ -121,11 +134,39 @@
 
         <div class="card card-dark draw-card">
           <div>
-            <p class="eyebrow">NEED A CARD?</p>
-            <h2>Ask the bear.</h2>
-            <p>No incense required.</p>
+            <p class="eyebrow">JOHN’S CARD DECK</p>
+            <h2>Pick one. See what sticks.</h2>
+            <p>Beautiful animals, useful thoughts, and absolutely no requirement to own crystals.</p>
           </div>
-          <button class="button button-light" id="drawWisdom" type="button">Draw a card</button>
+          <button class="button button-light" id="drawOracleCard" type="button">Draw a card</button>
+        </div>
+
+        <section class="oracle-library" id="oracleLibrary" hidden aria-live="polite">
+          <div class="oracle-library-intro">
+            <div>
+              <p class="eyebrow">THE CARD BOX</p>
+              <h2>Browse the whole deck</h2>
+              <p>Tap any card. Swipe through them. Rotate the phone for the big-boy reading glasses edition.</p>
+            </div>
+            <span class="count-pill" id="oracleLibraryCount">0 cards</span>
+          </div>
+          <div class="oracle-card-grid" id="oracleCardGrid"></div>
+        </section>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">FIELD NOTES</p>
+            <h2>Quick thoughts from the bear</h2>
+          </div>
+        </div>
+
+        <div class="card card-dark draw-card">
+          <div>
+            <p class="eyebrow">NEED A QUICK THOUGHT?</p>
+            <h2>Ask the bear.</h2>
+            <p>No incense required here either.</p>
+          </div>
+          <button class="button button-light" id="drawWisdom" type="button">Give me one</button>
         </div>
 
         <article class="card wisdom-detail" id="wisdomDetail" aria-live="polite">
@@ -146,8 +187,8 @@
 
         <div class="section-heading">
           <div>
-            <p class="eyebrow">THE DECK</p>
-            <h2>John’s field guide</h2>
+            <p class="eyebrow">THE FIELD GUIDE</p>
+            <h2>More John-sized wisdom</h2>
           </div>
         </div>
         <div class="card-grid" id="wisdomGrid"></div>
@@ -258,6 +299,24 @@
     </nav>
   </div>
 
+  <dialog class="oracle-viewer" id="oracleViewer" aria-label="Card reader">
+    <div class="oracle-viewer-shell">
+      <div class="oracle-viewer-topbar">
+        <div class="oracle-viewer-title" id="oracleViewerTitle">John’s card</div>
+        <button class="oracle-viewer-close" id="oracleViewerClose" type="button" aria-label="Close card">×</button>
+      </div>
+      <div class="oracle-image-stage">
+        <button class="oracle-arrow prev" id="oraclePrevious" type="button" aria-label="Previous card">‹</button>
+        <img class="oracle-viewer-image" id="oracleViewerImage" alt="">
+        <button class="oracle-arrow next" id="oracleNext" type="button" aria-label="Next card">›</button>
+      </div>
+      <div class="oracle-viewer-footer">
+        <p class="oracle-rotate-tip">📱 Rotate your phone sideways for the biggest, easiest-to-read view.</p>
+        <button class="oracle-share-button" id="oracleShare" type="button">Share card ↗</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="aboutDialog">
     <button class="dialog-close" id="closeDialog" type="button" aria-label="Close">×</button>
     <p class="eyebrow">ABOUT THIS APP</p>
@@ -272,5 +331,6 @@
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="weather.js"></script>
+  <script src="oracle-cards.js"></script>
 </body>
 </html>
