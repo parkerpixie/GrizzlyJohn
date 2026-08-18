@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2f4636">
+  <meta name="description" content="GrizzlyJohn: recovery wisdom, curiosity, side quests, parks, podcasts, and one very gentle grizzly.">
+  <title>GrizzlyJohn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-nav="today" aria-label="Go to Today">
+        <span class="brand-mark" aria-hidden="true">🐻</span>
+        <span>
+          <strong>GrizzlyJohn</strong>
+          <small>Still learning. Still wandering. Still here.</small>
+        </span>
+      </button>
+      <button class="icon-button" id="settingsButton" type="button" aria-label="About GrizzlyJohn">☰</button>
+    </header>
+
+    <main>
+      <section class="screen is-active" id="today" data-screen>
+        <div class="hero card card-dark">
+          <div>
+            <p class="eyebrow" id="todayDate">TODAY</p>
+            <h1>Good morning, John.</h1>
+            <p class="hero-copy">Here’s what’s on the trail today.</p>
+          </div>
+          <div class="hero-bear placeholder-art" aria-label="Grizzly artwork placeholder">🐻</div>
+        </div>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">START HERE</p>
+            <h2>A little wisdom for the trail</h2>
+          </div>
+        </div>
+
+        <article class="card reflection-card">
+          <div class="card-icon">📖</div>
+          <div class="card-content">
+            <p class="eyebrow">AA DAILY REFLECTION</p>
+            <h3>One day. One reflection.</h3>
+            <p>Start with today’s official Daily Reflection from Alcoholics Anonymous.</p>
+            <a class="button button-primary" href="https://www.aa.org/daily-reflections" target="_blank" rel="noopener noreferrer">Read today’s reflection ↗</a>
+          </div>
+        </article>
+
+        <article class="card wisdom-feature" id="dailyWisdomCard">
+          <div class="card-icon">🐻</div>
+          <div class="card-content">
+            <p class="eyebrow">TODAY’S BEAR WISDOM</p>
+            <h3 id="dailyWisdomTitle">The Grizzly</h3>
+            <p class="feature-quote" id="dailyWisdomLine">Know your own strength.</p>
+            <p id="dailyWisdomText">You don’t prove strength by putting yourself in situations where you have to fight yourself.</p>
+            <button class="text-button" data-nav="wisdom" type="button">Open Bear Wisdom →</button>
+          </div>
+        </article>
+
+        <article class="card quest-feature">
+          <div class="card-icon">🥾</div>
+          <div class="card-content">
+            <p class="eyebrow">TODAY’S SIDE QUEST</p>
+            <h3 id="todayQuest">Take the long way home.</h3>
+            <p id="todayQuestDescription">Choose one road, path, or stop you usually pass and see what you’ve been missing.</p>
+            <div class="button-row">
+              <button class="button button-secondary" id="newTodayQuest" type="button">Give me another</button>
+              <button class="button button-primary" id="completeTodayQuest" type="button">Quest complete ✓</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card prompt-card">
+          <p class="eyebrow">WHAT ARE YOU CARRYING TODAY?</p>
+          <h3>Three words is plenty.</h3>
+          <textarea id="todayNote" rows="3" maxlength="180" placeholder="Whatever is taking up space in your head..."></textarea>
+          <div class="save-row">
+            <small id="todayNoteStatus">Saved only on this device.</small>
+            <button class="text-button" id="saveTodayNote" type="button">Save note</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="wisdom" data-screen>
+        <div class="screen-intro">
+          <p class="eyebrow">BEAR WISDOM</p>
+          <h1>Things worth remembering.</h1>
+          <p>Recovery wisdom, life lessons, and reminders from a grizzly who has seen some things.</p>
+        </div>
+
+        <div class="card card-dark draw-card">
+          <div>
+            <p class="eyebrow">NEED A CARD?</p>
+            <h2>Ask the bear.</h2>
+            <p>No incense required.</p>
+          </div>
+          <button class="button button-light" id="drawWisdom" type="button">Draw a card</button>
+        </div>
+
+        <article class="card wisdom-detail" id="wisdomDetail" aria-live="polite">
+          <div class="wisdom-symbol" id="wisdomSymbol">🐻</div>
+          <p class="eyebrow" id="wisdomName">THE GRIZZLY</p>
+          <h2 id="wisdomHeadline">Know your own strength.</h2>
+          <p id="wisdomBody">You don’t prove strength by putting yourself in situations where you have to fight yourself. Sometimes wisdom is knowing exactly where the fence belongs.</p>
+          <blockquote id="wisdomQuote">“I don’t need to test every boundary just because I could cross it.”</blockquote>
+          <div class="wisdom-question">
+            <strong>For today</strong>
+            <p id="wisdomQuestion">Where would knowing yourself save you trouble?</p>
+          </div>
+          <div class="wisdom-practice">
+            <strong>Tiny practice</strong>
+            <p id="wisdomPractice">Name one thing you don’t need to negotiate with yourself today.</p>
+          </div>
+        </article>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE DECK</p>
+            <h2>John’s field guide</h2>
+          </div>
+        </div>
+        <div class="card-grid" id="wisdomGrid"></div>
+      </section>
+
+      <section class="screen" id="quest" data-screen>
+        <div class="screen-intro">
+          <p class="eyebrow">SIDE QUEST</p>
+          <h1>Go do something.</h1>
+          <p>Not because it’s productive. Because you’re alive and there’s still stuff out there.</p>
+        </div>
+
+        <article class="card card-dark quest-generator">
+          <p class="eyebrow">YOUR NEXT QUEST</p>
+          <div class="quest-emoji" id="questEmoji">🧭</div>
+          <h2 id="questTitle">Find a road you’ve never driven.</h2>
+          <p id="questDescription">Take one turn you normally don’t and see where it goes. Please continue obeying actual traffic laws, John.</p>
+          <div class="quest-category" id="questCategory">WILD CARD</div>
+          <div class="button-row">
+            <button class="button button-light" id="newQuest" type="button">Different quest</button>
+            <button class="button button-accent" id="completeQuest" type="button">I did the thing ✓</button>
+          </div>
+        </article>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">TRAIL STAMPS</p>
+            <h2>Proof you left the couch</h2>
+          </div>
+          <span class="count-pill"><strong id="questCount">0</strong> done</span>
+        </div>
+        <div class="stamp-grid" id="stampGrid"></div>
+      </section>
+
+      <section class="screen" id="roam" data-screen>
+        <div class="screen-intro">
+          <p class="eyebrow">ROAM</p>
+          <h1>John’s park passport.</h1>
+          <p>National parks, state parks, trails, weird roadside things, and anywhere else worth remembering.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><strong id="visitedCount">0</strong><span>Visited</span></div>
+          <div class="stat-card"><strong id="wishlistCount">0</strong><span>Want to go</span></div>
+          <div class="stat-card"><strong id="stateCount">0</strong><span>States</span></div>
+        </div>
+
+        <article class="card">
+          <p class="eyebrow">ADD A PLACE</p>
+          <h2>Put another pin in the story.</h2>
+          <form id="placeForm" class="stack-form">
+            <label>
+              Place or park
+              <input id="placeName" name="placeName" type="text" placeholder="Yellowstone National Park" required>
+            </label>
+            <label>
+              State
+              <input id="placeState" name="placeState" type="text" placeholder="Wyoming">
+            </label>
+            <label>
+              Status
+              <select id="placeStatus" name="placeStatus">
+                <option value="visited">I’ve been there</option>
+                <option value="wishlist">I want to go</option>
+              </select>
+            </label>
+            <label>
+              One thing I want to remember
+              <textarea id="placeMemory" name="placeMemory" rows="3" placeholder="Favorite trail, wildlife, who was there, the diner afterward..."></textarea>
+            </label>
+            <button class="button button-primary" type="submit">Add to my passport</button>
+          </form>
+        </article>
+
+        <div class="segmented-control" role="tablist" aria-label="Park passport filter">
+          <button class="segment is-active" type="button" data-place-filter="all">All</button>
+          <button class="segment" type="button" data-place-filter="visited">Visited</button>
+          <button class="segment" type="button" data-place-filter="wishlist">Want to go</button>
+        </div>
+        <div class="place-list" id="placeList"></div>
+      </section>
+
+      <section class="screen" id="listen" data-screen>
+        <div class="screen-intro">
+          <p class="eyebrow">CAMPFIRE RADIO</p>
+          <h1>Good stuff John might like.</h1>
+          <p>Interesting people, excellent rabbit holes, useful thoughts, strange stories, and zero requirement to learn anything productive.</p>
+        </div>
+
+        <div class="podcast-list" id="podcastList"></div>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LISTENING LOG</p>
+            <h2>Stuff that stuck</h2>
+          </div>
+        </div>
+        <div id="listeningLog" class="listening-log"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Primary navigation">
+      <button class="nav-item is-active" data-nav="today" type="button"><span>🏕️</span><small>Today</small></button>
+      <button class="nav-item" data-nav="wisdom" type="button"><span>🐻</span><small>Wisdom</small></button>
+      <button class="nav-item" data-nav="quest" type="button"><span>🥾</span><small>Quest</small></button>
+      <button class="nav-item" data-nav="roam" type="button"><span>🏞️</span><small>Roam</small></button>
+      <button class="nav-item" data-nav="listen" type="button"><span>🎧</span><small>Listen</small></button>
+    </nav>
+  </div>
+
+  <dialog id="aboutDialog">
+    <button class="dialog-close" id="closeDialog" type="button" aria-label="Close">×</button>
+    <p class="eyebrow">ABOUT THIS APP</p>
+    <h2>GrizzlyJohn</h2>
+    <p>A little bit AA wisdom, a little bit wilderness adventure, a little bit “what weird thing should I learn today?” and a whole lot of John.</p>
+    <p>Built for a man who looks suspiciously like Santa Claus, has the heart of a teddy bear, the life experience of a very well-traveled grizzly, and enough self-awareness to know when even lunch might be a questionable life choice.</p>
+    <p><strong>There’s no fixing you in here.</strong> After nearly 25 years of sobriety, you’ve probably learned a thing or two already.</p>
+    <p>Just keep wandering, keep laughing, keep thinking, keep noticing the good stuff.</p>
+    <div class="bear-note">🐻 You already learned that lesson, John. You do not need to take the class again.</div>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
