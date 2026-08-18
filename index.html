@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="weather.css">
 </head>
 <body>
   <div class="app-shell">
@@ -18,7 +19,7 @@
         <span class="brand-mark" aria-hidden="true">🐻</span>
         <span>
           <strong>GrizzlyJohn</strong>
-          <small>Still learning. Still wandering. Still here.</small>
+          <small>Stay grounded. Stay curious. Behave-ish.</small>
         </span>
       </button>
       <button class="icon-button" id="settingsButton" type="button" aria-label="About GrizzlyJohn">☰</button>
@@ -34,6 +35,30 @@
           </div>
           <div class="hero-bear placeholder-art" aria-label="Grizzly artwork placeholder">🐻</div>
         </div>
+
+        <article class="card weather-card" id="weatherCard">
+          <div class="weather-top">
+            <div class="weather-heading">
+              <div class="weather-icon" id="weatherIcon" aria-hidden="true">🌤️</div>
+              <div>
+                <p class="eyebrow">TRAIL WEATHER</p>
+                <h2 id="weatherCondition">What’s it doing out there?</h2>
+                <p class="weather-location" id="weatherLocation">Weather can follow John wherever he wanders.</p>
+              </div>
+            </div>
+            <div class="weather-temp" id="weatherTemp">--°</div>
+          </div>
+          <div class="weather-details" id="weatherDetails" hidden>
+            <div class="weather-stat"><span>Feels</span><strong id="weatherFeels">—</strong></div>
+            <div class="weather-stat"><span>High / Low</span><strong id="weatherHighLow">—</strong></div>
+            <div class="weather-stat"><span>Rain</span><strong id="weatherRain">—</strong></div>
+            <div class="weather-stat"><span>Wind</span><strong id="weatherWind">—</strong></div>
+          </div>
+          <div class="weather-actions">
+            <p class="weather-status" id="weatherStatus">Tap once to let GrizzlyJohn use this device’s location for local weather.</p>
+            <button class="button button-secondary" id="loadWeather" type="button">Use my location</button>
+          </div>
+        </article>
 
         <div class="section-heading">
           <div>
@@ -241,10 +266,11 @@
     <p>Built for a man who looks suspiciously like Santa Claus, has the heart of a teddy bear, the life experience of a very well-traveled grizzly, and enough self-awareness to know when even lunch might be a questionable life choice.</p>
     <p><strong>There’s no fixing you in here.</strong> After nearly 25 years of sobriety, you’ve probably learned a thing or two already.</p>
     <p>Just keep wandering, keep laughing, keep thinking, keep noticing the good stuff.</p>
-    <div class="bear-note">🐻 You already learned that lesson, John. You do not need to take the class again.</div>
+    <div class="bear-note">🐻 Stay grounded. Stay curious. Behave-ish.</div>
   </dialog>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="weather.js"></script>
 </body>
 </html>
