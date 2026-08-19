@@ -70,20 +70,34 @@
     }
 
     wheel.addEventListener('touchstart', event => {
+      if (!event.target.closest('#wheelWindow')) return;
       const touch = event.changedTouches[0];
-      if (touch) start(touch.clientY);
-    }, { passive: true });
+      if (!touch) return;
+      event.stopImmediatePropagation();
+      start(touch.clientY);
+    }, { passive: true, capture: true });
 
     wheel.addEventListener('touchmove', event => {
+      if (!dragging) return;
+      event.stopImmediatePropagation();
       const touch = event.changedTouches[0];
       if (touch) move(touch.clientY, event);
-    }, { passive: false });
+    }, { passive: false, capture: true });
 
-    wheel.addEventListener('touchend', end, { passive: true });
-    wheel.addEventListener('touchcancel', end, { passive: true });
+    wheel.addEventListener('touchend', event => {
+      if (!dragging) return;
+      event.stopImmediatePropagation();
+      end();
+    }, { passive: true, capture: true });
+
+    wheel.addEventListener('touchcancel', event => {
+      if (!dragging) return;
+      event.stopImmediatePropagation();
+      end();
+    }, { passive: true, capture: true });
 
     wheel.addEventListener('pointerdown', event => {
-      if (event.pointerType === 'touch') return;
+      if (event.pointerType === 'touch' || !event.target.closest('#wheelWindow')) return;
       start(event.clientY);
       wheel.setPointerCapture?.(event.pointerId);
     });
