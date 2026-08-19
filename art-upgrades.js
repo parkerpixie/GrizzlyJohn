@@ -25,6 +25,19 @@
     document.head.appendChild(link);
   }
 
+  function loadFollowupScripts() {
+    [
+      ['feeling-drag.js?v=20260819-1', 'feeling-drag'],
+      ['listen-upgrades.js?v=20260819-1', 'listen-upgrades']
+    ].forEach(([src, key]) => {
+      if (document.querySelector(`script[data-${key}]`)) return;
+      const script = document.createElement('script');
+      script.src = src;
+      script.dataset[key] = 'true';
+      document.body.appendChild(script);
+    });
+  }
+
   function makeImage(src, className, alt = '') {
     const image = document.createElement('img');
     image.src = src;
@@ -145,6 +158,7 @@
   let observer;
   function start() {
     ensureStyles();
+    loadFollowupScripts();
     upgradeAll();
     observer = new MutationObserver(() => {
       if (upgradeAll()) observer.disconnect();
