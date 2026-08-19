@@ -33,7 +33,7 @@
       if (document.querySelector(`script[data-${key}]`)) return;
       const script = document.createElement('script');
       script.src = src;
-      script.dataset[key] = 'true';
+      script.setAttribute(`data-${key}`, 'true');
       document.body.appendChild(script);
     });
   }
