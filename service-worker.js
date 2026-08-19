@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v6-listen-feelings';
+const CACHE_NAME = 'grizzlyjohn-v7-blue-quests';
 const APP_SHELL = [
   './',
   './index.html',
@@ -38,7 +38,12 @@ const APP_SHELL = [
   './graphics/GrizzlyJohn%20Backpack%20Idea%20Patch.png',
   './graphics/GrizzlyJohn%20Campfire%20Radio.png',
   './graphics/GrizzlyJohn%20Map%20Grizz.png',
-  './graphics/GrizzlyJohn%20Binoculars%20Grizz.png'
+  './graphics/GrizzlyJohn%20Binoculars%20Grizz.png',
+  './graphics/GrizzlyJohn%20Blue%2001.png',
+  './graphics/GrizzlyJohn%20Blue%2002.png',
+  './graphics/GrizzlyJohn%20Blue%2003.png',
+  './graphics/GrizzlyJohn%20Blue%2004.png',
+  './graphics/GrizzlyJohn%20Blue%2005.png'
 ];
 
 self.addEventListener('install', event => {
