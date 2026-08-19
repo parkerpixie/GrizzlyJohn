@@ -61,16 +61,26 @@
     return filename.replace(/\.(png|jpe?g|webp)$/i, '').replace(/\s+/g, ' ').trim();
   }
 
+  function cleanDisplayText(value = '') {
+    return String(value)
+      .replace(/\bPresense\b/gi, 'Presence')
+      .replace(/\bstead acts\b/gi, 'steady acts')
+      .replace(/\bremain stead\b/gi, 'remain steady')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function splitName(filename) {
     const full = cleanName(filename);
     const parts = full.split(/\s+-\s+/);
     const rawTitle = parts[0] || full;
-    const title = rawTitle
+    const title = cleanDisplayText(rawTitle
       .replace(/\s*\(\s*\d*\s*\)\s*/g, ' ')
       .replace(/[.]+$/g, '')
       .replace(/\s+/g, ' ')
-      .trim();
-    const subtitle = parts.slice(1).join(' — ').replace(/\s+/g, ' ').trim();
+      .trim());
+    let subtitle = cleanDisplayText(parts.slice(1).join(' — '));
+    if (!/[a-z0-9]/i.test(subtitle)) subtitle = '';
     return { title: title || full, subtitle };
   }
 
@@ -89,12 +99,15 @@
       const parsed = splitName(card.name);
       const key = parsed.title.toLowerCase();
       const hasNumber = /\(\s*\d+\s*\)/.test(card.name);
-      const hasSubtitle = Boolean(parsed.subtitle);
-      const score = (hasSubtitle ? 20 : 0) + (hasNumber ? 0 : 10);
+      const meaningfulSubtitle = /[a-z0-9]{3,}/i.test(parsed.subtitle);
+      const subtitleQuality = meaningfulSubtitle ? Math.min(parsed.subtitle.length, 60) : 0;
+      const score = (meaningfulSubtitle ? 100 : 0) + subtitleQuality + (hasNumber ? 0 : 20);
       const previous = byTitle.get(key);
       if (!previous || score > previous.score) byTitle.set(key, { card, score });
     });
-    return [...byTitle.values()].map(item => item.card).sort((a, b) => splitName(a.name).title.localeCompare(splitName(b.name).title));
+    return [...byTitle.values()]
+      .map(item => item.card)
+      .sort((a, b) => splitName(a.name).title.localeCompare(splitName(b.name).title));
   }
 
   function stableDailyIndex(length) {
