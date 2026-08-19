@@ -1,4 +1,4 @@
-const GRIZZLY_DATA = {
+var GRIZZLY_DATA = window.GRIZZLY_DATA = {
   wisdom: [
     {
       symbol: '🐻',
@@ -127,11 +127,20 @@ const GRIZZLY_DATA = {
 
   stamps: [
     { id: 'still-curious', icon: '🧭', name: 'Still Curious', requirement: 1 },
+    { id: 'trail-starter', icon: '🥾', name: 'Trail Starter', requirement: 2 },
     { id: 'took-long-way', icon: '🥾', name: 'Took the Long Way', requirement: 3 },
+    { id: 'detour-approved', icon: '🪧', name: 'Detour Approved', requirement: 4 },
     { id: 'touched-grass', icon: '🌲', name: 'Touched Grass', requirement: 5 },
+    { id: 'week-of-wandering', icon: '🧭', name: 'Week of Wandering', requirement: 7 },
     { id: 'left-routine', icon: '🗺️', name: 'Left the Routine', requirement: 10 },
+    { id: 'rabbit-hole-regular', icon: '🐇', name: 'Rabbit Hole Regular', requirement: 12 },
     { id: 'showed-up', icon: '🤝', name: 'Showed Up', requirement: 15 },
-    { id: 'good-day', icon: '🏕️', name: 'Good Day to Be Here', requirement: 25 }
+    { id: 'road-less-repeated', icon: '🚙', name: 'Road Less Repeated', requirement: 20 },
+    { id: 'good-day', icon: '🏕️', name: 'Good Day to Be Here', requirement: 25 },
+    { id: 'park-bench-philosopher', icon: '🪑', name: 'Park Bench Philosopher', requirement: 35 },
+    { id: 'half-century-roamer', icon: '🏕️', name: 'Half-Century Roamer', requirement: 50 },
+    { id: 'trail-legend', icon: '🏔️', name: 'Trail Legend', requirement: 75 },
+    { id: 'century-side-quests', icon: '🐻', name: 'Century of Side Quests', requirement: 100 }
   ],
 
   podcasts: [
@@ -147,7 +156,7 @@ const GRIZZLY_DATA = {
       id: 'better-human',
       title: 'How to Be a Better Human',
       description: 'TED conversations about relationships, work, behavior, growth, and generally becoming slightly less ridiculous at being human.',
-      spotify: 'https://open.spotify.com/show/5KuVFavG72i7fNOZ9tEX3a',
+      spotify: 'https://open.spotify.com/show/5KUwV1eFkq1T2qoNdWJ5Qe',
       apple: 'https://podcasts.apple.com/us/podcast/how-to-be-a-better-human/id1544098624',
       amazon: 'https://music.amazon.com/podcasts/20f102b6-4452-4b47-8fec-cd1d56e81d69/how-to-be-a-better-human'
     },
