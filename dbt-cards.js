@@ -129,3 +129,11 @@
   script.dataset.qaFixes = 'true';
   document.body.appendChild(script);
 })();
+
+(() => {
+  if (document.querySelector('script[data-john-extras]')) return;
+  const script = document.createElement('script');
+  script.src = 'john-extras.js?v=20260819-1';
+  script.dataset.johnExtras = 'true';
+  document.body.appendChild(script);
+})();
