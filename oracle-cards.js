@@ -10,6 +10,31 @@
 
   const $ = id => document.getElementById(id);
 
+  function ensureDailyCard() {
+    if ($('dailyOracleCard')) return;
+    const home = $('today');
+    const reflection = home?.querySelector('.reflection-card');
+    if (!home || !reflection) return;
+
+    const card = document.createElement('article');
+    card.className = 'card oracle-daily-card compact-home-card home-oracle-card';
+    card.id = 'dailyOracleCard';
+    card.hidden = true;
+    card.innerHTML = `
+      <button class="oracle-daily-image-button" type="button" aria-label="Open today's spirit animal card">
+        <img class="oracle-daily-image" id="dailyOracleImage" alt="">
+      </button>
+      <div class="oracle-daily-copy">
+        <p class="eyebrow">TODAY'S SPIRIT ANIMAL</p>
+        <h3 id="dailyOracleTitle">Today's guide</h3>
+        <p class="daily-oracle-subtitle">One card for today. Tap it when you want the full-sized version.</p>
+        <button class="text-button" id="openDailyOracle" type="button">Open today's card →</button>
+      </div>`;
+    reflection.insertAdjacentElement('afterend', card);
+  }
+
+  ensureDailyCard();
+
   const gallery = $('oracleCardGrid');
   const library = $('oracleLibrary');
   const libraryCount = $('oracleLibraryCount');
@@ -35,18 +60,37 @@
   function splitName(filename) {
     const full = cleanName(filename);
     const parts = full.split(/\s+-\s+/);
-    const title = (parts[0] || full).replace(/\s*\(\d+\)\s*$/, '').replace(/[.]+$/, '').trim();
-    return {
-      title: title || full,
-      subtitle: parts.slice(1).join(' — ')
-    };
+    const rawTitle = parts[0] || full;
+    const title = rawTitle
+      .replace(/\s*\(\s*\d*\s*\)\s*/g, ' ')
+      .replace(/[.]+$/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const subtitle = parts.slice(1).join(' — ').replace(/\s+/g, ' ').trim();
+    return { title: title || full, subtitle };
   }
 
   function isOracleCard(file) {
     if (file.type !== 'file' || !IMAGE_RE.test(file.name) || !file.download_url) return false;
     if (/ Skill\.png$/i.test(file.name)) return false;
     if (/^GrizzlyJohn /i.test(file.name)) return false;
+    if (/National Park/i.test(file.name)) return false;
+    if (/State (?:Emblem|Badge)/i.test(file.name)) return false;
     return file.name.includes(' - ');
+  }
+
+  function uniqueCards(files) {
+    const byTitle = new Map();
+    files.filter(isOracleCard).forEach(card => {
+      const parsed = splitName(card.name);
+      const key = parsed.title.toLowerCase();
+      const hasNumber = /\(\s*\d+\s*\)/.test(card.name);
+      const hasSubtitle = Boolean(parsed.subtitle);
+      const score = (hasSubtitle ? 20 : 0) + (hasNumber ? 0 : 10);
+      const previous = byTitle.get(key);
+      if (!previous || score > previous.score) byTitle.set(key, { card, score });
+    });
+    return [...byTitle.values()].map(item => item.card).sort((a, b) => splitName(a.name).title.localeCompare(splitName(b.name).title));
   }
 
   function stableDailyIndex(length) {
@@ -65,13 +109,12 @@
       const name = splitName(card.name);
       return `
         <button class="oracle-thumb" type="button" data-oracle-index="${index}" aria-label="Open ${escapeHtml(name.title)} card">
-          <img src="${card.download_url}" alt="${escapeHtml(cleanName(card.name))}" loading="lazy">
+          <img src="${card.download_url}" alt="${escapeHtml(name.title)} spirit animal card" loading="lazy">
           <span class="oracle-thumb-label">
             <strong>${escapeHtml(name.title)}</strong>
             <span>Tap to read</span>
           </span>
-        </button>
-      `;
+        </button>`;
     }).join('');
 
     gallery.querySelectorAll('[data-oracle-index]').forEach(button => {
@@ -80,25 +123,26 @@
   }
 
   function renderDailyCard() {
-    if (!state.cards.length || !dailyCard) return;
+    if (!state.cards.length || !dailyCard || !dailyImage || !dailyTitle || !dailyOpen) return;
     const index = stableDailyIndex(state.cards.length);
     const card = state.cards[index];
     const name = splitName(card.name);
     dailyImage.src = card.download_url;
-    dailyImage.alt = cleanName(card.name);
+    dailyImage.alt = `${name.title} spirit animal card`;
     dailyTitle.textContent = name.title;
     dailyCard.hidden = false;
     dailyOpen.onclick = () => openViewer(index);
-    dailyImage.closest('button').onclick = () => openViewer(index);
+    dailyImage.closest('button')?.addEventListener('click', () => openViewer(index));
   }
 
   function openViewer(index) {
     if (!state.cards.length) return;
     state.currentIndex = (index + state.cards.length) % state.cards.length;
     const card = state.cards[state.currentIndex];
+    const name = splitName(card.name);
     viewerImage.src = card.download_url;
-    viewerImage.alt = cleanName(card.name);
-    viewerTitle.textContent = cleanName(card.name);
+    viewerImage.alt = `${name.title} spirit animal card`;
+    viewerTitle.textContent = name.subtitle ? `${name.title} · ${name.subtitle}` : name.title;
     if (!viewer.open) viewer.showModal();
   }
 
@@ -109,7 +153,7 @@
   async function shareCurrentCard() {
     const card = state.cards[state.currentIndex];
     if (!card) return;
-    const title = cleanName(card.name);
+    const title = `${splitName(card.name).title} — GrizzlyJohn`;
 
     if (!navigator.share) {
       window.open(card.download_url, '_blank', 'noopener,noreferrer');
@@ -127,14 +171,12 @@
         await navigator.share({ title, url: card.download_url });
       }
     } catch {
-      try {
-        await navigator.share({ title, url: card.download_url });
-      } catch {}
+      try { await navigator.share({ title, url: card.download_url }); } catch {}
     }
   }
 
   function escapeHtml(value = '') {
-    return value.replace(/[&<>'"]/g, char => ({
+    return String(value).replace(/[&<>'"]/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
     })[char]);
   }
@@ -143,18 +185,13 @@
     gallery.innerHTML = '<div class="oracle-loading">Loading John’s cards… 🐻</div>';
 
     try {
-      const response = await fetch(API_URL, {
-        headers: { Accept: 'application/vnd.github+json' }
-      });
+      const response = await fetch(API_URL, { headers: { Accept: 'application/vnd.github+json' } });
       if (!response.ok) throw new Error('Card library unavailable');
       const files = await response.json();
-
-      state.cards = files
-        .filter(isOracleCard)
-        .sort((a, b) => a.name.localeCompare(b.name));
+      state.cards = uniqueCards(files);
 
       if (!state.cards.length) {
-        gallery.innerHTML = '<div class="oracle-loading">No reflection card images found yet.</div>';
+        gallery.innerHTML = '<div class="oracle-loading">No spirit animal cards found yet.</div>';
         return;
       }
 
@@ -166,19 +203,14 @@
   }
 
   drawButton?.addEventListener('click', () => {
-    if (!state.cards.length) return;
-    openViewer(Math.floor(Math.random() * state.cards.length));
+    if (state.cards.length) openViewer(Math.floor(Math.random() * state.cards.length));
   });
 
   viewerClose?.addEventListener('click', () => viewer.close());
   previousButton?.addEventListener('click', () => step(-1));
   nextButton?.addEventListener('click', () => step(1));
   shareButton?.addEventListener('click', shareCurrentCard);
-
-  viewer.addEventListener('click', event => {
-    if (event.target === viewer) viewer.close();
-  });
-
+  viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
   viewer.addEventListener('keydown', event => {
     if (event.key === 'ArrowLeft') step(-1);
     if (event.key === 'ArrowRight') step(1);
