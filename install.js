@@ -3,7 +3,7 @@
   if (!gate) return;
 
   const STORAGE_KEY = 'grizzlyjohn:installComplete';
-  const SESSION_KEY = 'grizzlyjohn:installSnoozed';
+  const DISMISSED_KEY = 'grizzlyjohn:installDismissed';
   const iphoneChoice = document.getElementById('chooseIphone');
   const androidChoice = document.getElementById('chooseAndroid');
   const iphoneSteps = document.getElementById('iphoneSteps');
@@ -19,12 +19,13 @@
 
   function markDone() {
     localStorage.setItem(STORAGE_KEY, 'true');
+    localStorage.removeItem(DISMISSED_KEY);
     gate.hidden = true;
     document.body.classList.remove('install-gate-active');
   }
 
-  function hideForNow() {
-    sessionStorage.setItem(SESSION_KEY, 'true');
+  function dismissPermanently() {
+    localStorage.setItem(DISMISSED_KEY, 'true');
     gate.hidden = true;
     document.body.classList.remove('install-gate-active');
   }
@@ -68,7 +69,7 @@
   iphoneChoice?.addEventListener('click', () => choose('iphone'));
   androidChoice?.addEventListener('click', () => choose('android'));
   doneButtons.forEach(button => button.addEventListener('click', markDone));
-  notNowButtons.forEach(button => button.addEventListener('click', hideForNow));
+  notNowButtons.forEach(button => button.addEventListener('click', dismissPermanently));
 
   window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
@@ -87,7 +88,7 @@
     return;
   }
 
-  if (localStorage.getItem(STORAGE_KEY) === 'true' || sessionStorage.getItem(SESSION_KEY) === 'true') {
+  if (localStorage.getItem(STORAGE_KEY) === 'true' || localStorage.getItem(DISMISSED_KEY) === 'true') {
     gate.hidden = true;
     return;
   }
