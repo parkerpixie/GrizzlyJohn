@@ -1,0 +1,98 @@
+.breathing-card {
+  overflow: hidden;
+  text-align: center;
+}
+
+.breathing-intro { max-width: 520px; margin: 0 auto 14px; }
+.breathing-intro h2 { margin-bottom: 6px; }
+.breathing-intro p:last-child { margin-bottom: 0; }
+
+.breathing-stage {
+  display: grid;
+  place-items: center;
+  min-height: 290px;
+  padding: 18px 0 10px;
+}
+
+.breathing-orb {
+  width: 158px;
+  height: 158px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,.74), transparent 32%),
+    linear-gradient(145deg, rgba(114,130,107,.30), rgba(47,70,54,.16));
+  box-shadow: 0 0 0 16px rgba(114,130,107,.06), 0 14px 40px rgba(32,49,39,.14);
+  transform: scale(.82);
+  transition: transform 4s ease-in-out, box-shadow 4s ease-in-out, opacity .5s ease;
+  will-change: transform;
+}
+
+.breathing-orb.is-inhaling {
+  transform: scale(1.24);
+  box-shadow: 0 0 0 30px rgba(114,130,107,.08), 0 18px 48px rgba(32,49,39,.18);
+}
+
+.breathing-orb.is-holding { transform: scale(1.24); }
+.breathing-orb.is-exhaling { transform: scale(.82); transition-duration: 6s; }
+.breathing-orb.is-complete { transform: scale(1); }
+
+.breathing-center {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: rgba(255,250,240,.78);
+  font-size: 3.2rem;
+  box-shadow: inset 0 0 0 1px rgba(43,42,39,.08);
+}
+
+.breathing-cue {
+  min-height: 30px;
+  margin: 10px 0 0;
+  color: var(--pine-dark);
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.breathing-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.backpack-suggestion-card {
+  margin: 18px 0 22px;
+  border-style: dashed;
+}
+
+.backpack-suggestion-card h3 { font-size: 1.3rem; }
+.backpack-suggestion-card .stack-form { margin-top: 14px; }
+.backpack-suggestion-card textarea { min-height: 96px; }
+.backpack-suggestion-status { min-height: 1.3em; margin: 8px 0 0; font-size: .78rem; }
+
+.john-note {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(47,70,54,.07);
+  color: var(--pine-dark);
+  font-size: .82rem;
+}
+
+@media (max-width: 430px) {
+  .breathing-stage { min-height: 245px; }
+  .breathing-orb { width: 136px; height: 136px; }
+  .breathing-center { width: 88px; height: 88px; font-size: 2.7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathing-orb,
+  .breathing-orb.is-inhaling,
+  .breathing-orb.is-holding,
+  .breathing-orb.is-exhaling { transition-duration: .25s; }
+}
