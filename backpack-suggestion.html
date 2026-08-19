@@ -4,18 +4,34 @@
   <meta charset="utf-8">
   <meta name="robots" content="noindex,nofollow">
   <title>GrizzlyJohn Backpack Suggestion</title>
+  <style>
+    .netlify-form-blueprint {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
 </head>
 <body>
-  <!-- Static copy lets Netlify detect the form at deploy time. The visible form lives inside the Roam backpack UI. -->
-  <form name="john-backpack-idea" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/" hidden>
-    <input type="hidden" name="form-name" value="john-backpack-idea">
-    <input type="hidden" name="subject" data-remove-prefix value="🐻 John has a new backpack idea">
-    <p><label>Do not fill this out: <input name="bot-field"></label></p>
-    <input name="from" value="John">
-    <input name="collectionIdea">
-    <textarea name="details"></textarea>
-    <input name="submittedFrom" value="GrizzlyJohn Roaming Backpack">
-  </form>
+  <!-- Static blueprint for Netlify's deploy-time form parser. The visible form is rendered in the Roam backpack UI. -->
+  <div class="netlify-form-blueprint" aria-hidden="true">
+    <form name="john-backpack-idea" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/">
+      <input type="hidden" name="form-name" value="john-backpack-idea">
+      <input type="hidden" name="subject" data-remove-prefix value="🐻 John has a new backpack idea">
+      <p><label>Do not fill this out: <input name="bot-field"></label></p>
+      <p><label>From <input name="from" value="John"></label></p>
+      <p><label>Collection idea <input name="collectionIdea"></label></p>
+      <p><label>Details <textarea name="details"></textarea></label></p>
+      <p><label>Submitted from <input name="submittedFrom" value="GrizzlyJohn Roaming Backpack"></label></p>
+      <button type="submit">Send</button>
+    </form>
+  </div>
   <p>Thanks, John. Your backpack idea was sent.</p>
 </body>
 </html>
