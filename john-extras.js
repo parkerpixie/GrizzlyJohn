@@ -1,11 +1,15 @@
 (() => {
   const $ = (selector, root = document) => root.querySelector(selector);
 
+  function escapeHtml(value = '') {
+    return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
+  }
+
   function ensureStyles() {
     if ($('link[data-john-extras]')) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'john-extras.css?v=20260819-1';
+    link.href = 'john-extras.css?v=20260819-2';
     link.dataset.johnExtras = 'true';
     document.head.appendChild(link);
   }
@@ -47,32 +51,46 @@
 
     if (Array.isArray(GRIZZLY_DATA.quests) && !GRIZZLY_DATA.quests.some(quest => quest.title === 'Give Blue the good walk.')) {
       GRIZZLY_DATA.quests.push(
-        {
-          emoji: '🐕',
-          category: 'BLUE APPROVED',
-          title: 'Give Blue the good walk.',
-          description: 'Let the golden retriever choose the pace for a while. Sniffing is apparently serious business.'
-        },
-        {
-          emoji: '☎️',
-          category: 'OLDTIMER BUSINESS',
-          title: 'Call another Oldtimer.',
-          description: 'No agenda required. Tell a story, check in, talk too long. You people have a reputation to maintain.'
-        },
-        {
-          emoji: '🌳',
-          category: 'OUTDOORS',
-          title: 'Go outside and look around.',
-          description: 'There are trees, birds, attractive strangers, and considerably fewer push notifications. Try to notice at least three of those responsibly.'
-        },
-        {
-          emoji: '🧠',
-          category: 'OLDTIMER WISDOM',
-          title: 'Use the lesson you already paid for.',
-          description: 'You have survived worse things than this. Some of them were probably your own ideas. Use what they taught you.'
-        }
+        { emoji: '🐕', category: 'BLUE APPROVED', title: 'Give Blue the good walk.', description: 'Let the golden retriever choose the pace for a while. Sniffing is apparently serious business.' },
+        { emoji: '☎️', category: 'OLDTIMER BUSINESS', title: 'Call another Oldtimer.', description: 'No agenda required. Tell a story, check in, talk too long. You people have a reputation to maintain.' },
+        { emoji: '🌳', category: 'OUTDOORS', title: 'Go outside and look around.', description: 'There are trees, birds, attractive strangers, and considerably fewer push notifications. Try to notice at least three of those responsibly.' },
+        { emoji: '🧠', category: 'OLDTIMER WISDOM', title: 'Use the lesson you already paid for.', description: 'You have survived worse things than this. Some of them were probably your own ideas. Use what they taught you.' }
       );
     }
+  }
+
+  function renderWisdomCard(card) {
+    if (!card) return;
+    const assignments = {
+      wisdomSymbol: card.symbol,
+      wisdomName: card.name.toUpperCase(),
+      wisdomHeadline: card.headline,
+      wisdomBody: card.body,
+      wisdomQuote: `“${card.quote}”`,
+      wisdomQuestion: card.question,
+      wisdomPractice: card.practice
+    };
+    Object.entries(assignments).forEach(([id, value]) => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    });
+  }
+
+  function refreshWisdomLibrary() {
+    const grid = $('#wisdomGrid');
+    if (!grid || !Array.isArray(window.GRIZZLY_DATA?.wisdom)) return;
+    grid.innerHTML = GRIZZLY_DATA.wisdom.map((card, index) => `
+      <button class="mini-card" type="button" data-john-wisdom-index="${index}">
+        <span class="mini-card-icon">${card.symbol}</span>
+        <span class="eyebrow">${escapeHtml(card.name)}</span>
+        <strong>${escapeHtml(card.headline)}</strong>
+      </button>`).join('');
+    grid.querySelectorAll('[data-john-wisdom-index]').forEach(button => {
+      button.addEventListener('click', () => {
+        renderWisdomCard(GRIZZLY_DATA.wisdom[Number(button.dataset.johnWisdomIndex)]);
+        $('#wisdomDetail')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
   }
 
   function tuneVisibleCopy() {
@@ -110,9 +128,8 @@
   }
 
   function ensureBreathingCard() {
-    const home = $('#today');
     const feelings = $('#feelingCheckIn');
-    if (!home || !feelings || $('#breathingCard')) return;
+    if (!feelings || $('#breathingCard')) return;
 
     const card = document.createElement('section');
     card.className = 'card breathing-card';
@@ -124,9 +141,7 @@
         <p>No analyzing. No fixing. You do not even have to be in a bad mood.</p>
       </div>
       <div class="breathing-stage" id="breathingStage" hidden>
-        <div class="breathing-orb" id="breathingOrb" aria-hidden="true">
-          <div class="breathing-center" id="breathingCenter">🐻</div>
-        </div>
+        <div class="breathing-orb" id="breathingOrb" aria-hidden="true"><div class="breathing-center" id="breathingCenter">🐻</div></div>
         <p class="breathing-cue" id="breathingCue" aria-live="polite">Just breathe.</p>
       </div>
       <div class="breathing-actions">
@@ -141,28 +156,17 @@
     const cue = $('#breathingCue', card);
     const start = $('#startBreathing', card);
     const stop = $('#stopBreathing', card);
-
     let completedBreaths = 0;
     let session = 0;
     let timers = [];
 
-    const clearTimers = () => {
-      timers.forEach(timer => clearTimeout(timer));
-      timers = [];
-    };
-
-    const later = (fn, ms, token) => {
-      const timer = setTimeout(() => {
-        if (token === session) fn();
-      }, ms);
-      timers.push(timer);
-    };
-
-    function setPhase(name, text) {
+    const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+    const later = (fn, ms, token) => timers.push(setTimeout(() => { if (token === session) fn(); }, ms));
+    const setPhase = (name, text) => {
       orb.classList.remove('is-inhaling', 'is-holding', 'is-exhaling', 'is-complete');
       if (name) orb.classList.add(`is-${name}`);
       cue.textContent = text;
-    }
+    };
 
     function finishSet() {
       clearTimers();
@@ -222,6 +226,11 @@
     const hero = $('.backpack-hero', backpack);
     if (!hero) return false;
 
+    const title = $('.backpack-copy h2', hero);
+    const heroParagraphs = hero.querySelectorAll('.backpack-copy p');
+    if (title) title.textContent = 'National Park badges, for starters.';
+    if (heroParagraphs[1]) heroParagraphs[1].textContent = 'Pack the places you have actually been. Then tell Jen what else belongs in here, because she cannot read your camping history from Wisconsin air.';
+
     const card = document.createElement('article');
     card.className = 'card backpack-suggestion-card';
     card.id = 'backpackSuggestionCard';
@@ -257,7 +266,7 @@
       try {
         const body = new URLSearchParams();
         data.forEach((value, key) => body.append(key, String(value)));
-        const response = await fetch('/backpack-suggestion.html', {
+        const response = await fetch('/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: body.toString()
@@ -288,6 +297,7 @@
   function init() {
     ensureStyles();
     addJohnSpecificContent();
+    refreshWisdomLibrary();
     tuneVisibleCopy();
     ensureBreathingCard();
     watchForBackpack();
