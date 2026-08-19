@@ -122,7 +122,33 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     { emoji: '🗺️', category: 'WILD CARD', title: 'Find a road you’ve never driven.', description: 'Take one turn you normally don’t and see where it goes. Please continue obeying actual traffic laws, John.' },
     { emoji: '📷', category: 'OUTDOORS', title: 'Photograph something easy to miss.', description: 'A weird sign, good light, tiny flower, ridiculous squirrel. Make the ordinary earn a second look.' },
     { emoji: '🎧', category: 'CURIOSITY', title: 'Listen outside your usual lane.', description: 'Pick one podcast episode on a subject you know almost nothing about.' },
-    { emoji: '🪑', category: 'WILD CARD', title: 'Sit somewhere for ten minutes.', description: 'Park bench, porch, trail, diner booth. Do not improve anything. Just be there.' }
+    { emoji: '🪑', category: 'WILD CARD', title: 'Sit somewhere for ten minutes.', description: 'Park bench, porch, trail, diner booth. Do not improve anything. Just be there.' },
+
+    { emoji: '🐕', category: 'BLUE TIME', title: 'Take Blue on a sniffari.', description: 'Blue chooses the route. Your job is to follow the nose and accept that every shrub may contain breaking news.' },
+    { emoji: '🚙', category: 'BLUE TIME', title: 'Go for a completely unnecessary ride with Blue.', description: 'Windows cracked, good music, nowhere important to be. Blue has agreed to serve as navigator despite having no qualifications.' },
+    { emoji: '🕵️', category: 'BLUE TIME', title: 'Put Blue on neighborhood security.', description: 'Walk one block and let him inspect three suspicious bushes, one mailbox, and whatever that smell is over there.' },
+    { emoji: '📷', category: 'BLUE TIME', title: 'Take Blue’s official employee photo.', description: 'Get one picture where he looks like he pays the mortgage, manages the household, or has just denied your PTO request.' },
+    { emoji: '🛋️', category: 'BLUE TIME', title: 'Schedule a strategic porch sit with Blue.', description: 'Ten minutes. No productivity. You and Blue may judge passing traffic, squirrels, and the general state of civilization.' },
+    { emoji: '🦴', category: 'BLUE TIME', title: 'Pay Blue his consulting fee.', description: 'One excellent treat for services rendered in emotional regulation, security, companionship, and being ridiculously handsome.' },
+    { emoji: '🎙️', category: 'BLUE TIME', title: 'Narrate Blue like a nature documentary.', description: 'Observe the wild golden retriever in his natural habitat as he bravely approaches a patch of grass he has smelled 400 times.' },
+    { emoji: '🧭', category: 'BLUE TIME', title: 'Let Blue choose a micro-adventure.', description: 'Trail, park, lake, pet store, or a new neighborhood. His planning process is mostly vibes, which is honestly refreshing.' },
+    { emoji: '💬', category: 'BLUE TIME', title: 'Tell Blue what annoyed you today.', description: 'He will maintain eye contact, offer no unsolicited advice, and immediately qualify as one of the better listeners you know.' },
+    { emoji: '🎩', category: 'BLUE TIME', title: 'Give Blue a new title for the day.', description: 'Assistant Regional Trail Manager? Vice President of Snacks? Director of Squirrel Affairs? Use the full title every time you address him.' },
+    { emoji: '👕', category: 'BLUE TIME', title: 'Give Blue a political wardrobe.', description: 'Find him a bandana or shirt that says “Fuck Trump” or something equally unsubtle. Blue did not request a neutral communications strategy.' },
+    { emoji: '🌈', category: 'BLUE TIME', title: 'Make Blue aggressively wholesome.', description: 'Put him in his most progressive-looking accessory and take him somewhere public to radiate golden-retriever tolerance at the world.' },
+
+    { emoji: '🗳️', category: 'CIVIC SASS', title: 'Wear the opinion.', description: 'Put on the loudest anti-Trump shirt you own and go about your perfectly normal day. No debate required. Fabric can carry the message.' },
+    { emoji: '📚', category: 'CIVIC SASS', title: 'Support a dangerous radical institution.', description: 'Visit a public library. Maybe even check out a book. Absolutely reckless civic behavior.' },
+    { emoji: '🔎', category: 'CIVIC SASS', title: 'Fact-check before roasting.', description: 'Find one political claim that made you roll your eyes and verify it before deploying the sarcasm. Accuracy makes the joke land harder.' },
+    { emoji: '📰', category: 'CIVIC SASS', title: 'Read past the headline.', description: 'Pick one political story and read the actual article before visiting the comments, also known as the internet’s raccoon enclosure.' },
+    { emoji: '🥤', category: 'CIVIC SASS', title: 'Hydrate before reading political comments.', description: 'Democracy is exhausting. You cannot defend reality while running on fumes and spite alone.' },
+    { emoji: '🚶', category: 'CIVIC SASS', title: 'Take your politics for a walk.', description: 'Wear something that makes your position obvious, take Blue if he is available, and enjoy not spending the walk arguing with strangers.' },
+    { emoji: '🧠', category: 'CIVIC SASS', title: 'Learn one boring civic fact.', description: 'City council, school board, county government, zoning, taxes. Democracy contains an upsetting amount of paperwork.' },
+    { emoji: '😂', category: 'CIVIC SASS', title: 'Make yourself laugh instead of rage-scroll.', description: 'Find one political joke, meme, clip, or absurd headline that turns the outrage dial down by at least two clicks.' },
+    { emoji: '🧹', category: 'CIVIC SASS', title: 'Clean your feed like a responsible adult.', description: 'Mute one account that contributes nothing except blood pressure. You are not constitutionally required to read every bad take.' },
+    { emoji: '🏞️', category: 'CIVIC SASS', title: 'Enjoy something publicly funded.', description: 'Use a park, trail, library, or other piece of shared infrastructure and quietly appreciate society doing one thing right.' },
+    { emoji: '📝', category: 'CIVIC SASS', title: 'Write down the comeback. Do not send it yet.', description: 'Draft the devastating reply, admire your craftsmanship, then decide whether this person actually deserves your afternoon.' },
+    { emoji: '🐻', category: 'CIVIC SASS', title: 'Choose peace, but make it smug.', description: 'Decline one pointless political argument today and walk away knowing you could have stayed for six hours and ruined everyone’s evening.' }
   ],
 
   stamps: [
@@ -131,6 +157,7 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     { id: 'took-long-way', icon: '🥾', name: 'Took the Long Way', requirement: 3 },
     { id: 'detour-approved', icon: '🪧', name: 'Detour Approved', requirement: 4 },
     { id: 'touched-grass', icon: '🌲', name: 'Touched Grass', requirement: 5 },
+    { id: 'blue-approved', icon: '🐕', name: 'Blue Approved', requirement: 6 },
     { id: 'week-of-wandering', icon: '🧭', name: 'Week of Wandering', requirement: 7 },
     { id: 'left-routine', icon: '🗺️', name: 'Left the Routine', requirement: 10 },
     { id: 'rabbit-hole-regular', icon: '🐇', name: 'Rabbit Hole Regular', requirement: 12 },
