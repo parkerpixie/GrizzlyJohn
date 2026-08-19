@@ -121,3 +121,11 @@
   script.dataset.parkBadges = 'true';
   document.body.appendChild(script);
 })();
+
+(() => {
+  if (document.querySelector('script[data-qa-fixes]')) return;
+  const script = document.createElement('script');
+  script.src = 'qa-fixes.js?v=20260819-1';
+  script.dataset.qaFixes = 'true';
+  document.body.appendChild(script);
+})();
