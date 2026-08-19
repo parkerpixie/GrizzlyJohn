@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v1';
+const CACHE_NAME = 'grizzlyjohn-v2-home-wisdom';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const APP_SHELL = [
   './oracle-cards.css',
   './install.css',
   './dbt-cards.css',
+  './enhancements.css',
   './app.js',
   './data.js',
   './weather.js',
