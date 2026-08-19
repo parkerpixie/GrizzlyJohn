@@ -10,17 +10,26 @@
     backpackIdea: 'graphics/GrizzlyJohn%20Backpack%20Idea%20Patch.png',
     campfireRadio: 'graphics/GrizzlyJohn%20Campfire%20Radio.png',
     map: 'graphics/GrizzlyJohn%20Map%20Grizz.png',
-    binoculars: 'graphics/GrizzlyJohn%20Binoculars%20Grizz.png'
+    binoculars: 'graphics/GrizzlyJohn%20Binoculars%20Grizz.png',
+    blue: [
+      'graphics/GrizzlyJohn%20Blue%2001.png',
+      'graphics/GrizzlyJohn%20Blue%2002.png',
+      'graphics/GrizzlyJohn%20Blue%2003.png',
+      'graphics/GrizzlyJohn%20Blue%2004.png',
+      'graphics/GrizzlyJohn%20Blue%2005.png'
+    ]
   };
 
   const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   let completionIndex = Math.floor(Math.random() * ART.breathComplete.length);
+  let selectedQuestCategory = 'ALL';
 
   function ensureStyles() {
     if ($('link[data-art-upgrades]')) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'art-upgrades.css?v=20260819-1';
+    link.href = 'art-upgrades.css?v=20260819-2';
     link.dataset.artUpgrades = 'true';
     document.head.appendChild(link);
   }
@@ -112,13 +121,17 @@
     if ($('#campfireRadioVisual')) return true;
 
     const visual = document.createElement('div');
-    visual.className = 'section-art campfire-radio-visual';
+    visual.className = 'section-art campfire-radio-visual blue-listen-hero';
     visual.id = 'campfireRadioVisual';
     visual.appendChild(makeImage(
-      ART.campfireRadio,
+      ART.blue[4],
       'campfire-radio-art',
-      'Grizz listening by the campfire'
+      'Grizz and Blue relaxing together'
     ));
+    const note = document.createElement('p');
+    note.className = 'blue-hero-caption';
+    note.textContent = 'Blue has no notes on the podcast. He does approve the couch.';
+    visual.appendChild(note);
     intro.insertAdjacentElement('afterend', visual);
     return true;
   }
@@ -145,13 +158,138 @@
     return true;
   }
 
+  function companionCard({ id, image, eyebrow, title, copy, target, position = 'afterend' }) {
+    if ($(`#${id}`)) return true;
+    const anchor = $(target);
+    if (!anchor) return false;
+    const card = document.createElement('article');
+    card.className = 'blue-companion-card';
+    card.id = id;
+    card.innerHTML = `
+      <img src="${image}" alt="Grizz and Blue together" loading="lazy" decoding="async">
+      <div class="blue-companion-copy">
+        <p class="eyebrow">${eyebrow}</p>
+        <h3>${title}</h3>
+        <p>${copy}</p>
+      </div>`;
+    anchor.insertAdjacentElement(position, card);
+    return true;
+  }
+
+  function addBlueCompanions() {
+    const placements = [
+      companionCard({
+        id: 'blueTodayCompanion',
+        image: ART.blue[0],
+        eyebrow: 'BLUE CHECKED IN TOO',
+        title: 'Status: excellent dog.',
+        copy: 'Blue reports that snacks, outside, and hanging out with John remain a solid daily plan.',
+        target: '#today .home-greeting'
+      }),
+      companionCard({
+        id: 'blueWisdomCompanion',
+        image: ART.blue[1],
+        eyebrow: 'BLUE’S FIELD GUIDE',
+        title: 'Walk. Sniff. Nap. Repeat.',
+        copy: 'Not every piece of wisdom needs seventeen steps and a worksheet.',
+        target: '#wisdom .wisdom-clean-intro'
+      }),
+      companionCard({
+        id: 'blueQuestCompanion',
+        image: ART.blue[2],
+        eyebrow: 'NEW QUEST CATEGORY',
+        title: 'Blue Time is officially on the board.',
+        copy: 'Some quests now include the golden coworker. His performance reviews remain suspiciously perfect.',
+        target: '#quest .screen-intro'
+      }),
+      companionCard({
+        id: 'blueRoamCompanion',
+        image: ART.blue[3],
+        eyebrow: 'TRAVEL ADVISORY',
+        title: 'Some routes are automatically better with Blue.',
+        copy: 'Especially routes containing water, smells, snacks, or absolutely no reason to hurry.',
+        target: '#roamExplorerVisuals'
+      })
+    ];
+    return placements.every(Boolean);
+  }
+
+  function setQuestCard(quest) {
+    if (!quest) return;
+    const title = $('#questTitle');
+    const description = $('#questDescription');
+    const emoji = $('#questEmoji');
+    const category = $('#questCategory');
+    if (title) title.textContent = quest.title;
+    if (description) description.textContent = quest.description;
+    if (emoji) emoji.textContent = quest.emoji;
+    if (category) category.textContent = quest.category;
+  }
+
+  function drawQuestFromSelectedCategory() {
+    const quests = window.GRIZZLY_DATA?.quests || [];
+    const pool = selectedQuestCategory === 'ALL'
+      ? quests
+      : quests.filter(quest => quest.category === selectedQuestCategory);
+    if (!pool.length) return;
+    setQuestCard(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  function setupQuestCategories() {
+    const questScreen = $('#quest');
+    const generator = $('#quest .quest-generator');
+    if (!questScreen || !generator || !window.GRIZZLY_DATA?.quests?.length) return false;
+    if ($('#questCategoryPicker')) return true;
+
+    const preferredOrder = ['ALL', 'BLUE TIME', 'CIVIC SASS', 'OUTDOORS', 'RECOVERY', 'CURIOSITY', 'PEOPLE', 'WILD CARD'];
+    const actual = new Set(GRIZZLY_DATA.quests.map(quest => quest.category));
+    const categories = preferredOrder.filter(category => category === 'ALL' || actual.has(category));
+
+    const picker = document.createElement('section');
+    picker.className = 'quest-category-picker';
+    picker.id = 'questCategoryPicker';
+    picker.innerHTML = `
+      <div class="quest-picker-heading">
+        <div><p class="eyebrow">PICK A FLAVOR</p><h2>What kind of trouble are we looking for?</h2></div>
+        <small>Tap a category, then “Different quest” stays in that lane.</small>
+      </div>
+      <div class="quest-category-chips">
+        ${categories.map(category => `<button type="button" class="quest-category-chip ${category === 'ALL' ? 'is-active' : ''}" data-quest-category="${category}">${category === 'ALL' ? '🎲 Anything' : category === 'BLUE TIME' ? '🐕 Blue Time' : category === 'CIVIC SASS' ? '🏛️ Civic Sass' : category}</button>`).join('')}
+      </div>`;
+    generator.insertAdjacentElement('beforebegin', picker);
+
+    $$('[data-quest-category]', picker).forEach(button => {
+      button.addEventListener('click', () => {
+        selectedQuestCategory = button.dataset.questCategory;
+        $$('[data-quest-category]', picker).forEach(item => item.classList.toggle('is-active', item === button));
+        drawQuestFromSelectedCategory();
+        generator.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+
+    const different = $('#newQuest');
+    if (different && different.dataset.categoryGuard !== 'true') {
+      different.dataset.categoryGuard = 'true';
+      different.addEventListener('click', event => {
+        if (selectedQuestCategory === 'ALL') return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        drawQuestFromSelectedCategory();
+      }, true);
+    }
+
+    return true;
+  }
+
   function upgradeAll() {
     return [
       upgradeBreathing(),
       upgradeBackpackHero(),
       upgradeBackpackSuggestion(),
       addListenArt(),
-      addRoamArt()
+      addRoamArt(),
+      addBlueCompanions(),
+      setupQuestCategories()
     ].every(Boolean);
   }
 
