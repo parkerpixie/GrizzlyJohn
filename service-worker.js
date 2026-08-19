@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v5-art-qa';
+const CACHE_NAME = 'grizzlyjohn-v6-listen-feelings';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL = [
   './qa-fixes.css',
   './john-extras.css',
   './art-upgrades.css',
+  './listen-upgrades.css',
   './app.js',
   './data.js',
   './weather.js',
@@ -22,6 +23,8 @@ const APP_SHELL = [
   './qa-fixes.js',
   './john-extras.js',
   './art-upgrades.js',
+  './feeling-drag.js',
+  './listen-upgrades.js',
   './jen-quests.js',
   './backpack-suggestion.html',
   './manifest.json',
