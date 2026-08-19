@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v2-home-wisdom';
+const CACHE_NAME = 'grizzlyjohn-v3-qa-backpack';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,12 +8,16 @@ const APP_SHELL = [
   './install.css',
   './dbt-cards.css',
   './enhancements.css',
+  './park-badges.css',
+  './qa-fixes.css',
   './app.js',
   './data.js',
   './weather.js',
   './oracle-cards.js',
   './install.js',
   './dbt-cards.js',
+  './park-badges.js',
+  './qa-fixes.js',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
   './GrizzlyJohn%20Popup%20Background.png'
