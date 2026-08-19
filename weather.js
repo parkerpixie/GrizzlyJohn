@@ -15,34 +15,13 @@
   const icon = document.getElementById('weatherIcon');
 
   const weatherCodes = {
-    0: ['Clear skies', '☀️'],
-    1: ['Mostly clear', '🌤️'],
-    2: ['Partly cloudy', '⛅'],
-    3: ['Overcast', '☁️'],
-    45: ['Foggy', '🌫️'],
-    48: ['Foggy', '🌫️'],
-    51: ['Light drizzle', '🌦️'],
-    53: ['Drizzle', '🌦️'],
-    55: ['Heavy drizzle', '🌧️'],
-    56: ['Freezing drizzle', '🌧️'],
-    57: ['Freezing drizzle', '🌧️'],
-    61: ['Light rain', '🌦️'],
-    63: ['Rain', '🌧️'],
-    65: ['Heavy rain', '🌧️'],
-    66: ['Freezing rain', '🌧️'],
-    67: ['Freezing rain', '🌧️'],
-    71: ['Light snow', '🌨️'],
-    73: ['Snow', '❄️'],
-    75: ['Heavy snow', '❄️'],
-    77: ['Snow grains', '❄️'],
-    80: ['Rain showers', '🌦️'],
-    81: ['Rain showers', '🌧️'],
-    82: ['Heavy showers', '🌧️'],
-    85: ['Snow showers', '🌨️'],
-    86: ['Heavy snow showers', '❄️'],
-    95: ['Thunderstorms', '⛈️'],
-    96: ['Storms with hail', '⛈️'],
-    99: ['Storms with hail', '⛈️']
+    0: ['Clear skies', '☀️'], 1: ['Mostly clear', '🌤️'], 2: ['Partly cloudy', '⛅'], 3: ['Overcast', '☁️'],
+    45: ['Foggy', '🌫️'], 48: ['Foggy', '🌫️'], 51: ['Light drizzle', '🌦️'], 53: ['Drizzle', '🌦️'],
+    55: ['Heavy drizzle', '🌧️'], 56: ['Freezing drizzle', '🌧️'], 57: ['Freezing drizzle', '🌧️'], 61: ['Light rain', '🌦️'],
+    63: ['Rain', '🌧️'], 65: ['Heavy rain', '🌧️'], 66: ['Freezing rain', '🌧️'], 67: ['Freezing rain', '🌧️'],
+    71: ['Light snow', '🌨️'], 73: ['Snow', '❄️'], 75: ['Heavy snow', '❄️'], 77: ['Snow grains', '❄️'],
+    80: ['Rain showers', '🌦️'], 81: ['Rain showers', '🌧️'], 82: ['Heavy showers', '🌧️'], 85: ['Snow showers', '🌨️'],
+    86: ['Heavy snow showers', '❄️'], 95: ['Thunderstorms', '⛈️'], 96: ['Storms with hail', '⛈️'], 99: ['Storms with hail', '⛈️']
   };
 
   function round(value) {
@@ -57,16 +36,11 @@
 
   async function loadForecast(latitude, longitude) {
     const params = new URLSearchParams({
-      latitude: latitude.toFixed(4),
-      longitude: longitude.toFixed(4),
+      latitude: latitude.toFixed(4), longitude: longitude.toFixed(4),
       current: 'temperature_2m,apparent_temperature,weather_code,wind_speed_10m',
       daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max',
-      temperature_unit: 'fahrenheit',
-      wind_speed_unit: 'mph',
-      timezone: 'auto',
-      forecast_days: '1'
+      temperature_unit: 'fahrenheit', wind_speed_unit: 'mph', timezone: 'auto', forecast_days: '1'
     });
-
     const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`);
     if (!response.ok) throw new Error('Weather service did not answer.');
     return response.json();
@@ -88,6 +62,15 @@
     status.textContent = 'Updated from John’s current location.';
     details.hidden = false;
     button.textContent = 'Update my weather';
+
+    window.dispatchEvent(new CustomEvent('grizzly-weather-updated', {
+      detail: {
+        code: Number(current.weather_code),
+        temp: Number(current.temperature_2m),
+        rainChance: Number(daily.precipitation_probability_max?.[0]),
+        condition: label
+      }
+    }));
   }
 
   function requestWeather({ automatic = false } = {}) {
@@ -105,29 +88,19 @@
         localStorage.setItem('grizzlyjohn:weatherEnabled', 'true');
         const data = await loadForecast(position.coords.latitude, position.coords.longitude);
         renderWeather(data);
-      } catch (error) {
+      } catch {
         status.textContent = 'The weather wandered off. Try again in a minute.';
       } finally {
         setBusy(false);
       }
     }, error => {
       setBusy(false);
-      if (error.code === 1) {
-        status.textContent = 'Location is off. Turn it on if you want trail weather here.';
-      } else {
-        status.textContent = 'Couldn’t find John. Even bears lose the trail sometimes.';
-      }
+      if (error.code === 1) status.textContent = 'Location is off. Turn it on if you want trail weather here.';
+      else status.textContent = 'Couldn’t find John. Even bears lose the trail sometimes.';
       button.textContent = 'Use my location';
-    }, {
-      enableHighAccuracy: false,
-      timeout: 10000,
-      maximumAge: 15 * 60 * 1000
-    });
+    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 15 * 60 * 1000 });
   }
 
   button.addEventListener('click', () => requestWeather());
-
-  if (localStorage.getItem('grizzlyjohn:weatherEnabled') === 'true') {
-    requestWeather({ automatic: true });
-  }
+  if (localStorage.getItem('grizzlyjohn:weatherEnabled') === 'true') requestWeather({ automatic: true });
 })();
