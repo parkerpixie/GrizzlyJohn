@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v4-john-voice';
+const CACHE_NAME = 'grizzlyjohn-v5-art-qa';
 const APP_SHELL = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   './park-badges.css',
   './qa-fixes.css',
   './john-extras.css',
+  './art-upgrades.css',
   './app.js',
   './data.js',
   './weather.js',
@@ -20,10 +21,21 @@ const APP_SHELL = [
   './park-badges.js',
   './qa-fixes.js',
   './john-extras.js',
+  './art-upgrades.js',
+  './jen-quests.js',
   './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
-  './GrizzlyJohn%20Popup%20Background.png'
+  './GrizzlyJohn%20Popup%20Background.png',
+  './graphics/GrizzlyJohn%20Breathing%20Bear.png',
+  './graphics/GrizzlyJohn%20Breath%20Complete%2001.png',
+  './graphics/GrizzlyJohn%20Breath%20Complete%2002.png',
+  './graphics/GrizzlyJohn%20Breath%20Complete%2003.png',
+  './graphics/GrizzlyJohn%20Backpack.png',
+  './graphics/GrizzlyJohn%20Backpack%20Idea%20Patch.png',
+  './graphics/GrizzlyJohn%20Campfire%20Radio.png',
+  './graphics/GrizzlyJohn%20Map%20Grizz.png',
+  './graphics/GrizzlyJohn%20Binoculars%20Grizz.png'
 ];
 
 self.addEventListener('install', event => {
