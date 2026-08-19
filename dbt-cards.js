@@ -113,3 +113,11 @@
 
   load();
 })();
+
+(() => {
+  if (document.querySelector('script[data-park-badges]')) return;
+  const script = document.createElement('script');
+  script.src = 'park-badges.js?v=20260819-1';
+  script.dataset.parkBadges = 'true';
+  document.body.appendChild(script);
+})();
