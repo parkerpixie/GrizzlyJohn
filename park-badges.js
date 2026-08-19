@@ -109,19 +109,8 @@
       console.warn('GrizzlyJohn backpack could not refresh its badge manifest.', error);
     }
 
-    migrateBadgeIds();
     collectBadgesFromVisitedPlaces();
     renderBackpack();
-  }
-
-  function migrateBadgeIds() {
-    if (!backpackState.badges.size || !backpackState.manifest.length) return;
-    const validIds = new Set(backpackState.manifest.map(badge => badge.id));
-    const cleaned = [...backpackState.badges].filter(id => validIds.has(id));
-    if (cleaned.length !== backpackState.badges.size) {
-      backpackState.badges = new Set(cleaned);
-      saveBadges();
-    }
   }
 
   function findBadgeForPlace(placeName) {
