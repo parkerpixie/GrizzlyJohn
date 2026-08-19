@@ -133,7 +133,15 @@
 (() => {
   if (document.querySelector('script[data-john-extras]')) return;
   const script = document.createElement('script');
-  script.src = 'john-extras.js?v=20260819-1';
+  script.src = 'john-extras.js?v=20260819-2';
   script.dataset.johnExtras = 'true';
+  document.body.appendChild(script);
+})();
+
+(() => {
+  if (document.querySelector('script[data-art-upgrades]')) return;
+  const script = document.createElement('script');
+  script.src = 'art-upgrades.js?v=20260819-1';
+  script.dataset.artUpgrades = 'true';
   document.body.appendChild(script);
 })();
