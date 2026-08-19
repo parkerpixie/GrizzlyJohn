@@ -16,6 +16,15 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   let completionIndex = Math.floor(Math.random() * ART.breathComplete.length);
 
+  function ensureStyles() {
+    if ($('link[data-art-upgrades]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'art-upgrades.css?v=20260819-1';
+    link.dataset.artUpgrades = 'true';
+    document.head.appendChild(link);
+  }
+
   function makeImage(src, className, alt = '') {
     const image = document.createElement('img');
     image.src = src;
@@ -135,6 +144,7 @@
 
   let observer;
   function start() {
+    ensureStyles();
     upgradeAll();
     observer = new MutationObserver(() => {
       if (upgradeAll()) observer.disconnect();
