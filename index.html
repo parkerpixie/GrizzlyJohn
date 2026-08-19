@@ -2,22 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#2f4636">
-  <meta name="description" content="GrizzlyJohn: recovery wisdom, curiosity, side quests, parks, podcasts, and one very gentle grizzly.">
+  <meta name="description" content="GrizzlyJohn: recovery wisdom, curiosity, side quests, parks, podcasts, DBT tools, and one very gentle grizzly.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="GrizzlyJohn">
   <title>GrizzlyJohn</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="GrizzlyJohn%20App%20Icon.png">
+  <link rel="icon" href="GrizzlyJohn%20App%20Icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="weather.css">
   <link rel="stylesheet" href="oracle-cards.css">
+  <link rel="stylesheet" href="dbt-cards.css">
+  <link rel="stylesheet" href="install.css">
+  <link rel="stylesheet" href="enhancements.css">
 </head>
 <body>
+  <section class="install-gate" id="installGate" hidden aria-label="Save GrizzlyJohn to your home screen">
+    <div class="install-panel">
+      <button class="install-close" type="button" data-install-not-now aria-label="Not now">×</button>
+      <h1 class="install-brand">GrizzlyJohn</h1>
+      <p class="install-tagline">Stay grounded. Stay curious. Behave-ish.</p>
+      <h2 class="install-title">Save GrizzlyJohn to your Home Screen</h2>
+      <p class="install-lede">Then it works like an app. No hunting for a link, no remembering what a browser tab is doing, no technology scavenger hunt.</p>
+
+      <p class="phone-choice-label">Which phone are you using?</p>
+      <div class="phone-choice-grid">
+        <button class="phone-choice" id="chooseIphone" type="button">
+          <span class="phone-choice-icon"></span>
+          <strong>iPhone</strong>
+          <small>Show me the steps</small>
+        </button>
+        <button class="phone-choice" id="chooseAndroid" type="button">
+          <span class="phone-choice-icon">🤖</span>
+          <strong>Android</strong>
+          <small>Show me the steps</small>
+        </button>
+      </div>
+
+      <div class="install-instructions" id="iphoneSteps" hidden>
+        <h3>iPhone: three taps and you’re done.</h3>
+        <p>Use Safari for the easiest setup.</p>
+        <ol class="install-steps">
+          <li><span>Tap the <strong>Share</strong> button at the bottom of Safari. It looks like a square with an arrow pointing up.</span></li>
+          <li><span>Scroll down and tap <strong>Add to Home Screen</strong>.</span></li>
+          <li><span>Tap <strong>Add</strong> in the upper-right corner.</span></li>
+        </ol>
+        <button class="install-done-button" type="button" data-install-done>I ADDED IT ✓</button>
+      </div>
+
+      <div class="install-instructions" id="androidSteps" hidden>
+        <h3>Android: let Chrome do the work.</h3>
+        <p>If the big green install button appears, use that. Otherwise follow the three steps below.</p>
+        <button class="install-native-button" id="nativeInstall" type="button" hidden>INSTALL GRIZZLYJOHN</button>
+        <ol class="install-steps">
+          <li><span>Tap the <strong>⋮ three-dot menu</strong> in Chrome.</span></li>
+          <li><span>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</span></li>
+          <li><span>Tap <strong>Install</strong> or <strong>Add</strong> to confirm.</span></li>
+        </ol>
+        <button class="install-done-button" type="button" data-install-done>I ADDED IT ✓</button>
+      </div>
+
+      <p class="install-footer-note">Once GrizzlyJohn is installed, this screen retires too.</p>
+      <button class="install-not-now" type="button" data-install-not-now>Not now. Let me look around first.</button>
+    </div>
+  </section>
+
   <div class="app-shell">
     <header class="topbar">
       <button class="brand" data-nav="today" aria-label="Go to Today">
-        <span class="brand-mark" aria-hidden="true">🐻</span>
+        <span class="brand-mark" aria-hidden="true"><img src="GrizzlyJohn%20App%20Icon.png" alt=""></span>
         <span>
           <strong>GrizzlyJohn</strong>
           <small>Stay grounded. Stay curious. Behave-ish.</small>
@@ -34,7 +93,9 @@
             <h1>Good morning, John.</h1>
             <p class="hero-copy">Here’s what’s on the trail today.</p>
           </div>
-          <div class="hero-bear placeholder-art" aria-label="Grizzly artwork placeholder">🐻</div>
+          <div class="hero-bear-image" aria-label="GrizzlyJohn app icon">
+            <img src="GrizzlyJohn%20App%20Icon.png" alt="Grizzly bear in an Arizona desert landscape">
+          </div>
         </div>
 
         <article class="card weather-card" id="weatherCard">
@@ -79,13 +140,13 @@
         </article>
 
         <article class="card oracle-daily-card" id="dailyOracleCard" hidden>
-          <button class="oracle-daily-image-button" type="button" aria-label="Open today’s card full screen">
+          <button class="oracle-daily-image-button" type="button" aria-label="Open today’s John card">
             <img class="oracle-daily-image" id="dailyOracleImage" alt="">
           </button>
           <div class="oracle-daily-copy">
             <p class="eyebrow">JOHN’S CARD FOR TODAY</p>
             <h3 id="dailyOracleTitle">Today’s card</h3>
-            <p>Tap the card to read it bigger. Turn the phone sideways when the tiny words start acting their age.</p>
+            <p>Turn the phone sideways when the tiny words start acting their age.</p>
             <button class="text-button" id="openDailyOracle" type="button">Open full screen →</button>
           </div>
         </article>
@@ -98,6 +159,16 @@
             <p class="feature-quote" id="dailyWisdomLine">Know your own strength.</p>
             <p id="dailyWisdomText">You don’t prove strength by putting yourself in situations where you have to fight yourself.</p>
             <button class="text-button" data-nav="wisdom" type="button">Open Bear Wisdom →</button>
+          </div>
+        </article>
+
+        <article class="card today-tool-card">
+          <div class="card-icon">🧰</div>
+          <div class="card-content">
+            <p class="eyebrow">DBT TRAIL TOOLS</p>
+            <h3>Sixteen practical tools. Zero therapy homework police.</h3>
+            <p>STOP, TIPP, Wise Mind, Radical Acceptance, DEAR MAN, Cope Ahead and the rest of Jen’s full DBT card collection.</p>
+            <button class="text-button" data-nav="wisdom" type="button" onclick="setTimeout(() => document.getElementById('dbtToolbox')?.scrollIntoView({behavior:'smooth'}), 250)">Open the toolbox →</button>
           </div>
         </article>
 
@@ -129,44 +200,16 @@
         <div class="screen-intro">
           <p class="eyebrow">BEAR WISDOM</p>
           <h1>Things worth remembering.</h1>
-          <p>Recovery wisdom, life lessons, and reminders from a grizzly who has seen some things.</p>
+          <p>Recovery wisdom, reflection cards, DBT tools, and reminders from a grizzly who has seen some things.</p>
         </div>
 
         <div class="card card-dark draw-card">
           <div>
-            <p class="eyebrow">JOHN’S CARD DECK</p>
-            <h2>Pick one. See what sticks.</h2>
-            <p>Beautiful animals, useful thoughts, and absolutely no requirement to own crystals.</p>
-          </div>
-          <button class="button button-light" id="drawOracleCard" type="button">Draw a card</button>
-        </div>
-
-        <section class="oracle-library" id="oracleLibrary" hidden aria-live="polite">
-          <div class="oracle-library-intro">
-            <div>
-              <p class="eyebrow">THE CARD BOX</p>
-              <h2>Browse the whole deck</h2>
-              <p>Tap any card. Swipe through them. Rotate the phone for the big-boy reading glasses edition.</p>
-            </div>
-            <span class="count-pill" id="oracleLibraryCount">0 cards</span>
-          </div>
-          <div class="oracle-card-grid" id="oracleCardGrid"></div>
-        </section>
-
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">FIELD NOTES</p>
-            <h2>Quick thoughts from the bear</h2>
-          </div>
-        </div>
-
-        <div class="card card-dark draw-card">
-          <div>
-            <p class="eyebrow">NEED A QUICK THOUGHT?</p>
+            <p class="eyebrow">NEED A THOUGHT?</p>
             <h2>Ask the bear.</h2>
-            <p>No incense required here either.</p>
+            <p>No incense required.</p>
           </div>
-          <button class="button button-light" id="drawWisdom" type="button">Give me one</button>
+          <button class="button button-light" id="drawWisdom" type="button">Draw wisdom</button>
         </div>
 
         <article class="card wisdom-detail" id="wisdomDetail" aria-live="polite">
@@ -185,10 +228,36 @@
           </div>
         </article>
 
+        <section class="oracle-library" id="oracleLibrary" hidden>
+          <div class="oracle-library-intro">
+            <div>
+              <p class="eyebrow">JOHN’S CARDS</p>
+              <h2>The reflection deck</h2>
+              <p>Tap a card to read it. Turn the phone sideways for the big-screen version.</p>
+            </div>
+            <span class="count-pill" id="oracleLibraryCount">0 cards</span>
+          </div>
+          <button class="button button-primary" id="drawOracleCard" type="button">Draw me a card</button>
+          <div class="oracle-card-grid" id="oracleCardGrid"></div>
+        </section>
+
+        <section class="dbt-toolbox" id="dbtToolbox">
+          <div class="dbt-toolbox-header">
+            <div>
+              <p class="eyebrow">DBT TRAIL TOOLS</p>
+              <h2>When wisdom needs a wrench.</h2>
+              <p>Sixteen DBT skills in plain-English cards. Pick one deliberately or let the bear choose.</p>
+            </div>
+            <span class="count-pill" id="dbtCount">16 skills</span>
+          </div>
+          <button class="button button-primary" id="drawDbtSkill" type="button">Give me a tool</button>
+          <div class="dbt-grid" id="dbtCardGrid"></div>
+        </section>
+
         <div class="section-heading">
           <div>
             <p class="eyebrow">THE FIELD GUIDE</p>
-            <h2>More John-sized wisdom</h2>
+            <h2>More Bear Wisdom</h2>
           </div>
         </div>
         <div class="card-grid" id="wisdomGrid"></div>
@@ -240,25 +309,10 @@
           <p class="eyebrow">ADD A PLACE</p>
           <h2>Put another pin in the story.</h2>
           <form id="placeForm" class="stack-form">
-            <label>
-              Place or park
-              <input id="placeName" name="placeName" type="text" placeholder="Yellowstone National Park" required>
-            </label>
-            <label>
-              State
-              <input id="placeState" name="placeState" type="text" placeholder="Wyoming">
-            </label>
-            <label>
-              Status
-              <select id="placeStatus" name="placeStatus">
-                <option value="visited">I’ve been there</option>
-                <option value="wishlist">I want to go</option>
-              </select>
-            </label>
-            <label>
-              One thing I want to remember
-              <textarea id="placeMemory" name="placeMemory" rows="3" placeholder="Favorite trail, wildlife, who was there, the diner afterward..."></textarea>
-            </label>
+            <label>Place or park<input id="placeName" name="placeName" type="text" placeholder="Yellowstone National Park" required></label>
+            <label>State<input id="placeState" name="placeState" type="text" placeholder="Wyoming"></label>
+            <label>Status<select id="placeStatus" name="placeStatus"><option value="visited">I’ve been there</option><option value="wishlist">I want to go</option></select></label>
+            <label>One thing I want to remember<textarea id="placeMemory" name="placeMemory" rows="3" placeholder="Favorite trail, wildlife, who was there, the diner afterward..."></textarea></label>
             <button class="button button-primary" type="submit">Add to my passport</button>
           </form>
         </article>
@@ -277,14 +331,9 @@
           <h1>Good stuff John might like.</h1>
           <p>Interesting people, excellent rabbit holes, useful thoughts, strange stories, and zero requirement to learn anything productive.</p>
         </div>
-
         <div class="podcast-list" id="podcastList"></div>
-
         <div class="section-heading">
-          <div>
-            <p class="eyebrow">LISTENING LOG</p>
-            <h2>Stuff that stuck</h2>
-          </div>
+          <div><p class="eyebrow">LISTENING LOG</p><h2>Stuff that stuck</h2></div>
         </div>
         <div id="listeningLog" class="listening-log"></div>
       </section>
@@ -299,11 +348,11 @@
     </nav>
   </div>
 
-  <dialog class="oracle-viewer" id="oracleViewer" aria-label="Card reader">
+  <dialog class="oracle-viewer" id="oracleViewer">
     <div class="oracle-viewer-shell">
       <div class="oracle-viewer-topbar">
-        <div class="oracle-viewer-title" id="oracleViewerTitle">John’s card</div>
-        <button class="oracle-viewer-close" id="oracleViewerClose" type="button" aria-label="Close card">×</button>
+        <span class="oracle-viewer-title" id="oracleViewerTitle">John’s card</span>
+        <button class="oracle-viewer-close" id="oracleViewerClose" type="button" aria-label="Close">×</button>
       </div>
       <div class="oracle-image-stage">
         <button class="oracle-arrow prev" id="oraclePrevious" type="button" aria-label="Previous card">‹</button>
@@ -311,8 +360,26 @@
         <button class="oracle-arrow next" id="oracleNext" type="button" aria-label="Next card">›</button>
       </div>
       <div class="oracle-viewer-footer">
-        <p class="oracle-rotate-tip">📱 Rotate your phone sideways for the biggest, easiest-to-read view.</p>
-        <button class="oracle-share-button" id="oracleShare" type="button">Share card ↗</button>
+        <p class="oracle-rotate-tip">📱 Turn your phone sideways for the biggest reading view.</p>
+        <button class="oracle-share-button" id="oracleShare" type="button">Share card</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="dbt-viewer" id="dbtViewer">
+    <div class="dbt-viewer-shell">
+      <div class="dbt-viewer-topbar">
+        <span class="dbt-viewer-title" id="dbtViewerTitle">DBT Trail Tool</span>
+        <button class="dbt-viewer-close" id="dbtViewerClose" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="dbt-stage">
+        <img class="dbt-viewer-image" id="dbtViewerImage" alt="">
+      </div>
+      <div class="dbt-viewer-footer">
+        <button class="dbt-nav-button" id="dbtPrevious" type="button">← Previous</button>
+        <small>Pinch to zoom if the words get uppity.</small>
+        <button class="dbt-nav-button" id="dbtNext" type="button">Next →</button>
+        <button class="dbt-share-button" id="dbtShare" type="button">Share</button>
       </div>
     </div>
   </dialog>
@@ -328,9 +395,11 @@
     <div class="bear-note">🐻 Stay grounded. Stay curious. Behave-ish.</div>
   </dialog>
 
+  <script src="install.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="weather.js"></script>
   <script src="oracle-cards.js"></script>
+  <script src="dbt-cards.js"></script>
 </body>
 </html>
