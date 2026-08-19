@@ -11,10 +11,14 @@
   const $ = id => document.getElementById(id);
 
   function ensureDailyCard() {
-    if ($('dailyOracleCard')) return;
     const home = $('today');
-    const reflection = home?.querySelector('.reflection-card');
-    if (!home || !reflection) return;
+    if (!home) return;
+    const existing = $('dailyOracleCard');
+    if (existing?.closest('#today')) return;
+    if (existing) existing.remove();
+
+    const reflection = home.querySelector('.reflection-card');
+    if (!reflection) return;
 
     const card = document.createElement('article');
     card.className = 'card oracle-daily-card compact-home-card home-oracle-card';
