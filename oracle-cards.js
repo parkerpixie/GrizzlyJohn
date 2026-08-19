@@ -1,5 +1,5 @@
 (() => {
-  const API_URL = 'https://api.github.com/repos/parkerpixie/GrizzlyJohn/contents/graphics?ref=main';
+  const API_URL = 'https://api.github.com/repos/parkerpixie/GrizzlyJohn/contents?ref=main';
   const IMAGE_RE = /\.(png|jpe?g|webp)$/i;
 
   const state = {
@@ -35,10 +35,18 @@
   function splitName(filename) {
     const full = cleanName(filename);
     const parts = full.split(/\s+-\s+/);
+    const title = (parts[0] || full).replace(/\s*\(\d+\)\s*$/, '').replace(/[.]+$/, '').trim();
     return {
-      title: parts[0] || full,
+      title: title || full,
       subtitle: parts.slice(1).join(' — ')
     };
+  }
+
+  function isOracleCard(file) {
+    if (file.type !== 'file' || !IMAGE_RE.test(file.name) || !file.download_url) return false;
+    if (/ Skill\.png$/i.test(file.name)) return false;
+    if (/^GrizzlyJohn /i.test(file.name)) return false;
+    return file.name.includes(' - ');
   }
 
   function stableDailyIndex(length) {
@@ -121,9 +129,7 @@
     } catch {
       try {
         await navigator.share({ title, url: card.download_url });
-      } catch {
-        // User cancelled or the device declined the share request.
-      }
+      } catch {}
     }
   }
 
@@ -144,11 +150,11 @@
       const files = await response.json();
 
       state.cards = files
-        .filter(file => file.type === 'file' && IMAGE_RE.test(file.name) && file.download_url)
+        .filter(isOracleCard)
         .sort((a, b) => a.name.localeCompare(b.name));
 
       if (!state.cards.length) {
-        gallery.innerHTML = '<div class="oracle-loading">No card images are in the graphics folder yet.</div>';
+        gallery.innerHTML = '<div class="oracle-loading">No reflection card images found yet.</div>';
         return;
       }
 
