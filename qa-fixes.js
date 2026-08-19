@@ -44,6 +44,31 @@
     }).join('');
   }
 
+  function guardQuestCompletion() {
+    const complete = document.getElementById('completeQuest');
+    const another = document.getElementById('newQuest');
+    if (!complete || !another) return;
+
+    complete.addEventListener('click', event => {
+      if (complete.dataset.questCounted === 'true') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
+      complete.dataset.questCounted = 'true';
+      window.setTimeout(() => {
+        complete.disabled = true;
+        complete.textContent = 'Counted ✓';
+      }, 0);
+    }, true);
+
+    another.addEventListener('click', () => {
+      delete complete.dataset.questCounted;
+      complete.disabled = false;
+      complete.textContent = 'I did the thing ✓';
+    }, true);
+  }
+
   function fixPodcastLinks() {
     document.querySelectorAll('.podcast-card').forEach(card => {
       const title = card.querySelector('h2')?.textContent?.trim();
@@ -65,6 +90,7 @@
   function init() {
     loadQaStyles();
     expandQuestRewards();
+    guardQuestCompletion();
     fixPodcastLinks();
   }
 
