@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v3-qa-backpack';
+const CACHE_NAME = 'grizzlyjohn-v4-john-voice';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './enhancements.css',
   './park-badges.css',
   './qa-fixes.css',
+  './john-extras.css',
   './app.js',
   './data.js',
   './weather.js',
@@ -18,6 +19,8 @@ const APP_SHELL = [
   './dbt-cards.js',
   './park-badges.js',
   './qa-fixes.js',
+  './john-extras.js',
+  './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
   './GrizzlyJohn%20Popup%20Background.png'
