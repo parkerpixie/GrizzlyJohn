@@ -60,9 +60,7 @@
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const result = await deferredPrompt.userChoice;
-    if (result.outcome === 'accepted') {
-      markDone();
-    }
+    if (result.outcome === 'accepted') markDone();
     deferredPrompt = null;
     nativeInstall.hidden = true;
   });
@@ -72,11 +70,16 @@
   doneButtons.forEach(button => button.addEventListener('click', markDone));
   notNowButtons.forEach(button => button.addEventListener('click', hideForNow));
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+  window.addEventListener('load', () => {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js').catch(() => {});
-    });
-  }
+    }
+
+    const jenScript = document.createElement('script');
+    jenScript.src = './jen-quests.js';
+    jenScript.defer = true;
+    document.body.appendChild(jenScript);
+  });
 
   if (isStandalone()) {
     localStorage.setItem(STORAGE_KEY, 'true');
