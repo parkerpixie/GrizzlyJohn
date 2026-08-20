@@ -1,9 +1,68 @@
 (() => {
-  const API_URL = 'https://api.github.com/repos/parkerpixie/GrizzlyJohn/contents?ref=main';
-  const IMAGE_RE = /\.(png|jpe?g|webp)$/i;
+  const CARD_FILES = [
+    'Antelope - Awareness is strength.png',
+    'Badger - I stay grounded.png',
+    'Beaver - I shape my environment.png',
+    'Bee () - I release overwork.png',
+    'Bison - I honor what sustains me.png',
+    "Bobcat (8) - I trust what others don't see.png",
+    'Brown Bear - I honor rest.png',
+    'Butterfly - I trust my transformation.png',
+    'Canary - My sensitivity is intelligence.png',
+    'Capybara - Calm Presense over Deregulated Chaos.png',
+    'Cat - I honor my independence.png',
+    'Chameleon - I stand out when it matters.png',
+    'Cow - I remain Steady.png',
+    "Coyote - Confusion doesn't mean you're lost.png",
+    'Deer - I move with grace.png',
+    'Dog - Loyalty is Sacred.png',
+    'Dolphin - Two things can be True.png',
+    'Dove - I allow softness.png',
+    'Dragonfly (22) - I allow clarity to guide me.png',
+    'Eagle (23) - I rise above reactive emotion.png',
+    'Elephant (23) - I rise above reactive emotion.png',
+    'Flamingo - I honor space in stillness.png',
+    'Fox - I Trust my instincts.png',
+    'Frog - I simplify before I strategize.png',
+    'Giraffe - I do not rush decisions.png',
+    'Groundhog (32) - Let go of what no longer fits.png',
+    'Hawk - What you focus on expands.png',
+    'Horse (33) - You are not fenced in.png',
+    'Koi Fish - I act from belief in abundance.png',
+    'Lion - I stand Confidently.png',
+    'Moose - I am allowed to take up space.png',
+    'Moth (39) - I can Exist in the in-between.png',
+    'Mouse (40) - I respect small, stead acts.png',
+    "Nightingale (41) - Calm words carry further than sharp ones.png",
+    'Octopus - I can pause, pivot and proceed.png',
+    'Otter - Joy is a form of wisdom.png',
+    'Owl - I move with Awareness.png',
+    "Panther - I don't wait for permission.png",
+    'Parrot. - I talk to myself with Kindness.png',
+    "Peacock - I shine because I'm Real.png",
+    'Porcupine - I allow wonder to lead.png',
+    'Rabbit - I take small risks.png',
+    "Rhino - I don't force progress.png",
+    'Sandpiper - some paths are meant to be danced across.png',
+    'Seahorse - I anchor myself to what matters.png',
+    'Snake (55) - I release what no longer fits.png',
+    'Squirrel - I notice what matters.png',
+    'Stag - Hold Your Ground Calmly.png',
+    'Starfish - I choose regeneration.png',
+    "Swan (60) - I listen for what's real.png",
+    'Turkey - I give without costing myself.png',
+    'Turtle - I remain stead.png',
+    'Turtle - Protection is not avoidance.png',
+    'Vulture (63) -  Nothing in Life is Wasted.png',
+    'Wasp - I release what hurt me.png',
+    'Wolf - I honor independence & Pack.png'
+  ];
 
   const state = {
-    cards: [],
+    cards: CARD_FILES.map(name => ({
+      name,
+      url: encodeURIComponent(name)
+    })),
     currentIndex: 0,
     touchStartX: null
   };
@@ -84,30 +143,10 @@
     return { title: title || full, subtitle };
   }
 
-  function isOracleCard(file) {
-    if (file.type !== 'file' || !IMAGE_RE.test(file.name) || !file.download_url) return false;
-    if (/ Skill\.png$/i.test(file.name)) return false;
-    if (/^GrizzlyJohn /i.test(file.name)) return false;
-    if (/National Park/i.test(file.name)) return false;
-    if (/State (?:Emblem|Badge)/i.test(file.name)) return false;
-    return file.name.includes(' - ');
-  }
-
-  function uniqueCards(files) {
-    const byTitle = new Map();
-    files.filter(isOracleCard).forEach(card => {
-      const parsed = splitName(card.name);
-      const key = parsed.title.toLowerCase();
-      const hasNumber = /\(\s*\d+\s*\)/.test(card.name);
-      const meaningfulSubtitle = /[a-z0-9]{3,}/i.test(parsed.subtitle);
-      const subtitleQuality = meaningfulSubtitle ? Math.min(parsed.subtitle.length, 60) : 0;
-      const score = (meaningfulSubtitle ? 100 : 0) + subtitleQuality + (hasNumber ? 0 : 20);
-      const previous = byTitle.get(key);
-      if (!previous || score > previous.score) byTitle.set(key, { card, score });
-    });
-    return [...byTitle.values()]
-      .map(item => item.card)
-      .sort((a, b) => splitName(a.name).title.localeCompare(splitName(b.name).title));
+  function escapeHtml(value = '') {
+    return String(value).replace(/[&<>'"]/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    })[char]);
   }
 
   function stableDailyIndex(length) {
@@ -121,12 +160,11 @@
   function renderGallery() {
     library.hidden = false;
     libraryCount.textContent = `${state.cards.length} cards`;
-
     gallery.innerHTML = state.cards.map((card, index) => {
       const name = splitName(card.name);
       return `
         <button class="oracle-thumb" type="button" data-oracle-index="${index}" aria-label="Open ${escapeHtml(name.title)} card">
-          <img src="${card.download_url}" alt="${escapeHtml(name.title)} spirit animal card" loading="lazy">
+          <img src="${card.url}" alt="${escapeHtml(name.title)} spirit animal card" loading="lazy">
           <span class="oracle-thumb-label">
             <strong>${escapeHtml(name.title)}</strong>
             <span>Tap to read</span>
@@ -144,12 +182,13 @@
     const index = stableDailyIndex(state.cards.length);
     const card = state.cards[index];
     const name = splitName(card.name);
-    dailyImage.src = card.download_url;
+    dailyImage.src = card.url;
     dailyImage.alt = `${name.title} spirit animal card`;
     dailyTitle.textContent = name.title;
     dailyCard.hidden = false;
     dailyOpen.onclick = () => openViewer(index);
-    dailyImage.closest('button')?.addEventListener('click', () => openViewer(index));
+    const imageButton = dailyImage.closest('button');
+    if (imageButton) imageButton.onclick = () => openViewer(index);
   }
 
   function openViewer(index) {
@@ -157,7 +196,7 @@
     state.currentIndex = (index + state.cards.length) % state.cards.length;
     const card = state.cards[state.currentIndex];
     const name = splitName(card.name);
-    viewerImage.src = card.download_url;
+    viewerImage.src = card.url;
     viewerImage.alt = `${name.title} spirit animal card`;
     viewerTitle.textContent = name.subtitle ? `${name.title} · ${name.subtitle}` : name.title;
     if (!viewer.open) viewer.showModal();
@@ -170,59 +209,29 @@
   async function shareCurrentCard() {
     const card = state.cards[state.currentIndex];
     if (!card) return;
-    const title = `${splitName(card.name).title} — GrizzlyJohn`;
+    const shareTitle = `${splitName(card.name).title} — GrizzlyJohn`;
+    const fullUrl = new URL(card.url, location.href).href;
 
     if (!navigator.share) {
-      window.open(card.download_url, '_blank', 'noopener,noreferrer');
+      window.open(fullUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
     try {
-      const response = await fetch(card.download_url);
+      const response = await fetch(card.url);
       const blob = await response.blob();
       const file = new File([blob], card.name, { type: blob.type || 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ title, files: [file] });
-      } else {
-        await navigator.share({ title, url: card.download_url });
-      }
+      if (navigator.canShare?.({ files: [file] })) await navigator.share({ title: shareTitle, files: [file] });
+      else await navigator.share({ title: shareTitle, url: fullUrl });
     } catch {
-      try { await navigator.share({ title, url: card.download_url }); } catch {}
+      try { await navigator.share({ title: shareTitle, url: fullUrl }); } catch {}
     }
   }
 
-  function escapeHtml(value = '') {
-    return String(value).replace(/[&<>'"]/g, char => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    })[char]);
-  }
+  renderGallery();
+  renderDailyCard();
 
-  async function loadCards() {
-    gallery.innerHTML = '<div class="oracle-loading">Loading John’s cards… 🐻</div>';
-
-    try {
-      const response = await fetch(API_URL, { headers: { Accept: 'application/vnd.github+json' } });
-      if (!response.ok) throw new Error('Card library unavailable');
-      const files = await response.json();
-      state.cards = uniqueCards(files);
-
-      if (!state.cards.length) {
-        gallery.innerHTML = '<div class="oracle-loading">No spirit animal cards found yet.</div>';
-        return;
-      }
-
-      renderGallery();
-      renderDailyCard();
-    } catch {
-      gallery.innerHTML = '<div class="oracle-loading">The card box would not open. Refresh and try again.</div>';
-    }
-  }
-
-  drawButton?.addEventListener('click', () => {
-    if (state.cards.length) openViewer(Math.floor(Math.random() * state.cards.length));
-  });
-
+  drawButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.cards.length)));
   viewerClose?.addEventListener('click', () => viewer.close());
   previousButton?.addEventListener('click', () => step(-1));
   nextButton?.addEventListener('click', () => step(1));
@@ -245,6 +254,4 @@
     if (Math.abs(delta) < 55) return;
     step(delta > 0 ? -1 : 1);
   }, { passive: true });
-
-  loadCards();
 })();
