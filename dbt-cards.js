@@ -1,10 +1,12 @@
 (() => {
-  const API_URLS = [
-    'https://api.github.com/repos/parkerpixie/GrizzlyJohn/contents?ref=main',
-    'https://api.github.com/repos/parkerpixie/GrizzlyJohn/contents/graphics?ref=main'
-  ];
+  const API_URL = 'https://api.github.com/repos/parkerpixie/GrizzlyJohn/contents?ref=main';
   const SKILL_RE = / Skill\.png$/i;
   const GO_TO_SKILL = 'HALT';
+  const HALT_SKILL = {
+    type: 'file',
+    name: 'HALT Skill.png',
+    download_url: 'https://raw.githubusercontent.com/parkerpixie/GrizzlyJohn/main/graphics/HALT%20Skill.png'
+  };
 
   const grid = document.getElementById('dbtCardGrid');
   const count = document.getElementById('dbtCount');
@@ -28,21 +30,19 @@
 
   const ALTERNATES_BY_GROUP = {
     'OVERWHELMED / DYSREGULATED': ['HALT', 'TIPP', 'STOP', 'Self Soothe', 'IMPROVE'],
-    'FEAR / ANXIETY': ['HALT', 'TIPP', 'Check The Facts', 'Cope Ahead', 'Wise Mind'],
-    'ANGER': ['HALT', 'STOP', 'TIPP', 'Check The Facts', 'Wise Mind'],
+    'FEAR / ANXIETY': ['HALT', 'TIPP', 'Check The Facts', 'Cope Ahead', 'WISE MIND'],
+    'ANGER': ['HALT', 'STOP', 'TIPP', 'Check The Facts', 'WISE MIND'],
     'SAD / HURT': ['HALT', 'Self Soothe', 'Opposite Action', 'IMPROVE'],
     'NEUTRAL / LOW ENERGY': ['HALT', 'ABC Please', 'Self Soothe'],
     'SHAME / SELF-CONSCIOUS': ['HALT', 'Check The Facts', 'Self Soothe', 'Opposite Action']
   };
 
   function cleanName(name) {
-    return name.replace(/ Skill\.png$/i, '').trim();
+    return String(name || '').replace(/ Skill\.png$/i, '').trim();
   }
 
   function normalizeSkillName(name = '') {
-    const value = name.trim().toLowerCase().replace(/\./g, '');
-    if (value === 'wise mind') return 'WISE MIND';
-    return value;
+    return String(name).trim().toLowerCase().replace(/\./g, '');
   }
 
   function escapeHtml(value = '') {
@@ -87,12 +87,10 @@
 
   function openSkillByName(skillName) {
     const index = findSkillIndex(skillName);
-    if (index >= 0) {
-      const wisdomNav = document.querySelector('[data-nav="wisdom"]');
-      wisdomNav?.click();
-      setTimeout(() => document.querySelector('[data-wisdom-panel="skillsPanel"]')?.click(), 40);
-      setTimeout(() => openViewer(index), 90);
-    }
+    if (index < 0) return;
+    document.querySelector('[data-nav="wisdom"]')?.click();
+    setTimeout(() => document.querySelector('[data-wisdom-panel="skillsPanel"]')?.click(), 40);
+    setTimeout(() => openViewer(index), 90);
   }
 
   function render() {
@@ -115,20 +113,15 @@
     });
   }
 
-  function currentFeelingContext(result) {
-    const feeling = result.querySelector('.selected-feeling-summary h2')?.textContent?.trim() || '';
-    const group = result.querySelector('.selected-feeling-summary small')?.textContent?.trim() || '';
-    const suggested = result.querySelector('[data-learn-skill]')?.dataset.learnSkill || result.querySelector('.skill-suggestion h3')?.textContent?.trim() || '';
-    return { feeling, group, suggested };
-  }
-
   function enhanceFeelingResult() {
     const result = document.getElementById('feelingResult');
     if (!result || result.hidden || result.querySelector('.john-skill-options')) return;
     const existingSkill = result.querySelector('[data-learn-skill]');
     if (!existingSkill) return;
 
-    const { feeling, group, suggested } = currentFeelingContext(result);
+    const feeling = result.querySelector('.selected-feeling-summary h2')?.textContent?.trim() || '';
+    const group = result.querySelector('.selected-feeling-summary small')?.textContent?.trim() || '';
+    const suggested = existingSkill.dataset.learnSkill || result.querySelector('.skill-suggestion h3')?.textContent?.trim() || '';
     const high = HIGH_DYSREGULATION.has(feeling.toLowerCase());
     const available = new Set(state.skills.map(skill => normalizeSkillName(cleanName(skill.name))));
     const requested = ALTERNATES_BY_GROUP[group] || ['HALT', suggested, 'TIPP', 'STOP', 'Self Soothe'];
@@ -141,19 +134,17 @@
       if (!choices.some(item => normalizeSkillName(item) === key)) choices.push(name);
     });
 
-    if (available.has(normalizeSkillName('HALT')) && !choices.some(item => normalizeSkillName(item) === normalizeSkillName('HALT'))) {
-      choices.unshift('HALT');
-    }
+    if (available.has('halt') && !choices.some(item => normalizeSkillName(item) === 'halt')) choices.unshift('HALT');
 
     const holder = document.createElement('div');
     holder.className = 'john-skill-options';
     holder.innerHTML = `
       ${high ? `<div class="john-halt-callout"><strong>Before anything else: H.A.L.T.</strong><span>John, this is your go-to. Check hungry, angry, lonely, and tired before asking yourself to solve the whole damn day.</span></div>` : ''}
-      <p class="eyebrow">OR PICK WHAT YOU KNOW WORKS</p>
-      <h4>You are not locked into one tool.</h4>
-      <p>The suggestion is a starting point, not an assignment. H.A.L.T. is always here.</p>
+      <p class="eyebrow">OTHER TOOLS THAT MAY FIT</p>
+      <h4>You are not locked into one skill.</h4>
+      <p>The first suggestion is only a starting point. Pick the tool that actually works for you.</p>
       <div class="john-skill-chip-row">
-        ${choices.map(name => `<button class="john-skill-chip${normalizeSkillName(name) === normalizeSkillName('HALT') ? ' is-halt' : ''}" type="button" data-john-skill="${escapeHtml(name)}">${normalizeSkillName(name) === normalizeSkillName('HALT') ? '★ ' : ''}${escapeHtml(name)}</button>`).join('')}
+        ${choices.map(name => `<button class="john-skill-chip${normalizeSkillName(name) === 'halt' ? ' is-halt' : ''}" type="button" data-john-skill="${escapeHtml(name)}">${normalizeSkillName(name) === 'halt' ? '★ ' : ''}${escapeHtml(name)}</button>`).join('')}
       </div>`;
 
     result.appendChild(holder);
@@ -192,10 +183,10 @@
   async function load() {
     grid.innerHTML = '<div class="dbt-loading">Unpacking the trail tools… 🧰</div>';
     try {
-      const responses = await Promise.all(API_URLS.map(url => fetch(url, { headers: { Accept: 'application/vnd.github+json' } })));
-      if (responses.some(response => !response.ok)) throw new Error('Unavailable');
-      const groups = await Promise.all(responses.map(response => response.json()));
-      const files = groups.flat();
+      const response = await fetch(API_URL, { headers: { Accept: 'application/vnd.github+json' } });
+      if (!response.ok) throw new Error('Unavailable');
+      const rootFiles = await response.json();
+      const files = [...rootFiles, HALT_SKILL];
       const seen = new Set();
       state.skills = files
         .filter(file => file.type === 'file' && SKILL_RE.test(file.name) && file.download_url)
@@ -206,8 +197,8 @@
           return true;
         })
         .sort((a, b) => {
-          const aHalt = normalizeSkillName(cleanName(a.name)) === normalizeSkillName(GO_TO_SKILL);
-          const bHalt = normalizeSkillName(cleanName(b.name)) === normalizeSkillName(GO_TO_SKILL);
+          const aHalt = normalizeSkillName(cleanName(a.name)) === 'halt';
+          const bHalt = normalizeSkillName(cleanName(b.name)) === 'halt';
           if (aHalt !== bHalt) return aHalt ? -1 : 1;
           return cleanName(a.name).localeCompare(cleanName(b.name));
         });
@@ -244,8 +235,7 @@
   ['park-badges.js?v=20260819-1', 'parkBadges'],
   ['qa-fixes.js?v=20260819-1', 'qaFixes'],
   ['john-extras.js?v=20260819-2', 'johnExtras'],
-  ['art-upgrades.js?v=20260819-1', 'artUpgrades'],
-  ['listen-upgrades.js?v=20260820-1', 'listenUpgrades']
+  ['art-upgrades.js?v=20260819-1', 'artUpgrades']
 ].forEach(([src, key]) => {
   if (document.querySelector(`script[data-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}]`)) return;
   const script = document.createElement('script');
