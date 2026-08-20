@@ -212,3 +212,18 @@
     if (event.key === 'ArrowRight') openViewer(state.index + 1);
   });
 })();
+
+[
+  ['park-badges.js?v=20260820-3', 'parkBadges'],
+  ['qa-fixes.js?v=20260820-3', 'qaFixes'],
+  ['john-extras.js?v=20260820-3', 'johnExtras'],
+  ['art-upgrades.js?v=20260820-3', 'artUpgrades'],
+  ['listen-upgrades.js?v=20260820-3', 'listenUpgrades']
+].forEach(([src, key]) => {
+  const attr = `data-${key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`;
+  if (document.querySelector(`script[${attr}]`)) return;
+  const script = document.createElement('script');
+  script.src = src;
+  script.setAttribute(attr, 'true');
+  document.body.appendChild(script);
+});
