@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v7-blue-quests';
+const CACHE_NAME = 'grizzlyjohn-v8-halt-campfire';
 const APP_SHELL = [
   './',
   './index.html',
@@ -30,6 +30,7 @@ const APP_SHELL = [
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
   './GrizzlyJohn%20Popup%20Background.png',
+  './graphics/HALT%20Skill.png',
   './graphics/GrizzlyJohn%20Breathing%20Bear.png',
   './graphics/GrizzlyJohn%20Breath%20Complete%2001.png',
   './graphics/GrizzlyJohn%20Breath%20Complete%2002.png',
