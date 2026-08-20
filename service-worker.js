@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v9-dbt-restore';
+const CACHE_NAME = 'grizzlyjohn-v10-full-audit';
 const APP_SHELL = [
   './',
   './index.html',
