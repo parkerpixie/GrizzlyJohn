@@ -1,7 +1,8 @@
 (() => {
-  const LEGACY_KEY = 'grizzlyjohn:listenShelf';
   const LIBRARY_KEY = 'grizzlyjohn:campfireLibrary';
+  const LEGACY_KEY = 'grizzlyjohn:listenShelf';
   const SEED_ID = 'seed-resilience-brene-brown';
+
   const CATEGORIES = [
     'Mind & Life',
     'Resilience & Growth',
@@ -14,6 +15,7 @@
     'Audiobooks',
     "John's Picks"
   ];
+
   const RECOMMENDED_CATEGORIES = {
     'The Mel Robbins Podcast': 'Mind & Life',
     'How to Be a Better Human': 'Mind & Life',
@@ -27,4 +29,4 @@ What Makes Up Resilience?
 
 If you look at the current research, here are five of the most common factors of resilient people:
 
-They are resourceful and have good problem-solving skills.They are
+They are resourceful and have good problem-solving skills.They are more likely to
