@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v8-halt-campfire';
+const CACHE_NAME = 'grizzlyjohn-v9-dbt-restore';
 const APP_SHELL = [
   './',
   './index.html',
