@@ -30,6 +30,7 @@
   const prevButton = document.getElementById('dbtPrevious');
   const nextButton = document.getElementById('dbtNext');
   const shareButton = document.getElementById('dbtShare');
+  const toolbox = document.getElementById('dbtToolbox');
 
   if (!grid || !viewer || !image || !title) return;
 
@@ -84,6 +85,9 @@
       .john-skill-chip.is-halt{background:#f8ead0;border-color:#d59b35;color:#6c4910}
       .john-halt-callout{margin:.7rem 0;padding:.8rem;border-radius:14px;background:#f8ead0;border:1px solid rgba(213,155,53,.55)}
       .john-halt-callout strong{display:block;color:#6c4910;margin-bottom:.25rem}
+      .john-toolbox-link{margin-top:1rem}
+      .john-toolbox-close{margin:.8rem 0 0 auto;display:block}
+      #dbtToolbox[hidden]{display:none!important}
     `;
     document.head.appendChild(style);
   }
@@ -103,16 +107,98 @@
     if (!viewer.open) viewer.showModal();
   }
 
+  function setToolboxExpanded(expanded) {
+    document.querySelectorAll('[data-open-recovery-toolbox]').forEach(button => {
+      button.setAttribute('aria-expanded', String(expanded));
+    });
+  }
+
+  function openToolbox({ navigate = true, scroll = true } = {}) {
+    if (navigate) document.querySelector('[data-nav="wisdom"]')?.click();
+    window.setTimeout(() => {
+      if (!toolbox) return;
+      toolbox.hidden = false;
+      setToolboxExpanded(true);
+      if (scroll) toolbox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, navigate ? 120 : 0);
+  }
+
+  function closeToolbox() {
+    if (!toolbox) return;
+    toolbox.hidden = true;
+    setToolboxExpanded(false);
+    document.getElementById('johnToolboxLink')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function setupToolboxAccess() {
+    if (!toolbox) return;
+    toolbox.hidden = true;
+
+    const toolboxHeader = toolbox.querySelector('.dbt-toolbox-header');
+    if (toolboxHeader) {
+      const eyebrow = toolboxHeader.querySelector('.eyebrow');
+      const heading = toolboxHeader.querySelector('h2');
+      const copy = toolboxHeader.querySelector('p:not(.eyebrow)');
+      if (eyebrow) eyebrow.textContent = 'RECOVERY TOOLBOX';
+      if (heading) heading.textContent = 'HALT + DBT Trail Tools';
+      if (copy) copy.textContent = 'Open what you need, when you need it. HALT is John’s go-to, followed by the complete DBT card collection.';
+    }
+
+    if (!toolbox.querySelector('[data-close-recovery-toolbox]')) {
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'text-button john-toolbox-close';
+      close.dataset.closeRecoveryToolbox = 'true';
+      close.textContent = 'Close toolbox ↑';
+      close.addEventListener('click', closeToolbox);
+      toolbox.appendChild(close);
+    }
+
+    const todayCard = document.querySelector('.today-tool-card');
+    if (todayCard) {
+      const eyebrow = todayCard.querySelector('.eyebrow');
+      const heading = todayCard.querySelector('h3');
+      const copy = todayCard.querySelector('p:not(.eyebrow)');
+      const button = todayCard.querySelector('button');
+      if (eyebrow) eyebrow.textContent = 'RECOVERY TOOLBOX';
+      if (heading) heading.textContent = 'Need a tool? They’re all in one place.';
+      if (copy) copy.textContent = 'HALT plus the full DBT collection, organized behind one clean link.';
+      if (button) {
+        button.textContent = 'Open Recovery Toolbox →';
+        button.removeAttribute('data-nav');
+        button.removeAttribute('onclick');
+        button.dataset.openRecoveryToolbox = 'true';
+        button.setAttribute('aria-expanded', 'false');
+        button.addEventListener('click', () => openToolbox({ navigate: true }));
+      }
+    }
+
+    if (!document.getElementById('johnToolboxLink')) {
+      const linkCard = document.createElement('article');
+      linkCard.className = 'card john-toolbox-link';
+      linkCard.id = 'johnToolboxLink';
+      linkCard.innerHTML = `
+        <div class="card-icon">🧰</div>
+        <div class="card-content">
+          <p class="eyebrow">RECOVERY TOOLS</p>
+          <h3>Need a tool? They’re all here.</h3>
+          <p>HALT and the full DBT collection live together in one organized toolbox.</p>
+          <button class="text-button" type="button" data-open-recovery-toolbox aria-expanded="false">Open Recovery Toolbox →</button>
+        </div>`;
+      toolbox.parentNode?.insertBefore(linkCard, toolbox);
+      linkCard.querySelector('[data-open-recovery-toolbox]')?.addEventListener('click', () => openToolbox({ navigate: false }));
+    }
+  }
+
   function openSkillByName(skillName) {
     const index = findSkillIndex(skillName);
     if (index < 0) return;
-    document.querySelector('[data-nav="wisdom"]')?.click();
-    setTimeout(() => document.querySelector('[data-wisdom-panel="skillsPanel"]')?.click(), 40);
-    setTimeout(() => openViewer(index), 100);
+    openToolbox({ navigate: true, scroll: false });
+    setTimeout(() => openViewer(index), 180);
   }
 
   function render() {
-    count.textContent = `${state.skills.length} skills`;
+    if (count) count.textContent = `${state.skills.length} tools`;
     grid.innerHTML = state.skills.map((skill, index) => {
       const name = cleanName(skill.name);
       const isHalt = normalize(name) === normalize(GO_TO_SKILL);
@@ -199,6 +285,7 @@
 
   injectStyles();
   render();
+  setupToolboxAccess();
   watchFeelingSuggestions();
 
   randomButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.skills.length)));
