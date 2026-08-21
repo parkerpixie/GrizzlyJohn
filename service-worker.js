@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v11-audit-complete';
+const CACHE_NAME = 'grizzlyjohn-v12-recovery-toolbox';
 const APP_SHELL = [
   './',
   './index.html',
