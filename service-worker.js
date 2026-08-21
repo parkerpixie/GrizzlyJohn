@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v12-recovery-toolbox';
+const CACHE_NAME = 'grizzlyjohn-v13-brene-reflection';
 const APP_SHELL = [
   './',
   './index.html',
@@ -26,11 +26,13 @@ const APP_SHELL = [
   './feeling-drag.js',
   './listen-upgrades.js',
   './jen-quests.js',
+  './brene-reflection.js',
   './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
   './GrizzlyJohn%20Popup%20Background.png',
   './graphics/HALT%20Skill.png',
+  './graphics/Brene%20Brown%20Quote.png',
   './graphics/GrizzlyJohn%20Breathing%20Bear.png',
   './graphics/GrizzlyJohn%20Breath%20Complete%2001.png',
   './graphics/GrizzlyJohn%20Breath%20Complete%2002.png',
