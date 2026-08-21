@@ -78,12 +78,21 @@
     document.body.appendChild(script);
   }
 
+  function loadRoamV2() {
+    if (document.querySelector('script[data-roam-v2]')) return;
+    const script = document.createElement('script');
+    script.src = 'roam-v2.js?v=20260821-1';
+    script.dataset.roamV2 = 'true';
+    document.body.appendChild(script);
+  }
+
   function init() {
     loadQaStyles();
     expandQuestRewards();
     guardQuestCompletion();
     fixPodcastLinks();
     loadBreneReflection();
+    loadRoamV2();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
