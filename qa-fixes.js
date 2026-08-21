@@ -14,27 +14,19 @@
   const BETTER_HUMAN_SPOTIFY = 'https://open.spotify.com/show/5KUwV1eFkq1T2qoNdWJ5Qe';
 
   function readQuestCount() {
-    try {
-      return Number(JSON.parse(localStorage.getItem('grizzlyjohn:questCount') || '0')) || 0;
-    } catch {
-      return 0;
-    }
+    try { return Number(JSON.parse(localStorage.getItem('grizzlyjohn:questCount') || '0')) || 0; }
+    catch { return 0; }
   }
 
   function escapeHtml(value = '') {
-    return String(value).replace(/[&<>'"]/g, char => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    })[char]);
+    return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]);
   }
 
   function expandQuestRewards() {
     if (!window.GRIZZLY_DATA || !Array.isArray(GRIZZLY_DATA.stamps)) return;
     const ids = new Set(GRIZZLY_DATA.stamps.map(stamp => stamp.id));
-    BONUS_STAMPS.forEach(stamp => {
-      if (!ids.has(stamp.id)) GRIZZLY_DATA.stamps.push(stamp);
-    });
+    BONUS_STAMPS.forEach(stamp => { if (!ids.has(stamp.id)) GRIZZLY_DATA.stamps.push(stamp); });
     GRIZZLY_DATA.stamps.sort((a, b) => a.requirement - b.requirement);
-
     const grid = document.getElementById('stampGrid');
     const count = readQuestCount();
     if (!grid) return;
@@ -48,20 +40,11 @@
     const complete = document.getElementById('completeQuest');
     const another = document.getElementById('newQuest');
     if (!complete || !another) return;
-
     complete.addEventListener('click', event => {
-      if (complete.dataset.questCounted === 'true') {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        return;
-      }
+      if (complete.dataset.questCounted === 'true') { event.preventDefault(); event.stopImmediatePropagation(); return; }
       complete.dataset.questCounted = 'true';
-      window.setTimeout(() => {
-        complete.disabled = true;
-        complete.textContent = 'Counted ✓';
-      }, 0);
+      window.setTimeout(() => { complete.disabled = true; complete.textContent = 'Counted ✓'; }, 0);
     }, true);
-
     another.addEventListener('click', () => {
       delete complete.dataset.questCounted;
       complete.disabled = false;
@@ -87,11 +70,20 @@
     document.head.appendChild(link);
   }
 
+  function loadBreneReflection() {
+    if (document.querySelector('script[data-brene-reflection]')) return;
+    const script = document.createElement('script');
+    script.src = 'brene-reflection.js?v=20260821-1';
+    script.dataset.breneReflection = 'true';
+    document.body.appendChild(script);
+  }
+
   function init() {
     loadQaStyles();
     expandQuestRewards();
     guardQuestCompletion();
     fixPodcastLinks();
+    loadBreneReflection();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
