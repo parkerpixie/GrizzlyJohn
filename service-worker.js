@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v13-brene-reflection';
+const CACHE_NAME = 'grizzlyjohn-v14-roam-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -27,6 +27,7 @@ const APP_SHELL = [
   './listen-upgrades.js',
   './jen-quests.js',
   './brene-reflection.js',
+  './roam-v2.js',
   './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
