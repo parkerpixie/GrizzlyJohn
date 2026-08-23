@@ -262,7 +262,11 @@
   }
 
   function saveCheckIn(feeling, skill) {
-    state.checkIns.unshift({ id: String(Date.now()), date: new Date().toISOString(), feeling: feeling.word, group: feeling.group.label, icon: feeling.group.icon, skill: skill || null });
+    const checkIn = { id: String(Date.now()), date: new Date().toISOString(), feeling: feeling.word, group: feeling.group.label, icon: feeling.group.icon, skill: skill || null };
+    window.GrizzlyJohnStorageV2?.appendCheckIn(checkIn);
+    state.checkIns.unshift(checkIn);
+    // Legacy UI compatibility still keeps 120 records here. V2 retains the complete
+    // stream in grizzlyjohn:v2:checkInsFullHistory until this path is retired.
     state.checkIns = state.checkIns.slice(0, 120); storage.set('checkIns', state.checkIns);
     const button = $('#feelingResult [data-save-feeling]'); if (button) { button.textContent = 'Saved ✓'; button.disabled = true; }
     renderJourney();

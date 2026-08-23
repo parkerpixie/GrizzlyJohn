@@ -63,7 +63,7 @@
         const title=$('#reflectionTitle',section).value.trim(),body=$('#reflectionBody',section).value.trim();if(!title||!body){status.textContent='Add a title and the full reflection first.';return}
         entry={id:uid(),kind:'reflection',title,body,source:$('#reflectionSource',section).value.trim(),sourceUrl:$('#reflectionUrl',section).value.trim(),category:$('#campfireCategory',section).value,addedAt:new Date().toISOString()};
       }
-      const all=items();all.unshift(entry);write(all.slice(0,250));e.target.reset();kind='stream';$$('[data-kind]',section).forEach(b=>b.classList.toggle('is-active',b.dataset.kind==='stream'));$('#streamFields',section).hidden=false;$('#reflectionFields',section).hidden=true;status.textContent='Saved ✓';render();
+      const all=items();all.unshift(entry);write(all);e.target.reset();kind='stream';$$('[data-kind]',section).forEach(b=>b.classList.toggle('is-active',b.dataset.kind==='stream'));$('#streamFields',section).hidden=false;$('#reflectionFields',section).hidden=true;status.textContent='Saved ✓';render();
     });
   }
 
