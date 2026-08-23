@@ -9,6 +9,7 @@
 - The one-time legacy backup stores each legacy key's exact raw string and is never overwritten.
 - Recovery imports skip existing keys by default. Overwriting requires `{ conflict: 'overwrite' }`, and an existing legacy backup can never be overwritten.
 - Imports never clear keys that are absent from an export.
+- Recovery imports snapshot the exact previous state of every key they may change. If a later write fails, all earlier writes from that attempt are rolled back; rollback status and any rollback errors are returned to the caller.
 
 ## Browser API
 
@@ -36,6 +37,13 @@ Future V2 code should use these readers instead of parsing legacy keys directly.
 ## Check-in transition
 
 The legacy UI still writes `grizzlyjohn:checkIns` and keeps its newest 120 records for compatibility. Before that legacy slice occurs, it also calls `appendCheckIn`, which writes the same new record to the uncapped `grizzlyjohn:v2:checkInsFullHistory` stream.
+
+Check-in bootstrap is recovery-safe:
+
+- A valid legacy array is copied into full history.
+- A parseable array with imperfect or unexpected records is copied in full without dropping those records. The protected backup still retains the exact legacy raw string.
+- Completely unparseable legacy data remains untouched and exact in the protected backup. V2 starts an empty forward history so new valid check-ins continue recording.
+- Recovery-start cases use the `full-check-in-history-recovery-started` journal event, including the legacy status and number of records carried forward. Clean initialization uses `full-check-in-history-created`.
 
 The next implementation phase should change check-in reads and rendering to use `readers.fullCheckInHistory()`. Only after parity is verified should the legacy 120-record slice be retired. The legacy key should remain available for backward compatibility and recovery.
 

@@ -13,6 +13,21 @@ class MemoryStorage {
   removeItem(key) { this.values.delete(key); }
 }
 
+class ThrowingStorage extends MemoryStorage {
+  constructor(initial, failKey) {
+    super(initial);
+    this.failKey = failKey;
+    this.hasFailed = false;
+  }
+  setItem(key, value) {
+    if (key === this.failKey && !this.hasFailed) {
+      this.hasFailed = true;
+      throw new Error('Simulated quota failure');
+    }
+    super.setItem(key, value);
+  }
+}
+
 const fixedNow = () => '2026-08-23T12:00:00.000Z';
 const layer = initial => {
   const storage = new MemoryStorage(initial);
@@ -63,7 +78,38 @@ test('reports malformed and unexpected data while preserving exact raw values', 
   api.initialize();
   assert.equal(storage.getItem(LEGACY_KEYS.checkIns), malformed);
   assert.equal(storage.getItem(LEGACY_KEYS.places), unexpected);
-  assert.equal(storage.getItem(V2_KEYS.checkInsFullHistory), null);
+  assert.deepEqual(JSON.parse(storage.getItem(V2_KEYS.checkInsFullHistory)), []);
+});
+
+test('unparseable legacy check-ins start a journaled recovery history that accepts future records', () => {
+  const malformed = '[{"id":"old"';
+  const { storage, api } = layer({ [LEGACY_KEYS.checkIns]: malformed });
+  const initialized = api.initialize();
+  const backup = JSON.parse(storage.getItem(V2_KEYS.legacyBackup));
+  assert.equal(backup.entries[LEGACY_KEYS.checkIns].raw, malformed);
+  assert.equal(storage.getItem(LEGACY_KEYS.checkIns), malformed);
+  assert.equal(initialized.fullHistory.recoveryStart, true);
+  assert.equal(initialized.fullHistory.legacyStatus, 'malformed');
+  assert.equal(api.appendCheckIn({ id: 'new', date: 'now', feeling: 'Safe', group: 'CALM' }).ok, true);
+  assert.equal(JSON.parse(storage.getItem(V2_KEYS.checkInsFullHistory)).length, 1);
+  const journal = JSON.parse(storage.getItem(V2_KEYS.migrationJournal));
+  assert.ok(journal.some(entry => entry.event === 'full-check-in-history-recovery-started' && entry.details.legacyStatus === 'malformed'));
+});
+
+test('parseable imperfect legacy check-in arrays carry every record into V2 and continue recording', () => {
+  const imperfect = [{ feeling: 'Fine' }, 'an old non-object value', { id: 'partial', custom: { preserved: true } }];
+  const legacyRaw = JSON.stringify(imperfect);
+  const { storage, api } = layer({ [LEGACY_KEYS.checkIns]: legacyRaw });
+  const initialized = api.initialize();
+  assert.equal(initialized.fullHistory.recoveryStart, true);
+  assert.equal(initialized.fullHistory.legacyStatus, 'unexpected');
+  assert.deepEqual(JSON.parse(storage.getItem(V2_KEYS.checkInsFullHistory)), imperfect);
+  assert.equal(storage.getItem(LEGACY_KEYS.checkIns), legacyRaw);
+  assert.equal(api.appendCheckIn({ id: 'new', date: 'now', feeling: 'Curious', group: 'BRIGHT' }).ok, true);
+  assert.deepEqual(JSON.parse(storage.getItem(V2_KEYS.checkInsFullHistory)).slice(1), imperfect);
+  const journal = JSON.parse(storage.getItem(V2_KEYS.migrationJournal));
+  const recovery = journal.find(entry => entry.event === 'full-check-in-history-recovery-started');
+  assert.equal(recovery.details.legacyRecordsCarriedForward, imperfect.length);
 });
 
 test('creates one exact legacy backup and never overwrites it', () => {
@@ -137,4 +183,32 @@ test('rejects invalid imports without making partial changes', () => {
   assert.equal(result.ok, false);
   assert.equal(storage.getItem(LEGACY_KEYS.questCount), '3');
   assert.equal(storage.getItem('other:key'), null);
+});
+
+test('rolls back every earlier import write when a later storage write fails', () => {
+  const initial = {
+    [LEGACY_KEYS.questCount]: '3',
+    [LEGACY_KEYS.weatherEnabled]: 'false',
+    [V2_KEYS.legacyBackup]: '{"protected":true}'
+  };
+  const storage = new ThrowingStorage(initial, LEGACY_KEYS.weatherEnabled);
+  const api = createStorageLayer(storage, { now: fixedNow });
+  const payload = JSON.stringify({
+    format: EXPORT_FORMAT,
+    exportedAt: fixedNow(),
+    entries: [
+      { key: LEGACY_KEYS.listenShelf, raw: '[{"id":"new-key"}]' },
+      { key: LEGACY_KEYS.questCount, raw: '99' },
+      { key: LEGACY_KEYS.weatherEnabled, raw: 'true' },
+      { key: V2_KEYS.legacyBackup, raw: '{"replacement":true}' }
+    ]
+  });
+  const result = api.importData(payload, { conflict: 'overwrite' });
+  assert.equal(result.ok, false);
+  assert.equal(result.rolledBack, true);
+  assert.match(result.errors[0], /Simulated quota failure/);
+  assert.equal(storage.getItem(LEGACY_KEYS.listenShelf), null);
+  assert.equal(storage.getItem(LEGACY_KEYS.questCount), '3');
+  assert.equal(storage.getItem(LEGACY_KEYS.weatherEnabled), 'false');
+  assert.equal(storage.getItem(V2_KEYS.legacyBackup), '{"protected":true}');
 });

@@ -153,22 +153,24 @@
       if (!existing.ok) return { ok: false, created: false, reason: existing.error };
       if (existing.present) return { ok: true, created: false };
       const legacy = readers.checkIns();
-      if (legacy.status === 'missing') {
-        try {
-          setJson(V2_KEYS.checkInsFullHistory, []);
-          appendJournal('full-check-in-history-created', { recordCount: 0 });
-          return { ok: true, created: true, recordCount: 0 };
-        } catch (error) {
-          return { ok: false, created: false, reason: String(error?.message || error) };
-        }
-      }
-      if (legacy.status !== 'valid') {
-        return { ok: true, created: false, reason: `Legacy check-ins were ${legacy.status}; raw data was left untouched.` };
-      }
+      if (legacy.status === 'unavailable') return { ok: false, created: false, reason: legacy.errors[0] };
+
+      const canCarryForward = (legacy.status === 'valid' || legacy.status === 'unexpected') && Array.isArray(legacy.value);
+      const history = canCarryForward ? legacy.value : [];
+      const recoveryStart = !['valid', 'missing'].includes(legacy.status);
+      const event = recoveryStart ? 'full-check-in-history-recovery-started' : 'full-check-in-history-created';
+      const details = {
+        recordCount: history.length,
+        legacyStatus: legacy.status,
+        legacyRecordsCarriedForward: canCarryForward ? history.length : 0
+      };
+      if (recoveryStart) details.reason = canCarryForward
+        ? 'Legacy JSON was an array with imperfect records; every parsed record was carried forward unchanged.'
+        : 'Legacy JSON could not provide an array; its exact raw value remains in the protected backup and V2 started an empty forward history.';
       try {
-        setJson(V2_KEYS.checkInsFullHistory, legacy.value);
-        appendJournal('full-check-in-history-created', { recordCount: legacy.value.length });
-        return { ok: true, created: true, recordCount: legacy.value.length };
+        setJson(V2_KEYS.checkInsFullHistory, history);
+        appendJournal(event, details);
+        return { ok: true, created: true, recoveryStart, recordCount: history.length, legacyStatus: legacy.status };
       } catch (error) {
         return { ok: false, created: false, reason: String(error?.message || error) };
       }
@@ -178,8 +180,8 @@
       if (!record || typeof record !== 'object' || Array.isArray(record)) {
         return { ok: false, reason: 'Check-in must be an object.' };
       }
-      const history = readers.fullCheckInHistory();
-      if (history.status !== 'valid') {
+      const history = parse(V2_KEYS.checkInsFullHistory);
+      if (history.status !== 'parsed' || !Array.isArray(history.value)) {
         return { ok: false, reason: `Full check-in history is ${history.status}; it was preserved without modification.` };
       }
       const next = [record, ...history.value];
@@ -215,16 +217,21 @@
         errors.push('Unsupported GrizzlyJohn export format.');
       }
       const entries = Array.isArray(parsedPayload?.entries) ? parsedPayload.entries : [];
+      const seenKeys = new Set();
       entries.forEach((entry, index) => {
         if (!entry || typeof entry.key !== 'string' || !entry.key.startsWith('grizzlyjohn:')) errors.push(`Entry ${index} has an invalid key.`);
         if (!entry || typeof entry.raw !== 'string') errors.push(`Entry ${index} does not contain an exact raw string value.`);
+        if (entry && typeof entry.key === 'string') {
+          if (seenKeys.has(entry.key)) errors.push(`Entry ${index} duplicates ${entry.key}.`);
+          seenKeys.add(entry.key);
+        }
       });
       if (errors.length) return { ok: false, errors, imported: [], skipped: [] };
 
       const overwrite = options.conflict === 'overwrite';
       const dryRun = options.dryRun === true;
-      const imported = [];
       const skipped = [];
+      const planned = [];
       for (const entry of entries) {
         const exists = storage.getItem(entry.key) !== null;
         const protectedBackup = entry.key === V2_KEYS.legacyBackup && exists;
@@ -232,11 +239,40 @@
           skipped.push({ key: entry.key, reason: protectedBackup ? 'Existing legacy backup is never overwritten.' : 'Key already exists.' });
           continue;
         }
-        if (!dryRun) storage.setItem(entry.key, entry.raw);
-        imported.push(entry.key);
+        planned.push({ entry, previous: { present: exists, raw: exists ? storage.getItem(entry.key) : null } });
+      }
+
+      const imported = planned.map(item => item.entry.key);
+      if (dryRun) return { ok: true, errors: [], imported, skipped, dryRun: true };
+
+      const changed = [];
+      try {
+        for (const item of planned) {
+          storage.setItem(item.entry.key, item.entry.raw);
+          changed.push(item);
+        }
+      } catch (error) {
+        const rollbackErrors = [];
+        for (const item of [...changed].reverse()) {
+          try {
+            if (item.previous.present) storage.setItem(item.entry.key, item.previous.raw);
+            else if (typeof storage.removeItem === 'function') storage.removeItem(item.entry.key);
+            else throw new Error('Storage adapter cannot remove a newly created key.');
+          } catch (rollbackError) {
+            rollbackErrors.push({ key: item.entry.key, error: String(rollbackError?.message || rollbackError) });
+          }
+        }
+        return {
+          ok: false,
+          errors: [`Recovery import failed while writing ${planned[changed.length]?.entry.key || 'a storage key'}: ${String(error?.message || error)}`],
+          imported: [],
+          skipped,
+          rolledBack: rollbackErrors.length === 0,
+          rollbackErrors
+        };
       }
       if (!dryRun) appendJournal('recovery-import', { imported: imported.length, skipped: skipped.length, conflict: overwrite ? 'overwrite' : 'skip' });
-      return { ok: true, errors: [], imported, skipped, dryRun };
+      return { ok: true, errors: [], imported, skipped, dryRun: false };
     }
 
     function initialize() {
