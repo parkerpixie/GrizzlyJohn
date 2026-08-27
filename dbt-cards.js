@@ -188,6 +188,11 @@
       toolbox.parentNode?.insertBefore(linkCard, toolbox);
       linkCard.querySelector('[data-open-recovery-toolbox]')?.addEventListener('click', () => openToolbox({ navigate: false }));
     }
+    document.querySelectorAll('[data-open-recovery-toolbox]').forEach(button => {
+      if (button.dataset.toolboxListenerReady === 'true') return;
+      button.dataset.toolboxListenerReady = 'true';
+      button.addEventListener('click', () => openToolbox({ navigate: !button.closest('#wisdom') }));
+    });
   }
 
   function openSkillByName(skillName) {
@@ -286,7 +291,6 @@
   injectStyles();
   render();
   setupToolboxAccess();
-  watchFeelingSuggestions();
 
   randomButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.skills.length)));
   closeButton?.addEventListener('click', () => viewer.close());

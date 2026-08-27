@@ -140,7 +140,6 @@
   const backpackState = {
     badges: new Set(readJson(BADGE_STORAGE_KEY, [])),
     manifest: PARK_FILES.map(parseBadgeFile).sort((a, b) => a.name.localeCompare(b.name)),
-    filter: 'all',
     search: ''
   };
 
@@ -175,7 +174,7 @@
     if (document.querySelector('link[data-park-badges]')) return;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'park-badges.css?v=20260820-4';
+    link.href = 'park-badges.css?v=20260827-1';
     link.dataset.parkBadges = 'true';
     document.head.appendChild(link);
   }
@@ -193,88 +192,74 @@
       <article class="card card-dark backpack-hero">
         <div class="backpack-art" aria-hidden="true">🎒</div>
         <div class="backpack-copy">
-          <p class="eyebrow">JOHN'S ROAMING BACKPACK</p>
-          <h2>National Park Badges</h2>
-          <p>Visited a National Park? Its emblem belongs in the pack. Mark a park visited in the passport below and GrizzlyJohn will pack the matching badge automatically.</p>
-          <div class="backpack-progress"><strong id="parkBadgeCount">0</strong><span id="parkBadgeTotal">of 0 packed</span></div>
+          <p class="eyebrow">NATIONAL PARK PASSPORT</p>
+          <h2>John’s park collection</h2>
+          <p>Visited parks appear in full color. Parks still ahead stay locked until John marks them visited.</p>
+          <div class="backpack-progress"><strong id="parkBadgeCount">0</strong><span id="parkBadgeTotal">of 0 visited</span></div>
         </div>
       </article>
-      <div class="backpack-controls" aria-label="National Park badge filters">
-        <div class="backpack-filter-row">
-          <button class="backpack-filter is-active" type="button" data-badge-filter="all">All badges</button>
-          <button class="backpack-filter" type="button" data-badge-filter="packed">In backpack</button>
-          <button class="backpack-filter" type="button" data-badge-filter="unpacked">Still roaming</button>
-        </div>
-        <label class="backpack-search">Find a park<input id="parkBadgeSearch" type="search" placeholder="Yellowstone, Acadia, Zion…" autocomplete="off"></label>
+      <div class="passport-picker" aria-label="Mark a National Park visited">
+        <label for="parkPassportPicker"><span>Choose a park</span><select id="parkPassportPicker"></select></label>
+        <button class="button button-primary" id="toggleSelectedPark" type="button">Mark visited</button>
       </div>
       <div class="backpack-message" id="backpackMessage" role="status" aria-live="polite"></div>
-      <div class="park-badge-grid" id="parkBadgeGrid" aria-live="polite"></div>`;
+      <section class="visited-park-badges" aria-labelledby="visitedParkBadgesHeading"><div class="passport-collection-heading"><h3 id="visitedParkBadgesHeading">Visited parks</h3><span id="visitedParkCount"></span></div><div class="park-badge-grid" id="parkBadgeGrid" aria-live="polite"></div></section>
+      <details class="locked-park-badges" id="lockedParkBadges"><summary><span><strong>Parks still ahead</strong><small id="lockedParkCount"></small></span><span aria-hidden="true">＋</span></summary><div class="locked-park-tools"><label class="backpack-search">Find a park<input id="parkBadgeSearch" type="search" placeholder="Yellowstone, Acadia, Zion…" autocomplete="off"></label></div><div class="park-badge-grid" id="lockedParkBadgeGrid"></div></details>`;
     stats.insertAdjacentElement('afterend', section);
 
-    section.querySelectorAll('[data-badge-filter]').forEach(button => {
-      button.addEventListener('click', () => {
-        backpackState.filter = button.dataset.badgeFilter;
-        section.querySelectorAll('[data-badge-filter]').forEach(item => item.classList.toggle('is-active', item === button));
-        renderBadgeGrid();
-      });
-    });
+    const picker = section.querySelector('#parkPassportPicker');
+    picker.innerHTML = backpackState.manifest.map(badge => `<option value="${badge.id}">${badge.name} · ${badge.region}</option>`).join('');
+    picker.addEventListener('change', updatePickerAction);
+    section.querySelector('#toggleSelectedPark').addEventListener('click', () => toggleBadge(picker.value));
 
     section.querySelector('#parkBadgeSearch')?.addEventListener('input', event => {
       backpackState.search = event.currentTarget.value.trim().toLowerCase();
       renderBadgeGrid();
     });
+    updatePickerAction();
   }
 
-  function visibleBadges() {
-    return backpackState.manifest.filter(badge => {
-      const packed = backpackState.badges.has(badge.id);
-      if (backpackState.filter === 'packed' && !packed) return false;
-      if (backpackState.filter === 'unpacked' && packed) return false;
-      if (backpackState.search) {
-        const haystack = `${badge.name} ${badge.region}`.toLowerCase();
-        if (!haystack.includes(backpackState.search)) return false;
-      }
-      return true;
-    });
+  function updatePickerAction() {
+    const picker = document.getElementById('parkPassportPicker');
+    const button = document.getElementById('toggleSelectedPark');
+    if (!picker || !button) return;
+    const visited = backpackState.badges.has(picker.value);
+    button.textContent = visited ? 'Mark not visited' : 'Mark visited';
+    button.setAttribute('aria-pressed', String(visited));
   }
 
   function renderBackpack() {
     ensureBackpackMarkup();
     const count = document.getElementById('parkBadgeCount');
     const total = document.getElementById('parkBadgeTotal');
+    const visitedCount = document.getElementById('visitedParkCount');
+    const lockedCount = document.getElementById('lockedParkCount');
     if (count) count.textContent = backpackState.badges.size;
-    if (total) total.textContent = `of ${backpackState.manifest.length} packed`;
+    if (total) total.textContent = `of ${backpackState.manifest.length} visited`;
+    if (visitedCount) visitedCount.textContent = `${backpackState.badges.size} collected`;
+    if (lockedCount) lockedCount.textContent = `${backpackState.manifest.length - backpackState.badges.size} locked`;
+    updatePickerAction();
     renderBadgeGrid();
+  }
+
+  function badgeMarkup(badge, packed) {
+    return `<article class="park-badge ${packed ? 'is-packed' : 'is-unpacked'}" data-badge-id="${badge.id}"><button class="park-badge-image-button" type="button" data-toggle-badge="${badge.id}" aria-pressed="${packed}" aria-label="${packed ? 'Mark' : 'Mark'} ${badge.name} ${packed ? 'not visited' : 'visited'}"><img src="${badge.image}" alt="${badge.name} emblem" loading="lazy" decoding="async"><span class="badge-status-mark" aria-hidden="true">${packed ? '✓' : '+'}</span></button><div class="park-badge-copy"><strong>${badge.name}</strong><small>${badge.region || 'National Park'}</small><span class="park-visit-state">${packed ? 'Visited · Unlocked' : 'Not visited · Locked'}</span><button class="badge-pack-button" type="button" data-toggle-badge="${badge.id}" aria-pressed="${packed}">${packed ? 'Mark not visited' : 'Mark visited'}</button></div></article>`;
+  }
+
+  function bindBadgeActions(root) {
+    root?.querySelectorAll('[data-toggle-badge]').forEach(button => button.addEventListener('click', () => toggleBadge(button.dataset.toggleBadge)));
   }
 
   function renderBadgeGrid() {
     const grid = document.getElementById('parkBadgeGrid');
-    if (!grid) return;
-    const badges = visibleBadges();
-    if (!badges.length) {
-      grid.innerHTML = '<div class="backpack-empty"><span>🧭</span><h3>No badges match that trail.</h3><p>Try another park name or filter.</p></div>';
-      return;
-    }
-
-    grid.innerHTML = badges.map(badge => {
-      const packed = backpackState.badges.has(badge.id);
-      return `
-        <article class="park-badge ${packed ? 'is-packed' : 'is-unpacked'}" data-badge-id="${badge.id}">
-          <button class="park-badge-image-button" type="button" data-toggle-badge="${badge.id}" aria-pressed="${packed}" aria-label="${packed ? 'Remove' : 'Add'} ${badge.name} ${packed ? 'from' : 'to'} backpack">
-            <img src="${badge.image}" alt="${badge.name} emblem" loading="lazy" decoding="async">
-            <span class="badge-status-mark" aria-hidden="true">${packed ? '✓' : '+'}</span>
-          </button>
-          <div class="park-badge-copy">
-            <strong>${badge.name}</strong>
-            <small>${badge.region || 'National Park'}</small>
-            <button class="badge-pack-button" type="button" data-toggle-badge="${badge.id}" aria-pressed="${packed}">${packed ? 'In backpack ✓' : 'Pack badge'}</button>
-          </div>
-        </article>`;
-    }).join('');
-
-    grid.querySelectorAll('[data-toggle-badge]').forEach(button => {
-      button.addEventListener('click', () => toggleBadge(button.dataset.toggleBadge));
-    });
+    const lockedGrid = document.getElementById('lockedParkBadgeGrid');
+    if (!grid || !lockedGrid) return;
+    const visited = backpackState.manifest.filter(badge => backpackState.badges.has(badge.id));
+    const locked = backpackState.manifest.filter(badge => !backpackState.badges.has(badge.id) && (!backpackState.search || `${badge.name} ${badge.region}`.toLowerCase().includes(backpackState.search)));
+    grid.innerHTML = visited.length ? visited.map(badge => badgeMarkup(badge, true)).join('') : '<div class="backpack-empty"><span>🧭</span><h3>No parks checked off yet.</h3><p>Choose a park above to start John’s passport.</p></div>';
+    lockedGrid.innerHTML = locked.length ? locked.map(badge => badgeMarkup(badge, false)).join('') : '<div class="backpack-empty"><span>✓</span><h3>No locked parks match.</h3><p>Try another park name.</p></div>';
+    bindBadgeActions(grid);
+    bindBadgeActions(lockedGrid);
   }
 
   function toggleBadge(id) {

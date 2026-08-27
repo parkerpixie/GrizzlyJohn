@@ -69,39 +69,11 @@
 
   const $ = id => document.getElementById(id);
 
-  function ensureDailyCard() {
-    const home = $('today');
-    if (!home) return;
-    const existing = $('dailyOracleCard');
-    if (existing?.closest('#today')) return;
-    if (existing) existing.remove();
-
-    const reflection = home.querySelector('.reflection-card');
-    if (!reflection) return;
-
-    const card = document.createElement('article');
-    card.className = 'card oracle-daily-card compact-home-card home-oracle-card';
-    card.id = 'dailyOracleCard';
-    card.hidden = true;
-    card.innerHTML = `
-      <button class="oracle-daily-image-button" type="button" aria-label="Open today's spirit animal card">
-        <img class="oracle-daily-image" id="dailyOracleImage" alt="">
-      </button>
-      <div class="oracle-daily-copy">
-        <p class="eyebrow">TODAY'S SPIRIT ANIMAL</p>
-        <h3 id="dailyOracleTitle">Today's guide</h3>
-        <p class="daily-oracle-subtitle">One card for today. Tap it when you want the full-sized version.</p>
-        <button class="text-button" id="openDailyOracle" type="button">Open today's card →</button>
-      </div>`;
-    reflection.insertAdjacentElement('afterend', card);
-  }
-
-  ensureDailyCard();
-
   const gallery = $('oracleCardGrid');
   const library = $('oracleLibrary');
   const libraryCount = $('oracleLibraryCount');
-  const drawButton = $('drawOracleCard');
+  const drawButton = $('pullReflectionCard');
+  const pullPrompt = $('reflectionPullPrompt');
   const viewer = $('oracleViewer');
   const viewerImage = $('oracleViewerImage');
   const viewerTitle = $('oracleViewerTitle');
@@ -149,22 +121,13 @@
     })[char]);
   }
 
-  function stableDailyIndex(length) {
-    const now = new Date();
-    const key = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-    let hash = 0;
-    for (const char of key) hash = ((hash << 5) - hash) + char.charCodeAt(0);
-    return Math.abs(hash) % length;
-  }
-
   function renderGallery() {
-    library.hidden = false;
     libraryCount.textContent = `${state.cards.length} cards`;
     gallery.innerHTML = state.cards.map((card, index) => {
       const name = splitName(card.name);
       return `
         <button class="oracle-thumb" type="button" data-oracle-index="${index}" aria-label="Open ${escapeHtml(name.title)} card">
-          <img src="${card.url}" alt="${escapeHtml(name.title)} spirit animal card" loading="lazy">
+          <img src="${card.url}" alt="${escapeHtml(name.title)} reflection card" loading="lazy">
           <span class="oracle-thumb-label">
             <strong>${escapeHtml(name.title)}</strong>
             <span>Tap to read</span>
@@ -177,15 +140,17 @@
     });
   }
 
-  function renderDailyCard() {
+  function renderDailyCard(record) {
     if (!state.cards.length || !dailyCard || !dailyImage || !dailyTitle || !dailyOpen) return;
-    const index = stableDailyIndex(state.cards.length);
+    if (!record) { dailyCard.hidden = true; if (pullPrompt) pullPrompt.hidden = false; return; }
+    const index = Math.max(0, state.cards.findIndex(card => card.name === record.file || card.name === record.cardId));
     const card = state.cards[index];
     const name = splitName(card.name);
     dailyImage.src = card.url;
-    dailyImage.alt = `${name.title} spirit animal card`;
+    dailyImage.alt = `${name.title} reflection card`;
     dailyTitle.textContent = name.title;
     dailyCard.hidden = false;
+    if (pullPrompt) pullPrompt.hidden = true;
     dailyOpen.onclick = () => openViewer(index);
     const imageButton = dailyImage.closest('button');
     if (imageButton) imageButton.onclick = () => openViewer(index);
@@ -197,7 +162,7 @@
     const card = state.cards[state.currentIndex];
     const name = splitName(card.name);
     viewerImage.src = card.url;
-    viewerImage.alt = `${name.title} spirit animal card`;
+    viewerImage.alt = `${name.title} reflection card`;
     viewerTitle.textContent = name.subtitle ? `${name.title} · ${name.subtitle}` : name.title;
     if (!viewer.open) viewer.showModal();
   }
@@ -229,9 +194,20 @@
   }
 
   renderGallery();
-  renderDailyCard();
+  const storage = window.GrizzlyJohnStorageV2;
+  const today = storage?.localDateKey(new Date());
+  const existingPull = storage?.reflectionCards.forDate(today);
+  renderDailyCard(existingPull?.ok ? existingPull.pull : null);
 
-  drawButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.cards.length)));
+  drawButton?.addEventListener('click', () => {
+    if (!storage || !state.cards.length) return;
+    const existing = storage.reflectionCards.forDate(today);
+    if (existing?.pull) { renderDailyCard(existing.pull); return; }
+    const card = state.cards[Math.floor(Math.random() * state.cards.length)];
+    const name = splitName(card.name);
+    const result = storage.reflectionCards.pull({ id: card.name, file: card.name, title: name.title }, { date: today });
+    if (result?.ok) renderDailyCard(result.pull);
+  });
   viewerClose?.addEventListener('click', () => viewer.close());
   previousButton?.addEventListener('click', () => step(-1));
   nextButton?.addEventListener('click', () => step(1));

@@ -1,0 +1,142 @@
+.roam-v2-section { margin: 18px 0 26px; }
+.roam-v2-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+.roam-v2-heading h2 { margin: 3px 0 0; font-size: 1.4rem; }
+.roam-resource-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.roam-resource-card { display: flex; flex-direction: column; gap: 10px; min-height: 176px; padding: 16px; border: 1px solid rgba(47,70,54,.14); border-radius: 19px; background: var(--paper, #fff); color: inherit; text-decoration: none; box-shadow: 0 8px 24px rgba(47,70,54,.06); }
+.roam-resource-card > span:nth-child(2) { display: grid; gap: 5px; }
+.roam-resource-icon { font-size: 1.7rem; }
+.roam-resource-card strong { color: var(--pine-dark, #2f4636); font-size: 1.05rem; }
+.roam-resource-card p { margin: 0; line-height: 1.45; }
+.roam-resource-cta { margin-top: auto; color: var(--pine-dark, #2f4636); font-size: .78rem; font-weight: 900; }
+.roam-side-quest-card { padding: 18px; }
+.roam-side-quest-main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 13px; align-items: start; }
+.roam-side-quest-emoji { font-size: 2.3rem; line-height: 1; }
+.roam-side-quest-card h3 { margin: 7px 0 5px; }
+.roam-side-quest-category { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.12); font-size: .68rem; font-weight: 900; letter-spacing: .05em; }
+.roam-side-quest-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+.roam-side-quest-actions .button { width: 100%; }
+.roam-badge-connection { margin: 13px 0 0; padding-top: 11px; border-top: 1px solid rgba(255,255,255,.16); color: rgba(255,255,255,.78); font-size: .76rem; font-weight: 700; }
+.roam-side-quests { margin-bottom: 13px; }
+.roam-trail-badges { position: relative; margin-top: 13px; padding-top: 17px; border-top: 1px solid rgba(47,70,54,.13); }
+.roam-trail-badges .roam-v2-heading { align-items: flex-start; }
+.roam-trail-badges .roam-v2-heading p:last-child { margin: 4px 0 0; color: var(--muted); font-size: .82rem; }
+.trail-badge-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 9px; }
+.trail-badge-tile { position: relative; display: grid; grid-template-rows: 44px 1.2em 5px; place-items: center; gap: 5px; min-width: 0; min-height: 88px; padding: 7px 6px; border: 1px solid rgba(47,70,54,.16); border-radius: 16px; background: linear-gradient(145deg, #fffaf0, #f5ead3); color: var(--pine-dark); font: inherit; cursor: pointer; box-shadow: 0 5px 15px rgba(47,70,54,.06); }
+.trail-badge-tile:hover, .trail-badge-tile:focus-visible, .trail-badge-tile[aria-expanded="true"] { border-color: rgba(47,70,54,.45); transform: translateY(-1px); }
+.trail-badge-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.78); font-size: 1.45rem; }
+.trail-badge-name { align-self: start; max-width: 100%; overflow: hidden; color: inherit; font-size: .66rem; font-weight: 850; line-height: 1.2; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.trail-badge-tile.is-locked { background: #edf0eb; color: #677169; box-shadow: none; }
+.trail-badge-tile.is-locked .trail-badge-icon { filter: grayscale(1); opacity: .5; }
+.trail-badge-tile.is-earned { border-color: rgba(212,166,75,.55); }
+.trail-badge-tile.is-just-unlocked { animation: trail-badge-unlock .55s ease-out both; }
+.trail-badge-progress { height: 7px; margin-top: 9px; overflow: hidden; border-radius: 999px; background: rgba(47,70,54,.12); }
+.trail-badge-progress span { display: block; height: 100%; border-radius: inherit; background: var(--gold); }
+.trail-badge-tile .trail-badge-progress { width: 100%; height: 5px; margin: 0; }
+.trail-badge-tile.is-earned .trail-badge-progress { opacity: .6; }
+.trail-badge-detail { position: relative; display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 12px; align-items: start; margin-top: 10px; padding: 14px; border: 1px solid rgba(47,70,54,.17); border-radius: 17px; background: var(--paper, #fff); box-shadow: 0 8px 22px rgba(47,70,54,.07); }
+.trail-badge-detail[hidden] { display: none; }
+.trail-badge-detail-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: rgba(212,166,75,.17); font-size: 1.35rem; }
+.trail-badge-detail h3, .trail-badge-detail p { margin: 2px 0 0; }
+.trail-badge-detail-progress { display: inline-block; margin-top: 4px; color: var(--pine-dark); font-size: .84rem; }
+.trail-badge-detail p:last-child { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+.trail-badge-detail-close { width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(47,70,54,.08); color: var(--pine-dark); font-size: 1.25rem; cursor: pointer; }
+@keyframes trail-badge-unlock { from { transform: scale(.97); box-shadow: 0 0 0 rgba(212,166,75,0); } to { transform: scale(1); box-shadow: 0 10px 28px rgba(212,166,75,.18); } }
+.roam-badge-empty { display: grid; gap: 4px; padding: 22px; border: 1px dashed rgba(47,70,54,.2); border-radius: 18px; text-align: center; }
+.roam-badge-empty span { font-size: 1.7rem; }
+.roam-badge-empty h3, .roam-badge-empty p { margin: 0; }
+.roam-badge-empty p { color: var(--muted); }
+.national-park-passport { margin: 28px 0 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.passport-body { display: grid; }
+.roam-extra-details, .roaming-record-details { margin: 16px 0 14px; border-top: 1px solid var(--line); }
+.roam-extra-details > summary, .roaming-record-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 14px 3px; color: var(--pine-dark); cursor: pointer; list-style: none; }
+.roam-extra-details > summary::-webkit-details-marker, .roaming-record-details > summary::-webkit-details-marker { display: none; }
+.roam-extra-details > summary span:first-child, .roaming-record-details > summary span:first-child { display: grid; gap: 2px; }
+.roam-extra-details > summary small, .roaming-record-details > summary small { color: var(--muted); font-weight: 500; }
+.roam-extra-details[open] > summary span:last-child, .roaming-record-details[open] > summary span:last-child, .locked-park-badges[open] > summary span:last-child { transform: rotate(45deg); }
+.trailhead-tools .roam-resource-grid { padding: 4px 0 12px; }
+.roaming-record-body { display: grid; gap: 14px; }
+
+/* Passport density overrides the legacy badge sheet without changing its assets or storage. */
+.national-park-passport .roam-backpack { margin: 0; }
+.national-park-passport .backpack-hero { margin-bottom: 10px; }
+.passport-picker { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: end; margin: 10px 0 14px; padding: 12px; border: 1px solid rgba(47,70,54,.14); border-radius: 16px; background: rgba(255,255,255,.72); }
+.passport-picker label { display: grid; gap: 5px; min-width: 0; color: var(--pine-dark); font-size: .75rem; font-weight: 850; }
+.passport-picker select { width: 100%; min-height: 44px; padding: 0 36px 0 11px; border: 1px solid rgba(47,70,54,.2); border-radius: 11px; background: #fff; color: var(--ink); font: inherit; }
+.passport-picker .button { min-height: 44px; white-space: nowrap; }
+.passport-collection-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0 9px; }
+.passport-collection-heading h3 { margin: 0; }
+.passport-collection-heading span { color: var(--muted); font-size: .75rem; font-weight: 800; }
+.national-park-passport .park-badge-grid { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 9px; }
+.national-park-passport .park-badge { padding: 9px; border-radius: 15px; }
+.national-park-passport .park-badge-copy strong { font-size: .78rem; }
+.national-park-passport .park-badge-copy small, .national-park-passport .park-visit-state { font-size: .66rem; }
+.national-park-passport .badge-pack-button { min-height: 38px; font-size: .7rem; }
+.locked-park-badges { margin-top: 13px; border-top: 1px solid rgba(47,70,54,.12); }
+.locked-park-badges > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 12px 2px; color: var(--pine-dark); cursor: pointer; list-style: none; }
+.locked-park-badges > summary::-webkit-details-marker { display: none; }
+.locked-park-badges > summary span:first-child { display: grid; gap: 2px; }
+.locked-park-badges > summary small { color: var(--muted); font-weight: 500; }
+.locked-park-tools { margin-bottom: 9px; }
+
+/* Saved places stay separate from the National Park Passport. */
+.john-roaming-list { margin: 26px 0 14px; padding-top: 20px; border-top: 1px solid var(--line); }
+.roaming-list-heading { align-items: flex-start; }
+.roaming-list-heading p:last-child { max-width: 560px; margin: 4px 0 0; color: var(--muted); font-size: .82rem; }
+.john-roaming-list #blueRoamCompanion { grid-template-columns: 76px minmax(0,1fr); gap: 10px; min-height: 0; margin: 0 0 12px; padding: 8px 12px 8px 5px; border-radius: 17px; background: linear-gradient(135deg, rgba(212,166,75,.14), rgba(239,235,222,.88)); }
+.john-roaming-list #blueRoamCompanion img { width: 76px; max-height: 78px; }
+.john-roaming-list #blueRoamCompanion .blue-companion-copy h3 { font-size: 1.02rem; }
+.john-roaming-list #blueRoamCompanion .blue-companion-copy p:last-child { font-size: .74rem; line-height: 1.35; }
+.roaming-list-body { display: grid; gap: 11px; }
+.roaming-list-body .stats-grid { margin: 0; }
+.roaming-list-body .stats-grid[hidden] { display: none !important; }
+.roaming-list-body .stat-card { padding: 11px 6px; border-radius: 14px; box-shadow: none; }
+.roaming-list-body .stat-card strong { font-size: 1.35rem; }
+.place-editor-details, .roam-request-details { border: 1px solid rgba(47,70,54,.14); border-radius: 16px; background: rgba(255,255,255,.68); }
+.place-editor-details > summary, .roam-request-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 11px 13px; color: var(--pine-dark); cursor: pointer; list-style: none; }
+.place-editor-details > summary::-webkit-details-marker, .roam-request-details > summary::-webkit-details-marker { display: none; }
+.place-editor-details > summary span:first-child, .roam-request-details > summary span:first-child { display: grid; gap: 2px; }
+.place-editor-details > summary small, .roam-request-details > summary small { color: var(--muted); font-weight: 500; }
+.place-editor-details[open] > summary span:last-child, .roam-request-details[open] > summary span:last-child { transform: rotate(45deg); }
+.place-editor-card { margin: 0 9px 9px; padding: 13px; box-shadow: none; }
+.place-editor-card .eyebrow { margin-bottom: 3px; }
+.place-editor-card h2 { margin-bottom: 11px; font-size: 1.15rem; }
+.place-form-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.roaming-list-filter-bar { display: grid; grid-template-columns: minmax(0,1fr) minmax(150px, .42fr); gap: 8px; align-items: end; }
+.roaming-list-filter-bar .segmented-control { display: flex; gap: 4px; overflow-x: auto; margin: 0; padding: 4px; scrollbar-width: thin; }
+.roaming-list-filter-bar .segment { flex: 0 0 auto; min-height: 38px; padding: 0 10px; white-space: nowrap; }
+.place-type-filter { display: grid; gap: 4px; color: var(--pine-dark); font-size: .7rem; font-weight: 850; }
+.place-type-filter select { min-height: 42px; width: 100%; padding: 0 30px 0 9px; border: 1px solid rgba(47,70,54,.17); border-radius: 11px; background: #fff; color: var(--ink); font: inherit; }
+.roaming-list-body .place-list { display: grid; gap: 8px; }
+.roaming-list-body .place-card { align-items: start; margin: 0; padding: 12px; border-radius: 15px; box-shadow: 0 5px 15px rgba(47,70,54,.05); }
+.roaming-list-body .place-card h3 { margin: 6px 0 2px; font-size: 1rem; }
+.roaming-list-body .place-state { margin: 0; color: var(--muted); font-size: .74rem; }
+.place-row-actions { display: flex; align-items: center; gap: 3px; }
+.place-row-actions .text-button { padding: 7px; }
+.place-note { margin-top: 6px; color: var(--muted); font-size: .76rem; }
+.place-note summary { color: var(--pine-dark); font-weight: 800; cursor: pointer; }
+.place-note p { margin: 4px 0 0; }
+.status-chip.favorite { background: rgba(212,166,75,.2); color: #6e521c; }
+.status-chip.revisit { background: rgba(80,112,139,.13); color: #385469; }
+.roaming-list-body .empty-state.compact { margin: 0; padding: 17px; }
+.roam-request-details { margin: 12px 0 16px; }
+.roam-request-body { padding: 0 13px 13px; }
+.roam-request-body > p { margin: 0 0 11px; color: var(--muted); font-size: .8rem; }
+.roam-request-body .button { width: 100%; }
+[data-nav="quest"][hidden], #quest[aria-hidden="true"] { display: none !important; }
+
+@media (max-width: 760px) {
+  .roam-resource-grid { grid-template-columns: 1fr; }
+  .roam-resource-card { min-height: 0; }
+}
+@media (max-width: 430px) {
+  .roam-side-quest-actions { grid-template-columns: 1fr; }
+  .roam-v2-heading { align-items: flex-start; }
+  .trail-badge-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+  .trail-badge-tile { padding-inline: 5px; }
+  .passport-picker { grid-template-columns: 1fr; }
+  .passport-picker .button { width: 100%; }
+  .national-park-passport .park-badge-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .roaming-list-filter-bar { grid-template-columns: 1fr; }
+  .john-roaming-list #blueRoamCompanion { grid-template-columns: 70px minmax(0,1fr); }
+  .john-roaming-list #blueRoamCompanion img { width: 70px; max-height: 72px; }
+}

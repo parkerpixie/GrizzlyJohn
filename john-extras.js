@@ -104,10 +104,10 @@
     if (listenIntro) listenIntro.innerHTML = '<p class="eyebrow">CAMPFIRE RADIO</p><h1>Something worth talking about.</h1><p>Good stories, strange facts, useful ideas, and enough rabbit holes to give an Oldtimer material for the next conversation.</p>';
 
     const wisdomIntro = $('#wisdom .wisdom-clean-intro');
-    if (wisdomIntro) wisdomIntro.innerHTML = '<p class="eyebrow">WISDOM</p><h1>Pick what you need.</h1><p>You have been doing this long enough to know reflection and a dirty joke can live in the same man.</p>';
+    if (wisdomIntro) wisdomIntro.innerHTML = '<p class="eyebrow">WISDOM</p><h1>A little room to notice.</h1><p>Pull a reflection, check in, or reach for a practical tool.</p>';
 
     const wheelHint = $('#feelingCheckIn .wheel-hint');
-    if (wheelHint) wheelHint.textContent = 'Swipe, scroll, or use the arrows. Pick the word that is actually true, not the one that sounds nicest.';
+    if (wheelHint) wheelHint.textContent = 'Swipe, scroll, or use the arrows. Tap add for each feeling that fits.';
 
     const meetingCopy = $('#today .meeting-card .card-content > p:not(.eyebrow)');
     if (meetingCopy) meetingCopy.textContent = 'One tap. The Oldtimers are waiting.';
@@ -148,7 +148,7 @@
         <button class="button button-primary" id="startBreathing" type="button">Take three breaths</button>
         <button class="button button-secondary" id="stopBreathing" type="button" hidden>I’m good</button>
       </div>`;
-    feelings.insertAdjacentElement('beforebegin', card);
+    feelings.insertAdjacentElement('afterend', card);
 
     const stage = $('#breathingStage', card);
     const orb = $('#breathingOrb', card);
@@ -228,27 +228,29 @@
 
     const title = $('.backpack-copy h2', hero);
     const heroParagraphs = hero.querySelectorAll('.backpack-copy p');
-    if (title) title.textContent = 'National Park badges, for starters.';
-    if (heroParagraphs[1]) heroParagraphs[1].textContent = 'Pack the places you have actually been. Then tell Jen what else belongs in here, because she cannot read your camping history from Wisconsin air.';
+    if (title) title.textContent = 'John’s National Park Passport';
+    if (heroParagraphs[1]) heroParagraphs[1].textContent = 'Visited parks unlock their full-color emblems. Everything else stays visible as part of the road still ahead.';
 
-    const card = document.createElement('article');
-    card.className = 'card backpack-suggestion-card';
+    const card = document.createElement('details');
+    card.className = 'backpack-suggestion-card roam-request-details';
     card.id = 'backpackSuggestionCard';
     card.innerHTML = `
-      <p class="eyebrow">WHAT ELSE BELONGS IN HERE?</p>
-      <h3>John, you know where you wander. Jen does not.</h3>
-      <p>Campgrounds? State-park patches? Lighthouses? Roadside nonsense? Tell her what else you want to collect or keep on the bucket list.</p>
+      <summary><span><strong>Have something you want added here?</strong><small>Send Jen a place or Side Quest idea</small></span><span aria-hidden="true">＋</span></summary>
+      <div class="roam-request-body">
+      <p>Send Jen the campground, park, trail, road, destination, or Side Quest you want added.</p>
       <form id="backpackSuggestionForm" class="stack-form" name="john-backpack-idea">
         <input type="hidden" name="form-name" value="john-backpack-idea">
         <input type="hidden" name="from" value="John">
-        <input type="hidden" name="submittedFrom" value="GrizzlyJohn Roaming Backpack">
+        <input type="hidden" name="submittedFrom" value="GrizzlyJohn Roaming List">
         <p hidden><label>Leave this empty<input name="bot-field"></label></p>
-        <label>What should we collect?<input name="collectionIdea" type="text" maxlength="120" placeholder="Campgrounds, waterfalls, weird giant statues..." required></label>
-        <label>Anything Jen should know?<textarea name="details" rows="3" maxlength="500" placeholder="A place you already go, something on the bucket list, what would make this useful..."></textarea></label>
+        <label>Name<input name="collectionIdea" type="text" maxlength="120" placeholder="Campground, trail, road, destination, or idea" required></label>
+        <label>State / location<input name="location" type="text" maxlength="120" placeholder="Where is it?"></label>
+        <label>What kind of place or idea?<input name="kind" type="text" maxlength="120" placeholder="Campground, Side Quest, scenic drive..."></label>
+        <label>Anything else John wants Jen to know?<textarea name="details" rows="3" maxlength="500" placeholder="What would make this useful?"></textarea></label>
         <button class="button button-primary" type="submit">Tell Jen →</button>
         <p class="backpack-suggestion-status" id="backpackSuggestionStatus" role="status" aria-live="polite"></p>
       </form>
-      <div class="john-note">Yes, this really sends Jen another idea to build. Use this power irresponsibly within reason.</div>`;
+      </div>`;
     hero.insertAdjacentElement('afterend', card);
 
     const form = $('#backpackSuggestionForm', card);

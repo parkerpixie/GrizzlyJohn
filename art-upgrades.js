@@ -137,25 +137,8 @@
   }
 
   function addRoamArt() {
-    const roam = $('#roam');
-    const intro = $('#roam .screen-intro');
-    if (!roam || !intro) return false;
-    if ($('#roamExplorerVisuals')) return true;
-
-    const row = document.createElement('div');
-    row.className = 'roam-explorer-visuals';
-    row.id = 'roamExplorerVisuals';
-    row.innerHTML = `
-      <figure class="roam-explorer-visual">
-        <img src="${ART.map}" alt="Grizz planning a trip with a map" loading="lazy" decoding="async">
-        <figcaption>Plot the next wander.</figcaption>
-      </figure>
-      <figure class="roam-explorer-visual">
-        <img src="${ART.binoculars}" alt="Grizz exploring with binoculars" loading="lazy" decoding="async">
-        <figcaption>See what is still out there.</figcaption>
-      </figure>`;
-    intro.insertAdjacentElement('afterend', row);
-    return true;
+    $('#roamExplorerVisuals')?.remove();
+    return Boolean($('#roam'));
   }
 
   function companionCard({ id, image, eyebrow, title, copy, target, position = 'afterend' }) {
@@ -179,22 +162,6 @@
   function addBlueCompanions() {
     const placements = [
       companionCard({
-        id: 'blueTodayCompanion',
-        image: ART.blue[0],
-        eyebrow: 'BLUE CHECKED IN TOO',
-        title: 'Status: excellent dog.',
-        copy: 'Blue reports that snacks, outside, and hanging out with John remain a solid daily plan.',
-        target: '#today .home-greeting'
-      }),
-      companionCard({
-        id: 'blueWisdomCompanion',
-        image: ART.blue[1],
-        eyebrow: 'BLUE’S FIELD GUIDE',
-        title: 'Walk. Sniff. Nap. Repeat.',
-        copy: 'Not every piece of wisdom needs seventeen steps and a worksheet.',
-        target: '#wisdom .wisdom-clean-intro'
-      }),
-      companionCard({
         id: 'blueQuestCompanion',
         image: ART.blue[2],
         eyebrow: 'NEW QUEST CATEGORY',
@@ -205,10 +172,11 @@
       companionCard({
         id: 'blueRoamCompanion',
         image: ART.blue[3],
-        eyebrow: 'TRAVEL ADVISORY',
+        eyebrow: 'JOHN’S ROAMING LIST',
         title: 'Some routes are automatically better with Blue.',
-        copy: 'Especially routes containing water, smells, snacks, or absolutely no reason to hurry.',
-        target: '#roamExplorerVisuals'
+        copy: 'Save the campgrounds, trails, roads, towns, stops, and places worth remembering.',
+        target: '#johnRoamingList',
+        position: 'afterbegin'
       })
     ];
     return placements.every(Boolean);

@@ -43,12 +43,12 @@
     complete.addEventListener('click', event => {
       if (complete.dataset.questCounted === 'true') { event.preventDefault(); event.stopImmediatePropagation(); return; }
       complete.dataset.questCounted = 'true';
-      window.setTimeout(() => { complete.disabled = true; complete.textContent = 'Counted ✓'; }, 0);
+      window.setTimeout(() => { complete.disabled = true; complete.textContent = 'Quest Completed'; }, 0);
     }, true);
     another.addEventListener('click', () => {
       delete complete.dataset.questCounted;
       complete.disabled = false;
-      complete.textContent = 'I did the thing ✓';
+      complete.textContent = 'Quest Completed';
     }, true);
   }
 

@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="dbt-cards.css">
   <link rel="stylesheet" href="install.css">
   <link rel="stylesheet" href="enhancements.css">
+  <link rel="stylesheet" href="today-v2.css">
+  <link rel="stylesheet" href="wisdom-v2.css">
+  <link rel="stylesheet" href="my-days.css">
 </head>
 <body>
   <section class="install-gate" id="installGate" hidden aria-label="Save GrizzlyJohn to your home screen">
@@ -93,8 +96,8 @@
             <h1>Good morning, John.</h1>
             <p class="hero-copy">Here’s what’s on the trail today.</p>
           </div>
-          <div class="hero-bear-image" aria-label="GrizzlyJohn app icon">
-            <img src="GrizzlyJohn%20App%20Icon.png" alt="Grizzly bear in an Arizona desert landscape">
+          <div class="hero-bear-image" aria-label="GrizzlyJohn and Blue camping">
+            <img src="graphics/GrizzlyJohn%20Blue%2001.png" alt="GrizzlyJohn and Blue camping beside the lake">
           </div>
         </div>
 
@@ -300,27 +303,34 @@
         </div>
 
         <div class="stats-grid">
+          <div class="stat-card"><strong id="savedCount">0</strong><span>Saved</span></div>
           <div class="stat-card"><strong id="visitedCount">0</strong><span>Visited</span></div>
-          <div class="stat-card"><strong id="wishlistCount">0</strong><span>Want to go</span></div>
           <div class="stat-card"><strong id="stateCount">0</strong><span>States</span></div>
         </div>
 
-        <article class="card">
+        <article class="card place-editor-card">
           <p class="eyebrow">ADD A PLACE</p>
-          <h2>Put another pin in the story.</h2>
+          <h2 id="placeFormHeading">Put another pin in the story.</h2>
           <form id="placeForm" class="stack-form">
-            <label>Place or park<input id="placeName" name="placeName" type="text" placeholder="Yellowstone National Park" required></label>
-            <label>State<input id="placeState" name="placeState" type="text" placeholder="Wyoming"></label>
-            <label>Status<select id="placeStatus" name="placeStatus"><option value="visited">I’ve been there</option><option value="wishlist">I want to go</option></select></label>
-            <label>One thing I want to remember<textarea id="placeMemory" name="placeMemory" rows="3" placeholder="Favorite trail, wildlife, who was there, the diner afterward..."></textarea></label>
-            <button class="button button-primary" type="submit">Add to my passport</button>
+            <input id="placeId" name="placeId" type="hidden">
+            <label>Name<input id="placeName" name="placeName" type="text" placeholder="A campground, trail, town, or stop" required></label>
+            <label>State / location<input id="placeState" name="placeState" type="text" placeholder="Michigan or near Traverse City"></label>
+            <label>Type<select id="placeType" name="placeType"><option value="Campground / RV Park">Campground / RV Park</option><option value="National Park">National Park</option><option value="State Park">State Park</option><option value="Hiking Trail">Hiking Trail</option><option value="Scenic Drive / Road">Scenic Drive / Road</option><option value="Town / Destination">Town / Destination</option><option value="Attraction / Stop">Attraction / Stop</option><option value="Food / Brewery / Local Spot">Food / Brewery / Local Spot</option><option value="Dog-Friendly Stop">Dog-Friendly Stop</option><option value="Side Quest Idea">Side Quest Idea</option><option value="Other" selected>Other</option></select></label>
+            <label>Status<select id="placeStatus" name="placeStatus"><option value="wishlist">Want to Go</option><option value="visited">Visited</option><option value="favorite">Favorite</option><option value="revisit">Revisit</option></select></label>
+            <label>Optional note<textarea id="placeMemory" name="placeMemory" rows="3" placeholder="A trail, campsite, person, meal, or reason to remember it..."></textarea></label>
+            <div class="place-form-actions"><button class="button button-primary" type="submit" id="savePlace">Save place</button><button class="button button-secondary" type="button" id="cancelPlaceEdit" hidden>Cancel edit</button></div>
           </form>
         </article>
 
-        <div class="segmented-control" role="tablist" aria-label="Park passport filter">
+        <div class="roaming-list-filter-bar">
+        <div class="segmented-control" role="tablist" aria-label="Roaming List status filter">
           <button class="segment is-active" type="button" data-place-filter="all">All</button>
           <button class="segment" type="button" data-place-filter="visited">Visited</button>
           <button class="segment" type="button" data-place-filter="wishlist">Want to go</button>
+          <button class="segment" type="button" data-place-filter="favorite">Favorite</button>
+          <button class="segment" type="button" data-place-filter="revisit">Revisit</button>
+        </div>
+        <label class="place-type-filter">Type<select id="placeTypeFilter"><option value="all">All types</option><option value="Campground / RV Park">Campground / RV Park</option><option value="National Park">National Park</option><option value="State Park">State Park</option><option value="Hiking Trail">Hiking Trail</option><option value="Scenic Drive / Road">Scenic Drive / Road</option><option value="Town / Destination">Town / Destination</option><option value="Attraction / Stop">Attraction / Stop</option><option value="Food / Brewery / Local Spot">Food / Brewery / Local Spot</option><option value="Dog-Friendly Stop">Dog-Friendly Stop</option><option value="Side Quest Idea">Side Quest Idea</option><option value="Other">Other / legacy</option></select></label>
         </div>
         <div class="place-list" id="placeList"></div>
       </section>
@@ -344,7 +354,7 @@
       <button class="nav-item" data-nav="wisdom" type="button"><span>🐻</span><small>Wisdom</small></button>
       <button class="nav-item" data-nav="quest" type="button"><span>🥾</span><small>Quest</small></button>
       <button class="nav-item" data-nav="roam" type="button"><span>🏞️</span><small>Roam</small></button>
-      <button class="nav-item" data-nav="listen" type="button"><span>🎧</span><small>Listen</small></button>
+      <button class="nav-item" data-nav="listen" type="button"><span>🎧</span><small>Campfire</small></button>
     </nav>
   </div>
 
@@ -396,11 +406,13 @@
   </dialog>
 
   <script src="storage-v2.js"></script>
+  <script src="wisdom-patterns.js"></script>
   <script src="install.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
   <script src="weather.js"></script>
   <script src="oracle-cards.js"></script>
   <script src="dbt-cards.js"></script>
+  <script src="my-days.js"></script>
 </body>
 </html>
