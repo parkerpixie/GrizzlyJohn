@@ -88,6 +88,32 @@
       .john-toolbox-link{margin-top:1rem}
       .john-toolbox-close{margin:.8rem 0 0 auto;display:block}
       #dbtToolbox[hidden]{display:none!important}
+      .john-halt-quick{margin-top:1rem;border:1px solid rgba(213,155,53,.5);background:linear-gradient(180deg,#fffdf8,#fbf2df)}
+      .john-halt-quick .card-content{width:100%}
+      .john-halt-quick h3{margin:.15rem 0 .35rem}
+      .john-halt-quick p:not(.eyebrow){margin:.1rem 0 .85rem}
+      .john-halt-quick-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+      .john-halt-quick-row .button{min-width:120px}
+      .john-halt-quick-note{font-size:.78rem;color:rgba(47,70,54,.72);font-weight:700}
+      .john-halt-quick-status{margin:.65rem 0 0;min-height:1.2em;font-size:.84rem;font-weight:800;color:var(--pine-dark,#2f4636)}
+      .john-halt-dialog{width:min(92vw,520px);border:0;border-radius:24px;padding:0;background:#fffdf8;color:var(--pine-dark,#2f4636);box-shadow:0 24px 70px rgba(23,36,28,.28)}
+      .john-halt-dialog::backdrop{background:rgba(20,31,24,.55);backdrop-filter:blur(2px)}
+      .john-halt-dialog-inner{padding:1.35rem}
+      .john-halt-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+      .john-halt-dialog-head h2{margin:.1rem 0 .2rem;font-size:1.75rem}
+      .john-halt-dialog-head p{margin:0;color:rgba(47,70,54,.78)}
+      .john-halt-close{border:0;background:transparent;color:var(--pine-dark,#2f4636);font:inherit;font-size:1.7rem;line-height:1;padding:.35rem;cursor:pointer}
+      .john-halt-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin:1rem 0}
+      .john-halt-option{position:relative;display:block}
+      .john-halt-option input{position:absolute;opacity:0;pointer-events:none}
+      .john-halt-option span{display:flex;align-items:center;gap:.7rem;min-height:62px;padding:.8rem .9rem;border:1px solid rgba(47,70,54,.18);border-radius:16px;background:#fff;font-weight:800;cursor:pointer;transition:.15s ease}
+      .john-halt-option strong{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#f2e6cf;color:#6c4910;font-size:1rem}
+      .john-halt-option input:checked+span{border-color:#d59b35;background:#f8ead0;box-shadow:0 0 0 2px rgba(213,155,53,.18)}
+      .john-halt-option input:focus-visible+span{outline:3px solid rgba(47,70,54,.35);outline-offset:2px}
+      .john-halt-dialog-help{font-size:.82rem;color:rgba(47,70,54,.72);margin:.2rem 0 1rem}
+      .john-halt-dialog-actions{display:flex;justify-content:flex-end;gap:.65rem;flex-wrap:wrap}
+      .john-halt-dialog-status{margin:.7rem 0 0;min-height:1.2em;font-size:.84rem;font-weight:800}
+      @media(max-width:520px){.john-halt-options{grid-template-columns:1fr}.john-halt-dialog-inner{padding:1.05rem}.john-halt-dialog-actions .button{flex:1 1 auto}}
     `;
     document.head.appendChild(style);
   }
@@ -195,6 +221,109 @@
     });
   }
 
+  function setupWisdomHaltQuickCheck() {
+    const wisdom = document.getElementById('wisdom');
+    const thought = document.getElementById('thoughtToPonder');
+    if (!wisdom || !thought || document.getElementById('johnHaltQuickCheck')) return;
+
+    const staleLine = 'Nothing to solve. Just something to carry for a while.';
+    wisdom.querySelectorAll('p, blockquote, small').forEach(node => {
+      const text = String(node.textContent || '').trim().replace(/^[“”"']+|[“”"']+$/g, '');
+      if (text === staleLine) node.remove();
+    });
+
+    const thoughtCard = thought.closest('.card') || thought.parentElement;
+    if (!thoughtCard?.parentNode) return;
+
+    const card = document.createElement('article');
+    card.className = 'card john-halt-quick';
+    card.id = 'johnHaltQuickCheck';
+    card.innerHTML = `
+      <div class="card-content">
+        <p class="eyebrow">TRY THIS FIRST</p>
+        <h3>Check the basics.</h3>
+        <p>Before solving the whole day, see if one of the basics is asking for attention.</p>
+        <div class="john-halt-quick-row">
+          <button class="button button-primary" id="openJohnHalt" type="button">HALT</button>
+          <span class="john-halt-quick-note">John’s go-to</span>
+        </div>
+        <p class="john-halt-quick-status" id="johnHaltQuickStatus" role="status" aria-live="polite"></p>
+      </div>`;
+    thoughtCard.insertAdjacentElement('afterend', card);
+
+    const dialog = document.createElement('dialog');
+    dialog.className = 'john-halt-dialog';
+    dialog.id = 'johnHaltDialog';
+    dialog.setAttribute('aria-labelledby', 'johnHaltTitle');
+    dialog.innerHTML = `
+      <form class="john-halt-dialog-inner" id="johnHaltForm">
+        <div class="john-halt-dialog-head">
+          <div>
+            <p class="eyebrow">HALT</p>
+            <h2 id="johnHaltTitle">Check the basics.</h2>
+            <p>Are you Hungry, Angry, Lonely, or Tired?</p>
+          </div>
+          <button class="john-halt-close" type="button" aria-label="Close HALT check">×</button>
+        </div>
+        <div class="john-halt-options" role="group" aria-label="HALT needs. Select all that apply.">
+          <label class="john-halt-option"><input type="checkbox" name="haltNeed" value="Hungry"><span><strong>H</strong>Hungry</span></label>
+          <label class="john-halt-option"><input type="checkbox" name="haltNeed" value="Angry"><span><strong>A</strong>Angry</span></label>
+          <label class="john-halt-option"><input type="checkbox" name="haltNeed" value="Lonely"><span><strong>L</strong>Lonely</span></label>
+          <label class="john-halt-option"><input type="checkbox" name="haltNeed" value="Tired"><span><strong>T</strong>Tired</span></label>
+        </div>
+        <p class="john-halt-dialog-help">Choose all that apply. If none fit, that is useful information too.</p>
+        <div class="john-halt-dialog-actions">
+          <button class="button button-secondary" type="button" data-close-halt>Cancel</button>
+          <button class="button button-primary" type="submit">Save HALT check</button>
+        </div>
+        <p class="john-halt-dialog-status" id="johnHaltDialogStatus" role="status" aria-live="polite"></p>
+      </form>`;
+    document.body.appendChild(dialog);
+
+    const openButton = card.querySelector('#openJohnHalt');
+    const form = dialog.querySelector('#johnHaltForm');
+    const cardStatus = card.querySelector('#johnHaltQuickStatus');
+    const dialogStatus = dialog.querySelector('#johnHaltDialogStatus');
+    const close = () => { if (dialog.open) dialog.close(); };
+
+    openButton?.addEventListener('click', () => {
+      dialogStatus.textContent = '';
+      if (!dialog.open) dialog.showModal();
+      setTimeout(() => dialog.querySelector('input[name="haltNeed"]')?.focus(), 0);
+    });
+    dialog.querySelector('.john-halt-close')?.addEventListener('click', close);
+    dialog.querySelector('[data-close-halt]')?.addEventListener('click', close);
+    dialog.addEventListener('click', event => { if (event.target === dialog) close(); });
+
+    form?.addEventListener('submit', event => {
+      event.preventDefault();
+      const api = window.GrizzlyJohnStorageV2;
+      if (!api?.guidedSkillSessions) {
+        dialogStatus.textContent = 'HALT could not be saved safely right now.';
+        return;
+      }
+      const selected = [...form.querySelectorAll('input[name="haltNeed"]:checked')].map(input => input.value);
+      const answer = selected.length ? selected.join(' · ') : 'None selected';
+      const result = api.guidedSkillSessions.add({
+        feeling: selected.length ? selected.join(', ') : 'HALT check',
+        skill: 'HALT',
+        responses: [{ prompt: 'Are you Hungry, Angry, Lonely, or Tired?', response: answer }]
+      }, { date: api.localDateKey(new Date()) });
+
+      if (!result?.ok) {
+        dialogStatus.textContent = result?.reason || 'HALT could not be saved safely right now.';
+        return;
+      }
+
+      form.reset();
+      cardStatus.textContent = `HALT saved ✓${selected.length ? ` ${selected.join(' · ')}` : ''}`;
+      dialogStatus.textContent = 'Saved ✓';
+      if (window.GrizzlyJohnMyDays?.refresh) window.GrizzlyJohnMyDays.refresh(api.localDateKey(new Date()));
+      document.dispatchEvent(new CustomEvent('grizzly-guided-skill-saved', { detail: { skill: 'HALT', session: result.session } }));
+      close();
+    });
+  }
+
   function openSkillByName(skillName) {
     const index = findSkillIndex(skillName);
     if (index < 0) return;
@@ -218,7 +347,7 @@
     }).join('');
 
     grid.querySelectorAll('[data-dbt-index]').forEach(button => {
-      button.addEventListener('click', () => openViewer(Number(button.dataset.dbtIndex)));
+      button.addEventListener('click', () => openViewer(Number(button.dataset.dbtIndex));
     });
   }
 
@@ -291,6 +420,8 @@
   injectStyles();
   render();
   setupToolboxAccess();
+  setupWisdomHaltQuickCheck();
+  watchFeelingSuggestions();
 
   randomButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.skills.length)));
   closeButton?.addEventListener('click', () => viewer.close());
