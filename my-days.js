@@ -17,7 +17,7 @@
     const days = new Map();
     const ensureDay = date => {
       if (!date) return null;
-      if (!days.has(date)) days.set(date, { date, feelings: [], gratitude: [], badgeAwards: [], sideQuestEvents: [], guidedSkillSessions: [] });
+      if (!days.has(date)) days.set(date, { date, feelings: [], gratitude: [], goldStarDays: [], badgeAwards: [], sideQuestEvents: [], guidedSkillSessions: [] });
       return days.get(date);
     };
     const dateFor = record => {
@@ -35,6 +35,12 @@
       const day = ensureDay(dateFor(entry));
       if (day) day.gratitude.push(entry);
     });
+    (Array.isArray(records.goldStarDays) ? records.goldStarDays : []).forEach(entry => {
+      const completed = Array.isArray(entry?.completedStarIds) ? entry.completedStarIds : [];
+      if (!completed.length) return;
+      const day = ensureDay(dateFor(entry));
+      if (day) day.goldStarDays.push(entry);
+    });
     (Array.isArray(records.badgeAwards) ? records.badgeAwards : []).forEach(entry => {
       const day = ensureDay(dateFor(entry));
       if (day) day.badgeAwards.push(entry);
@@ -48,10 +54,18 @@
       if (day) day.guidedSkillSessions.push(entry);
     });
 
+    const definitions = new Map((Array.isArray(records.goldStarDefinitions) ? records.goldStarDefinitions : []).filter(item => item?.id).map(item => [item.id, item]));
     return [...days.values()].map(day => ({
       ...day,
       feelings: [...day.feelings].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || ''))),
       gratitude: [...day.gratitude].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || ''))),
+      goldStarDays: day.goldStarDays.map(entry => ({
+        ...entry,
+        completedStars: (Array.isArray(entry?.completedStarIds) ? entry.completedStarIds : []).flatMap(id => {
+          const definition = definitions.get(id);
+          return definition ? [{ id, label: definition.label }] : [];
+        })
+      })),
       badgeAwards: [...day.badgeAwards].sort((a, b) => String(a?.awardedAt || '').localeCompare(String(b?.awardedAt || ''))),
       sideQuestEvents: [...day.sideQuestEvents].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || ''))),
       guidedSkillSessions: [...day.guidedSkillSessions].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || '')))
@@ -65,24 +79,86 @@
     return (Array.isArray(days) ? days : []).find(entry => entry?.date === target) || null;
   }
 
-  const exported = { aggregateMyDays, findThisDayLastYear };
+  function monthKey(dateKey) {
+    return validDateKey(dateKey) ? dateKey.slice(0, 7) : null;
+  }
+
+  function shiftMonth(month, offset) {
+    if (typeof month !== 'string' || !/^\d{4}-\d{2}$/.test(month) || !Number.isInteger(offset)) return null;
+    const [year, monthNumber] = month.split('-').map(Number);
+    const absolute = year * 12 + monthNumber - 1 + offset;
+    const shiftedYear = Math.floor(absolute / 12);
+    const shiftedMonth = ((absolute % 12) + 12) % 12 + 1;
+    return `${shiftedYear}-${String(shiftedMonth).padStart(2, '0')}`;
+  }
+
+  function calendarMonth(days, viewedMonth, options = {}) {
+    const currentDate = validDateKey(options.currentDate) ? options.currentDate : null;
+    const selectedDate = validDateKey(options.selectedDate) ? options.selectedDate : null;
+    if (!/^\d{4}-\d{2}$/.test(viewedMonth || '')) return null;
+    const [year, monthNumber] = viewedMonth.split('-').map(Number);
+    const activeDates = new Set((Array.isArray(days) ? days : []).map(day => day?.date).filter(validDateKey));
+    const leadingBlanks = new Date(year, monthNumber - 1, 1, 12).getDay();
+    const dayCount = new Date(year, monthNumber, 0, 12).getDate();
+    const entries = Array.from({ length: dayCount }, (_, index) => {
+      const day = index + 1;
+      const date = `${viewedMonth}-${String(day).padStart(2, '0')}`;
+      return { day, date, active: activeDates.has(date), selected: date === selectedDate, future: Boolean(currentDate && date > currentDate) };
+    });
+    const label = new Date(year, monthNumber - 1, 1, 12).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return { month: viewedMonth, label, leadingBlanks, days: entries, canGoNext: !currentDate || viewedMonth < currentDate.slice(0, 7) };
+  }
+
+  function goldStarSummary(day) {
+    const activity = Array.isArray(day?.goldStarDays) ? day.goldStarDays[0] : null;
+    const completedIds = Array.isArray(activity?.completedStarIds) ? activity.completedStarIds : [];
+    const availableIds = Array.isArray(activity?.activeStarIds) ? activity.activeStarIds : null;
+    return {
+      completedCount: completedIds.length,
+      availableCount: availableIds ? availableIds.length : null,
+      completedStars: Array.isArray(activity?.completedStars) ? activity.completedStars : [],
+      badgeEarned: Boolean(day?.badgeAwards?.length)
+    };
+  }
+
+  function anniversaryPreview(day) {
+    if (!day) return null;
+    const feelings = day.feelings?.flatMap(entry => Array.isArray(entry?.feelings) ? entry.feelings.map(feeling => typeof feeling === 'string' ? feeling : feeling?.word).filter(Boolean) : []) || [];
+    const stars = goldStarSummary(day);
+    return {
+      date: day.date,
+      feelings: feelings.slice(0, 2),
+      gratitudeCount: day.gratitude?.length || 0,
+      goldStarCount: stars.completedCount,
+      badgeEarned: stars.badgeEarned,
+      sideQuestCount: day.sideQuestEvents?.length || 0
+    };
+  }
+
+  const exported = { aggregateMyDays, findThisDayLastYear, monthKey, shiftMonth, calendarMonth, goldStarSummary, anniversaryPreview };
   if (typeof module !== 'undefined' && module.exports) module.exports = exported;
   if (typeof window === 'undefined') return;
   window.GrizzlyJohnMyDays = exported;
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
+  let viewedMonth = null;
+  let selectedDate = null;
 
   function readDays() {
     const storage = window.GrizzlyJohnStorageV2;
     const gratitude = storage?.gratitude.all();
     const feelings = storage?.feelingCheckIns.all();
+    const goldDays = storage?.readers.goldStarDays();
+    const goldDefinitions = storage?.goldStars.list({ includeInactive: true });
     const awards = storage?.goldStarDays.awards();
     const quests = storage?.sideQuestEvents.all();
     const guided = storage?.guidedSkillSessions.all();
     return aggregateMyDays({
       gratitudeEntries: gratitude?.ok ? gratitude.entries : [],
       feelingCheckIns: feelings?.ok ? feelings.entries : [],
+      goldStarDays: ['valid', 'unexpected'].includes(goldDays?.status) && Array.isArray(goldDays.value) ? goldDays.value : [],
+      goldStarDefinitions: goldDefinitions?.ok ? goldDefinitions.definitions : [],
       badgeAwards: awards?.ok ? awards.awards : [],
       sideQuestEvents: quests?.ok ? quests.events : [],
       guidedSkillSessions: guided?.ok ? guided.sessions : []
@@ -106,10 +182,12 @@
 
   function daySummary(day) {
     const feelings = feelingWords(day);
+    const stars = goldStarSummary(day);
     const preview = feelings.slice(0, 3).map(word => `<span>${escapeHtml(word)}</span>`).join('');
     const extra = feelings.length > 3 ? `<span>+${feelings.length - 3}</span>` : '';
     const signals = [
       day.gratitude.length ? `${day.gratitude.length} gratitude${day.gratitude.length === 1 ? '' : 's'}` : '',
+      stars.completedCount ? `Gold Stars: ${stars.completedCount}${stars.availableCount === null ? '' : ` of ${stars.availableCount}`}` : '',
       day.badgeAwards.length ? 'Gold Star Trail Day' : '',
       day.sideQuestEvents.length ? `${day.sideQuestEvents.length} Side Quest${day.sideQuestEvents.length === 1 ? '' : 's'}` : ''
     ].filter(Boolean).map(label => `<small>${escapeHtml(label)}</small>`).join('');
@@ -131,6 +209,14 @@
     return `<section class="my-days-detail-group"><h4>Badges earned</h4>${day.badgeAwards.map(award => `<div class="my-days-badge"><span aria-hidden="true">⭐️</span><div><strong>Gold Star Trail Day</strong><p>Completed more than half of the day’s Gold Stars.</p><time>${escapeHtml(naturalTime(award.awardedAt))}</time></div></div>`).join('')}</section>`;
   }
 
+  function goldStarDetails(day) {
+    const stars = goldStarSummary(day);
+    if (!stars.completedCount) return '';
+    const count = stars.availableCount === null ? `${stars.completedCount} completed` : `${stars.completedCount} of ${stars.availableCount} completed`;
+    const items = stars.completedStars.length ? `<ul>${stars.completedStars.map(star => `<li>${escapeHtml(star.label)}</li>`).join('')}</ul>` : '<p>Completed Star names were not stored for this day.</p>';
+    return `<section class="my-days-detail-group my-days-gold-stars"><h4>Gold Stars</h4><strong>${escapeHtml(count)}</strong>${items}</section>`;
+  }
+
   function sideQuestDetails(day) {
     if (!day.sideQuestEvents.length) return '';
     return `<section class="my-days-detail-group"><h4>Side Quests</h4><div class="my-days-quest-entries">${day.sideQuestEvents.map(entry => `<div class="my-days-quest-entry"><time>${escapeHtml(naturalTime(entry.timestamp))}</time><span>Completed: <strong>${escapeHtml(entry.title || entry.questId || 'Side Quest')}</strong></span></div>`).join('')}</div></section>`;
@@ -141,22 +227,70 @@
     return `<section class="my-days-detail-group"><h4>Tools used</h4><div class="my-days-guided-entries">${day.guidedSkillSessions.map(entry => `<div class="my-days-guided-entry"><time>${escapeHtml(naturalTime(entry.timestamp))}</time><span><strong>${escapeHtml(entry.skill || 'Guided skill')}</strong>${entry.feeling ? ` · ${escapeHtml(entry.feeling)}` : ''}</span></div>`).join('')}</div></section>`;
   }
 
-  function renderMyDays() {
+  function dayDetails(day) {
+    if (!day) return '<p class="history-empty">No saved activity for this day.</p>';
+    return `${feelingDetails(day)}${gratitudeDetails(day)}${goldStarDetails(day)}${badgeDetails(day)}${sideQuestDetails(day)}${guidedSkillDetails(day)}`;
+  }
+
+  function renderCalendar(days, today) {
+    const calendar = $('#checkInCalendar');
+    if (!calendar) return;
+    if (!viewedMonth) {
+      viewedMonth = monthKey(today);
+      selectedDate = today;
+    }
+    const model = calendarMonth(days, viewedMonth, { currentDate: today, selectedDate });
+    if (!model) return;
+    const blanks = Array.from({ length: model.leadingBlanks }, () => '<span aria-hidden="true"></span>').join('');
+    const buttons = model.days.map(entry => {
+      const label = `${entry.day}${entry.active ? ', activity recorded' : ', no activity'}`;
+      return `<button type="button" class="calendar-day ${entry.selected ? 'is-selected' : ''} ${entry.active ? 'has-activity' : ''}" data-my-day-date="${entry.date}" aria-label="${label}" ${entry.active ? '' : 'disabled'}><span>${entry.day}</span>${entry.active ? '<i class="calendar-activity-dot" aria-hidden="true"></i>' : ''}</button>`;
+    }).join('');
+    calendar.innerHTML = `<div class="my-days-calendar-heading"><button type="button" class="my-days-month-button" data-my-days-month="previous" aria-label="Previous month">‹</button><strong>${escapeHtml(model.label)}</strong><button type="button" class="my-days-month-button" data-my-days-month="next" aria-label="Next month" ${model.canGoNext ? '' : 'disabled'}>›</button></div><div class="calendar-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div><div class="calendar-days">${blanks}${buttons}</div>`;
+    const selected = days.find(day => day.date === selectedDate) || null;
+    const heading = $('#checkInHistoryDate');
+    if (heading) heading.textContent = selected ? naturalDate(selected.date, true) : 'Choose a day with activity';
+    const details = $('#checkInHistoryList');
+    if (details) details.innerHTML = dayDetails(selected);
+  }
+
+  function renderAnniversary(days, today) {
+    const holder = $('#thisDayLastYear');
+    if (!holder) return;
+    const anniversary = findThisDayLastYear(days, today);
+    const preview = anniversaryPreview(anniversary);
+    holder.hidden = !preview;
+    if (!preview) { holder.innerHTML = ''; return; }
+    const signals = [
+      preview.feelings.length ? preview.feelings.join(' · ') : '',
+      preview.gratitudeCount ? `${preview.gratitudeCount} gratitude${preview.gratitudeCount === 1 ? '' : 's'}` : '',
+      preview.goldStarCount ? `${preview.goldStarCount} Gold Star${preview.goldStarCount === 1 ? '' : 's'}` : '',
+      preview.badgeEarned ? 'Trail Day badge' : '',
+      preview.sideQuestCount ? `${preview.sideQuestCount} Side Quest${preview.sideQuestCount === 1 ? '' : 's'}` : ''
+    ].filter(Boolean);
+    holder.innerHTML = `<div><strong>This day last year</strong><span>${escapeHtml(naturalDate(preview.date, true))}</span><small>${escapeHtml(signals.join(' · '))}</small></div><button type="button" class="text-button" data-open-my-day="${preview.date}">View that day →</button>`;
+  }
+
+  function renderMyDays(preferredDate) {
     const holder = $('#myDaysList');
     if (!holder) return;
     const days = readDays();
+    const storage = window.GrizzlyJohnStorageV2;
+    const today = storage.localDateKey(new Date());
+    if (validDateKey(preferredDate)) {
+      selectedDate = preferredDate;
+      viewedMonth = monthKey(preferredDate);
+    }
     $('#myDaysCount').textContent = days.length ? `${days.length} day${days.length === 1 ? '' : 's'}` : 'No days yet';
     if (!days.length) {
       holder.innerHTML = '<div class="my-days-empty"><h3>Your days will start showing up here.</h3><p>Feelings, gratitude, and earned trail days stay available whenever you want to look back.</p></div>';
       $('#thisDayLastYear').hidden = true;
+      renderCalendar(days, today);
       return;
     }
-    holder.innerHTML = days.map(day => `<details class="my-day-card"><summary><div class="my-day-date"><time datetime="${day.date}">${escapeHtml(naturalDate(day.date))}</time><span aria-hidden="true">＋</span></div>${daySummary(day)}</summary><div class="my-day-details">${feelingDetails(day)}${gratitudeDetails(day)}${badgeDetails(day)}${sideQuestDetails(day)}${guidedSkillDetails(day)}</div></details>`).join('');
-    const storage = window.GrizzlyJohnStorageV2;
-    const anniversary = findThisDayLastYear(days, storage.localDateKey(new Date()));
-    const anniversaryHolder = $('#thisDayLastYear');
-    anniversaryHolder.hidden = !anniversary;
-    anniversaryHolder.innerHTML = anniversary ? `<strong>This day last year</strong><span>${escapeHtml(naturalDate(anniversary.date, true))} is already in My Days.</span>` : '';
+    holder.innerHTML = days.map(day => `<details class="my-day-card" data-my-day-card="${day.date}"><summary><div class="my-day-date"><time datetime="${day.date}">${escapeHtml(naturalDate(day.date, true))}</time><span aria-hidden="true">＋</span></div>${daySummary(day)}</summary><div class="my-day-details">${dayDetails(day)}</div></details>`).join('');
+    renderCalendar(days, today);
+    renderAnniversary(days, today);
   }
 
   function buildMyDays() {
@@ -170,9 +304,37 @@
     section.innerHTML = `<details class="my-days-shell"><summary><div><p class="eyebrow">LOOK BACK</p><h2>Want to look closer?</h2><p>View My Days, then open the calendar when a date deserves a closer look.</p></div><span class="count-pill" id="myDaysCount">Days</span></summary><div class="my-days-content"><div class="this-day-last-year" id="thisDayLastYear" hidden></div><div class="my-days-list" id="myDaysList"></div></div></details>`;
     toolbox.insertAdjacentElement('beforebegin', section);
     const history = $('#checkInHistory');
-    if (history) { history.hidden = false; $('.my-days-content', section).appendChild(history); }
+    if (history) {
+      history.hidden = false;
+      $('.history-heading .eyebrow', history).textContent = 'MY DAYS CALENDAR';
+      $('.history-heading h2', history).textContent = 'Browse your days';
+      $('.my-days-content', section).insertBefore(history, $('#myDaysList'));
+    }
+    section.addEventListener('click', event => {
+      const monthButton = event.target.closest('[data-my-days-month]');
+      if (monthButton) {
+        const next = shiftMonth(viewedMonth, monthButton.dataset.myDaysMonth === 'previous' ? -1 : 1);
+        const currentMonth = monthKey(window.GrizzlyJohnStorageV2.localDateKey(new Date()));
+        if (next && next <= currentMonth) { viewedMonth = next; selectedDate = null; renderMyDays(); }
+        return;
+      }
+      const dayButton = event.target.closest('[data-my-day-date]');
+      if (dayButton) {
+        selectedDate = dayButton.dataset.myDayDate;
+        renderMyDays();
+        return;
+      }
+      const anniversaryButton = event.target.closest('[data-open-my-day]');
+      if (anniversaryButton) {
+        renderMyDays(anniversaryButton.dataset.openMyDay);
+        const card = $(`[data-my-day-card="${anniversaryButton.dataset.openMyDay}"]`);
+        if (card) card.open = true;
+        $('#checkInHistory')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
     $('.my-days-shell', section).addEventListener('toggle', event => { if (event.currentTarget.open) renderMyDays(); });
     renderMyDays();
+    exported.refresh = renderMyDays;
     return true;
   }
 

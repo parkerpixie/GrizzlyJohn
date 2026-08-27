@@ -449,7 +449,8 @@
     const thoughts = ['What deserves a little less struggle today?', 'What is already working that you could notice on purpose?', 'Where would a clean pause make the next choice easier?', 'What can be true without needing to be fixed today?', 'What would kindness toward future John look like?'];
     const dayNumber = Math.floor(new Date().setHours(0, 0, 0, 0) / 86400000);
     if ($('#thoughtToPonder')) $('#thoughtToPonder').textContent = thoughts[Math.abs(dayNumber) % thoughts.length];
-    renderCheckInHistory(todayLocalDate());
+    if (window.GrizzlyJohnMyDays?.refresh) window.GrizzlyJohnMyDays.refresh(todayLocalDate());
+    else renderCheckInHistory(todayLocalDate());
     renderPatterns();
   }
 
