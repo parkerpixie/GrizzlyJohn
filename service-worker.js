@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v27-acceptance-fixes';
+const CACHE_NAME = 'grizzlyjohn-v28-family-patterns';
 const APP_SHELL = [
   './',
   './index.html',
@@ -21,6 +21,7 @@ const APP_SHELL = [
   './app.js',
   './storage-v2.js',
   './settings-v2.js',
+  './feeling-families.js',
   './wisdom-patterns.js',
   './wisdom-thoughts.js',
   './podcast-artwork.js',

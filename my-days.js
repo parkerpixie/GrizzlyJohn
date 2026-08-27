@@ -1,6 +1,10 @@
 (() => {
   'use strict';
 
+  const familyApi = typeof module !== 'undefined' && module.exports
+    ? require('./feeling-families.js')
+    : window.GrizzlyJohnFeelingFamilies;
+
   function validDateKey(value) {
     return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
   }
@@ -121,21 +125,9 @@
     };
   }
 
-  const FAMILY_NAMES = Object.freeze({ bright: 'Bright', calm: 'Calm', neutral: 'Neutral', sad: 'Sad', fear: 'Fear', anger: 'Anger', shame: 'Shame', overwhelmed: 'Overwhelmed' });
-
   function feelingFamilySummary(day) {
-    const counts = new Map();
     const checkIns = Array.isArray(day?.feelings) ? day.feelings : [];
-    checkIns.forEach(entry => (Array.isArray(entry?.feelings) ? entry.feelings : []).forEach(feeling => {
-      if (!feeling || typeof feeling === 'string') return;
-      const family = String(feeling.groupId || '').trim().toLowerCase();
-      if (!FAMILY_NAMES[family]) return;
-      counts.set(family, (counts.get(family) || 0) + 1);
-    }));
-    if (!counts.size) return { kind: 'activity', families: [], counts: {}, checkInCount: checkIns.length };
-    const maximum = Math.max(...counts.values());
-    const families = [...counts.entries()].filter(([, count]) => count === maximum).map(([family]) => family).sort();
-    return { kind: families.length > 1 ? 'tie' : 'dominant', families, counts: Object.fromEntries(counts), checkInCount: checkIns.length };
+    return familyApi.summarizeFeelingDay(checkIns);
   }
 
   function anniversaryPreview(day) {
@@ -262,7 +254,7 @@
     const buttons = model.days.map(entry => {
       const day = days.find(item => item.date === entry.date) || null;
       const summary = day ? feelingFamilySummary(day) : null;
-      const familyNames = summary?.families.map(family => FAMILY_NAMES[family]);
+      const familyNames = summary?.families.map(family => familyApi.displayName(family));
       const description = !entry.active
         ? 'No activity'
         : summary?.kind === 'dominant'

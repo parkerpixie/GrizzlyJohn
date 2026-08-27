@@ -1,6 +1,10 @@
 (() => {
   'use strict';
 
+  const familyApi = typeof module !== 'undefined' && module.exports
+    ? require('./feeling-families.js')
+    : window.GrizzlyJohnFeelingFamilies;
+
   const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
   const STOP_WORDS = new Set([
     'about', 'after', 'again', 'also', 'and', 'because', 'been', 'being', 'day', 'felt', 'for',
@@ -60,6 +64,45 @@
     };
   }
 
+  function familyDayCounts(checkIns, dates, localDateKey) {
+    const entriesByDate = new Map();
+    (Array.isArray(checkIns) ? checkIns : []).forEach(entry => {
+      const date = recordDate(entry, localDateKey);
+      if (!dates.has(date) || !Array.isArray(entry?.feelings) || !entry.feelings.some(feeling => familyApi.feelingWord(feeling))) return;
+      if (!entriesByDate.has(date)) entriesByDate.set(date, []);
+      entriesByDate.get(date).push(entry);
+    });
+    const families = new Map();
+    entriesByDate.forEach((entries, date) => {
+      const summary = familyApi.summarizeFeelingDay(entries);
+      summary.families.forEach(family => {
+        if (!families.has(family)) families.set(family, { family, label: familyApi.displayName(family), dates: new Set(), words: new Map() });
+        const result = families.get(family);
+        result.dates.add(date);
+        entries.flatMap(entry => entry.feelings).forEach(feeling => {
+          if (familyApi.familyIdForFeeling(feeling) !== family) return;
+          const word = familyApi.feelingWord(feeling);
+          const normalized = word.toLocaleLowerCase();
+          if (!word) return;
+          if (!result.words.has(normalized)) result.words.set(normalized, { word, dates: new Set() });
+          result.words.get(normalized).dates.add(date);
+        });
+      });
+    });
+    return {
+      activeDays: entriesByDate.size,
+      families: [...families.values()].map(item => ({
+        family: item.family,
+        label: item.label,
+        days: item.dates.size,
+        words: [...item.words.values()]
+          .map(word => ({ word: word.word, days: word.dates.size }))
+          .sort((left, right) => right.days - left.days || left.word.localeCompare(right.word))
+          .slice(0, 3)
+      })).sort((left, right) => right.days - left.days || left.label.localeCompare(right.label))
+    };
+  }
+
   function gratitudeThemes(entries, dates, localDateKey, limit = 3) {
     const terms = new Map();
     (Array.isArray(entries) ? entries : []).forEach(entry => {
@@ -94,20 +137,46 @@
     const thirtyDates = rollingDateSet(now, 30, localDateKey);
     const weekly = feelingDayCounts(checkIns, sevenDates, localDateKey);
     const monthly = feelingDayCounts(checkIns, thirtyDates, localDateKey);
+    const weeklyFamilies = familyDayCounts(checkIns, sevenDates, localDateKey);
+    const monthlyFamilies = familyDayCounts(checkIns, thirtyDates, localDateKey);
     const observations = [];
+
+    const qualifyingWeeklyFamilies = weeklyFamilies.activeDays >= 4
+      ? weeklyFamilies.families.filter(item => item.days >= 4 || (item.days === 3 && weeklyFamilies.activeDays >= 5)).slice(0, 2)
+      : [];
+    const weeklyFamilyIds = new Set(qualifyingWeeklyFamilies.map(item => item.family));
+    qualifyingWeeklyFamilies.forEach(item => observations.push({
+      category: 'Last 7 days',
+      familyId: item.family,
+      text: `${item.label} feelings were dominant on ${item.days} of the last 7 days.`,
+      detail: item.words.length ? `Showing up as: ${item.words.map(word => word.word).join(' · ')}` : ''
+    }));
 
     // Four distinct check-in days are required before a seven-day pattern is described.
     if (weekly.activeDays >= 4) {
       weekly.feelings
         .filter(item => item.days >= 4 || (item.days === 3 && weekly.activeDays >= 5))
+        .filter(item => !weeklyFamilyIds.has(familyApi.familyIdForFeeling(item.feeling)))
         .slice(0, 2)
         .forEach(item => observations.push({ category: 'Last 7 days', text: `${item.feeling} showed up on ${item.days} of the last 7 days.` }));
     }
+
+    const qualifyingMonthlyFamilies = monthlyFamilies.activeDays >= 6
+      ? monthlyFamilies.families.filter(item => item.days >= 4).slice(0, 2)
+      : [];
+    const monthlyFamilyIds = new Set([...weeklyFamilyIds, ...qualifyingMonthlyFamilies.map(item => item.family)]);
+    qualifyingMonthlyFamilies.forEach(item => observations.push({
+      category: 'Last 30 days',
+      familyId: item.family,
+      text: `${item.label} feelings were dominant on ${item.days} of the last 30 days.`,
+      detail: item.words.length ? `Showing up as: ${item.words.map(word => word.word).join(' · ')}` : ''
+    }));
 
     // Six distinct check-in days are required for the broader monthly summary.
     if (monthly.activeDays >= 6) {
       monthly.feelings
         .filter(item => item.days >= 4)
+        .filter(item => !monthlyFamilyIds.has(familyApi.familyIdForFeeling(item.feeling)))
         .slice(0, 3)
         .forEach(item => observations.push({ category: 'Last 30 days', text: `${item.feeling} appeared on ${item.days} of the last 30 days.` }));
     }
@@ -126,7 +195,7 @@
     return observations;
   }
 
-  const exported = { derivePatternObservations, feelingDayCounts, gratitudeThemes, rollingDateSet, recordDate, STOP_WORDS };
+  const exported = { derivePatternObservations, feelingDayCounts, familyDayCounts, gratitudeThemes, rollingDateSet, recordDate, STOP_WORDS };
   if (typeof module !== 'undefined' && module.exports) module.exports = exported;
   if (typeof window !== 'undefined') window.GrizzlyJohnWisdomPatterns = exported;
 })();

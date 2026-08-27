@@ -54,16 +54,7 @@
     IMPROVE: ['What part of this moment cannot change immediately?', 'What could make the next few minutes more bearable?', 'Which small improvement will you try?']
   };
 
-  const FEELING_GROUPS = [
-    { id: 'bright', label: 'BRIGHT / GOOD', icon: '☀️', words: ['Great', 'Joyful', 'Happy', 'Content', 'Grateful', 'Hopeful', 'Proud', 'Playful', 'Excited', 'Energized', 'Inspired', 'Curious', 'Connected', 'Loved', 'Confident', 'Accomplished', 'Relieved'] },
-    { id: 'calm', label: 'CALM / GROUNDED', icon: '🌲', words: ['Peaceful', 'Grounded', 'Centered', 'Safe', 'Comfortable', 'Relaxed', 'Patient', 'Open', 'Present', 'Steady', 'Trusting'] },
-    { id: 'neutral', label: 'NEUTRAL / LOW ENERGY', icon: '🌥️', words: ['Okay', 'Fine', 'Neutral', 'Indifferent', 'Bored', 'Tired', 'Flat', 'Detached', 'Distracted', 'Unmotivated', 'Restless'] },
-    { id: 'sad', label: 'SAD / HURT', icon: '🌧️', words: ['Disappointed', 'Discouraged', 'Lonely', 'Hurt', 'Rejected', 'Unseen', 'Grieving', 'Heavy', 'Empty', 'Hopeless', 'Devastated', 'Vulnerable'] },
-    { id: 'fear', label: 'FEAR / ANXIETY', icon: '🌫️', words: ['Worried', 'Nervous', 'Uneasy', 'Apprehensive', 'Afraid', 'Panicked', 'Insecure', 'Dread', 'On edge', 'Overthinking', 'Pressured', 'Uncertain', 'Powerless'] },
-    { id: 'anger', label: 'ANGER', icon: '🔥', words: ['Annoyed', 'Irritated', 'Frustrated', 'Resentful', 'Bitter', 'Defensive', 'Disrespected', 'Betrayed', 'Jealous', 'Provoked', 'Furious', 'Enraged'] },
-    { id: 'shame', label: 'SHAME / SELF-CONSCIOUS', icon: '🪞', words: ['Embarrassed', 'Ashamed', 'Guilty', 'Inadequate', 'Exposed', 'Self-conscious', 'Regretful', 'Invalidated'] },
-    { id: 'overwhelmed', label: 'OVERWHELMED / DYSREGULATED', icon: '🌪️', words: ['Overwhelmed', 'Flooded', 'Dysregulated', 'Scattered', 'Trapped', 'Stuck', 'Conflicted', 'Ambivalent', 'Shut down', 'Numb', 'Burned out', 'Helpless'] }
-  ];
+  const FEELING_GROUPS = window.GrizzlyJohnFeelingFamilies?.groups || [];
 
   const FEELINGS = FEELING_GROUPS.flatMap(group => group.words.map(word => ({ word, group })));
 
@@ -652,13 +643,14 @@
     const observations = window.GrizzlyJohnWisdomPatterns.derivePatternObservations(checkIns.entries, sessions.sessions, {
       now: new Date(), localDateKey: api.localDateKey, gratitudeEntries: gratitude.entries
     });
-    const groups = observations.reduce((result, item) => {
+    const visibleObservations = observations.slice(0, 5);
+    const groups = visibleObservations.reduce((result, item) => {
       if (!result.has(item.category)) result.set(item.category, []);
-      result.get(item.category).push(item.text);
+      result.get(item.category).push(item);
       return result;
     }, new Map());
     holder.innerHTML = observations.length
-      ? `<div class="pattern-observations">${[...groups].map(([category, texts]) => `<section><h3>${escapeHtml(category)}</h3>${texts.map(text => `<p>${escapeHtml(text)}</p>`).join('')}</section>`).join('')}</div><small>These are simple observations from your saved history, not a diagnosis.</small>`
+      ? `<div class="pattern-observations">${[...groups].map(([category, items]) => `<section><h3>${escapeHtml(category)}</h3>${items.map(item => `<p>${escapeHtml(item.text)}</p>${item.detail ? `<small class="pattern-detail">${escapeHtml(item.detail)}</small>` : ''}`).join('')}</section>`).join('')}</div><small>These are simple observations from your saved history, not a diagnosis.</small>`
       : '<p>No pattern needs a label yet. A few more check-ins will make this easier to read.</p><small>Nothing is inferred from one or two isolated records.</small>';
   }
 

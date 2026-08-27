@@ -73,6 +73,7 @@
 .pattern-observations h3, .pattern-observations p { margin: 0; }
 .pattern-observations h3 { color: var(--rust); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; }
 .pattern-observations p { margin-top: 2px; line-height: 1.45; }
+.pattern-observations .pattern-detail { display: block; margin: 2px 0 7px; font-size: .75rem; }
 
 @media (max-width: 520px) {
   .feeling-check-in-actions { grid-template-columns: 1fr; }

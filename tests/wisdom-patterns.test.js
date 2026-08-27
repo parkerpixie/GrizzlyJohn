@@ -2,7 +2,8 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { derivePatternObservations, feelingDayCounts, gratitudeThemes, rollingDateSet, recordDate } = require('../wisdom-patterns.js');
+const { derivePatternObservations, feelingDayCounts, familyDayCounts, gratitudeThemes, rollingDateSet, recordDate } = require('../wisdom-patterns.js');
+const families = require('../feeling-families.js');
 
 const now = new Date(2026, 7, 27, 12, 0, 0);
 const localDateKey = value => {
@@ -42,19 +43,19 @@ test('C: seven-day thresholds surface recurrence but suppress weak and sparse co
 test('D: thirty-day results use distinct days, rank strongest feelings, cap output, and require enough data', () => {
   const checkIns = [];
   for (let offset = 0; offset < 12; offset += 1) {
-    const feelings = ['Steady'];
-    if (offset < 9) feelings.push('Hopeful');
-    if (offset < 7) feelings.push('Tired');
-    if (offset < 5) feelings.push('Curious');
+    const feelings = ['Consistent'];
+    if (offset < 9) feelings.push('Reflective');
+    if (offset < 7) feelings.push('Wistful');
+    if (offset < 5) feelings.push('Observant');
     checkIns.push(entry(offset, ...feelings));
   }
-  checkIns.push(entry(8, 'Steady'), entry(8, 'Steady'));
+  checkIns.push(entry(8, 'Consistent'), entry(8, 'Consistent'));
   const monthly = derivePatternObservations(checkIns, [], { now, localDateKey }).filter(item => item.category === 'Last 30 days');
   assert.equal(monthly.length, 3);
   assert.deepEqual(monthly.map(item => item.text), [
-    'Steady appeared on 12 of the last 30 days.',
-    'Hopeful appeared on 9 of the last 30 days.',
-    'Tired appeared on 7 of the last 30 days.'
+    'Consistent appeared on 12 of the last 30 days.',
+    'Reflective appeared on 9 of the last 30 days.',
+    'Wistful appeared on 7 of the last 30 days.'
   ]);
   const sparse = derivePatternObservations([entry(10, 'Steady'), entry(11, 'Steady')], [], { now, localDateKey });
   assert.equal(sparse.some(item => item.category === 'Last 30 days'), false);
@@ -62,7 +63,7 @@ test('D: thirty-day results use distinct days, rank strongest feelings, cap outp
 
 test('E: recurring positive feelings are eligible under the same rules', () => {
   const result = derivePatternObservations([0, 1, 2, 3, 4].map(offset => entry(offset, 'Joyful')), [], { now, localDateKey });
-  assert.ok(texts(result).includes('Joyful showed up on 5 of the last 7 days.'));
+  assert.ok(texts(result).includes('Bright / good feelings were dominant on 5 of the last 7 days.'));
   assert.ok(texts(result).includes('Joyful appeared on 5 of the last 30 days.') === false, 'monthly summary still requires six active days');
 });
 
@@ -124,4 +125,70 @@ test('J: repeated guided tool use remains an observational Wisdom insight', () =
   const sessions = [0, 1, 2].map(offset => ({ date: date(offset), skill: 'TIPP' }));
   const result = derivePatternObservations([], sessions, { now, localDateKey });
   assert.ok(result.some(item => item.category === 'Tools' && /reached for several times/.test(item.text)));
+});
+
+test('K: different anger words combine into one weekly family pattern with representative words', () => {
+  const result = derivePatternObservations([
+    entry(0, 'Annoyed'), entry(1, 'Irritated'), entry(2, 'Frustrated'), entry(3, 'Resentful')
+  ], [], { now, localDateKey });
+  const pattern = result.find(item => item.familyId === 'anger' && item.category === 'Last 7 days');
+  assert.equal(pattern.text, 'Anger feelings were dominant on 4 of the last 7 days.');
+  assert.match(pattern.detail, /^Showing up as: /);
+  assert.ok(pattern.detail.includes('Annoyed'));
+  assert.equal(result.some(item => /^Annoyed showed up/.test(item.text)), false);
+});
+
+test('L: the shared daily classifier counts only dominant families and preserves ties', () => {
+  const dates = rollingDateSet(now, 7, localDateKey);
+  const checkIns = [
+    entry(0, 'Annoyed', 'Irritated', 'Frustrated'), entry(0, 'Hopeful'),
+    entry(1, 'Annoyed'), entry(1, 'Hopeful')
+  ];
+  const counts = familyDayCounts(checkIns, dates, localDateKey);
+  assert.equal(counts.families.find(item => item.family === 'anger').days, 2);
+  assert.equal(counts.families.find(item => item.family === 'bright').days, 1);
+  const dayZero = families.summarizeFeelingDay(checkIns.filter(item => item.date === date(0)));
+  assert.deepEqual(dayZero.families, ['anger']);
+  const dayOne = families.summarizeFeelingDay(checkIns.filter(item => item.date === date(1)));
+  assert.deepEqual(dayOne.families, ['anger', 'bright']);
+});
+
+test('M: multiple check-ins aggregate by date, and representatives rank distinct days with a three-word cap', () => {
+  const dates = rollingDateSet(now, 7, localDateKey);
+  const counts = familyDayCounts([
+    entry(0, 'Annoyed'), entry(0, 'Annoyed', 'Irritated'),
+    entry(1, 'Annoyed', 'Frustrated'), entry(2, 'Irritated', 'Resentful'), entry(3, 'Jealous')
+  ], dates, localDateKey);
+  const anger = counts.families.find(item => item.family === 'anger');
+  assert.equal(anger.days, 4);
+  assert.equal(anger.words.length, 3);
+  assert.deepEqual(anger.words.map(item => [item.word, item.days]), [['Annoyed', 2], ['Irritated', 2], ['Frustrated', 1]]);
+});
+
+test('N: weekly and monthly family thresholds use active days and remain positive-family neutral', () => {
+  const threeOfFive = derivePatternObservations([
+    entry(0, 'Hopeful'), entry(1, 'Joyful'), entry(2, 'Grateful'), entry(3, 'Tired'), entry(4, 'Worried')
+  ], [], { now, localDateKey });
+  assert.ok(threeOfFive.some(item => item.familyId === 'bright' && /3 of the last 7/.test(item.text)));
+  const threeOfFour = derivePatternObservations([
+    entry(0, 'Hopeful'), entry(1, 'Joyful'), entry(2, 'Grateful'), entry(3, 'Tired')
+  ], [], { now, localDateKey });
+  assert.equal(threeOfFour.some(item => item.familyId === 'bright'), false);
+  const monthly = derivePatternObservations([
+    entry(8, 'Annoyed'), entry(9, 'Irritated'), entry(10, 'Frustrated'), entry(11, 'Resentful'), entry(12, 'Tired'), entry(13, 'Worried')
+  ], [], { now, localDateKey });
+  assert.ok(monthly.some(item => item.familyId === 'anger' && item.category === 'Last 30 days'));
+  const monthlySparse = derivePatternObservations([
+    entry(8, 'Annoyed'), entry(9, 'Irritated'), entry(10, 'Frustrated'), entry(11, 'Resentful'), entry(12, 'Tired')
+  ], [], { now, localDateKey });
+  assert.equal(monthlySparse.some(item => item.familyId === 'anger' && item.category === 'Last 30 days'), false);
+});
+
+test('O: family counting honors date-only records and the supplied local timestamp boundary', () => {
+  const resolver = value => typeof value === 'string' && value === 'boundary' ? '2026-08-26' : localDateKey(value);
+  const counts = familyDayCounts([
+    { date: '2026-08-27', feelings: [{ word: 'Annoyed' }] },
+    { timestamp: 'boundary', feelings: [{ word: 'Irritated' }] }
+  ], rollingDateSet(now, 7, localDateKey), resolver);
+  assert.equal(counts.families.find(item => item.family === 'anger').days, 2);
 });

@@ -83,6 +83,12 @@ test('dominant feeling family preserves ties and neutral non-feeling activity', 
   assert.deepEqual(activity, { kind: 'activity', families: [], counts: {}, checkInCount: 0 });
 });
 
+test('daily family summary safely classifies legacy feeling words without group ids', () => {
+  const summary = feelingFamilySummary({ feelings: [{ feelings: ['Annoyed', { word: 'Frustrated' }, { word: 'Hopeful' }] }] });
+  assert.equal(summary.kind, 'dominant');
+  assert.deepEqual(summary.families, ['anger']);
+});
+
 test('A: preserves stored Gold Star counts, completed labels, and badge awards without inventing missing detail', () => {
   const days = aggregateMyDays({
     goldStarDefinitions: [{ id: 'walk', label: 'Take a walk' }, { id: 'call', label: 'Call a friend' }],
