@@ -625,11 +625,18 @@
 
   function renderPatterns() {
     const holder = $('#patternObservation'), api = window.GrizzlyJohnStorageV2;
-    const checkIns = api?.feelingCheckIns.all(), sessions = api?.guidedSkillSessions.all();
-    if (!holder || !checkIns?.ok || !sessions?.ok || !window.GrizzlyJohnWisdomPatterns) return;
-    const observations = window.GrizzlyJohnWisdomPatterns.derivePatternObservations(checkIns.entries, sessions.sessions, { now: new Date(), localDateKey: api.localDateKey });
+    const checkIns = api?.feelingCheckIns.all(), sessions = api?.guidedSkillSessions.all(), gratitude = api?.gratitude.all();
+    if (!holder || !checkIns?.ok || !sessions?.ok || !gratitude?.ok || !window.GrizzlyJohnWisdomPatterns) return;
+    const observations = window.GrizzlyJohnWisdomPatterns.derivePatternObservations(checkIns.entries, sessions.sessions, {
+      now: new Date(), localDateKey: api.localDateKey, gratitudeEntries: gratitude.entries
+    });
+    const groups = observations.reduce((result, item) => {
+      if (!result.has(item.category)) result.set(item.category, []);
+      result.get(item.category).push(item.text);
+      return result;
+    }, new Map());
     holder.innerHTML = observations.length
-      ? `<div class="pattern-observations">${observations.map(item => `<section><h3>${escapeHtml(item.category)}</h3><p>${escapeHtml(item.text)}</p></section>`).join('')}</div><small>These are simple observations from your saved history, not a diagnosis.</small>`
+      ? `<div class="pattern-observations">${[...groups].map(([category, texts]) => `<section><h3>${escapeHtml(category)}</h3>${texts.map(text => `<p>${escapeHtml(text)}</p>`).join('')}</section>`).join('')}</div><small>These are simple observations from your saved history, not a diagnosis.</small>`
       : '<p>No pattern needs a label yet. A few more check-ins will make this easier to read.</p><small>Nothing is inferred from one or two isolated records.</small>';
   }
 
