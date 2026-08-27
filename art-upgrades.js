@@ -184,6 +184,10 @@
 
   function setQuestCard(quest) {
     if (!quest) return;
+    if (window.GrizzlyJohnQuest?.setCurrentQuest) {
+      window.GrizzlyJohnQuest.setCurrentQuest(quest);
+      return;
+    }
     const title = $('#questTitle');
     const description = $('#questDescription');
     const emoji = $('#questEmoji');

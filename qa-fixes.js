@@ -36,22 +36,6 @@
     }).join('');
   }
 
-  function guardQuestCompletion() {
-    const complete = document.getElementById('completeQuest');
-    const another = document.getElementById('newQuest');
-    if (!complete || !another) return;
-    complete.addEventListener('click', event => {
-      if (complete.dataset.questCounted === 'true') { event.preventDefault(); event.stopImmediatePropagation(); return; }
-      complete.dataset.questCounted = 'true';
-      window.setTimeout(() => { complete.disabled = true; complete.textContent = 'Quest Completed'; }, 0);
-    }, true);
-    another.addEventListener('click', () => {
-      delete complete.dataset.questCounted;
-      complete.disabled = false;
-      complete.textContent = 'Quest Completed';
-    }, true);
-  }
-
   function fixPodcastLinks() {
     document.querySelectorAll('.podcast-card').forEach(card => {
       const title = card.querySelector('h2')?.textContent?.trim();
@@ -78,21 +62,11 @@
     document.body.appendChild(script);
   }
 
-  function loadRoamV2() {
-    if (document.querySelector('script[data-roam-v2]')) return;
-    const script = document.createElement('script');
-    script.src = 'roam-v2.js?v=20260821-1';
-    script.dataset.roamV2 = 'true';
-    document.body.appendChild(script);
-  }
-
   function init() {
     loadQaStyles();
     expandQuestRewards();
-    guardQuestCompletion();
     fixPodcastLinks();
     loadBreneReflection();
-    loadRoamV2();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });

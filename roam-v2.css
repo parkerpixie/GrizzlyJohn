@@ -8,18 +8,18 @@
 .roam-resource-card strong { color: var(--pine-dark, #2f4636); font-size: 1.05rem; }
 .roam-resource-card p { margin: 0; line-height: 1.45; }
 .roam-resource-cta { margin-top: auto; color: var(--pine-dark, #2f4636); font-size: .78rem; font-weight: 900; }
-.roam-side-quest-card { padding: 18px; }
-.roam-side-quest-main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 13px; align-items: start; }
-.roam-side-quest-emoji { font-size: 2.3rem; line-height: 1; }
-.roam-side-quest-card h3 { margin: 7px 0 5px; }
-.roam-side-quest-category { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.12); font-size: .68rem; font-weight: 900; letter-spacing: .05em; }
-.roam-side-quest-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
-.roam-side-quest-actions .button { width: 100%; }
-.roam-badge-connection { margin: 13px 0 0; padding-top: 11px; border-top: 1px solid rgba(255,255,255,.16); color: rgba(255,255,255,.78); font-size: .76rem; font-weight: 700; }
-.roam-side-quests { margin-bottom: 13px; }
-.roam-trail-badges { position: relative; margin-top: 13px; padding-top: 17px; border-top: 1px solid rgba(47,70,54,.13); }
-.roam-trail-badges .roam-v2-heading { align-items: flex-start; }
-.roam-trail-badges .roam-v2-heading p:last-child { margin: 4px 0 0; color: var(--muted); font-size: .82rem; }
+.quest-side-quest-card { padding: 18px; }
+.quest-side-quest-main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 13px; align-items: start; }
+.quest-side-quest-emoji { font-size: 2.3rem; line-height: 1; }
+.quest-side-quest-card h2 { margin: 7px 0 5px; }
+.quest-side-quest-category { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.12); font-size: .68rem; font-weight: 900; letter-spacing: .05em; }
+.quest-side-quest-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+.quest-side-quest-actions .button { width: 100%; min-height: 44px; }
+.quest-badge-connection { margin: 13px 0 0; padding-top: 11px; border-top: 1px solid rgba(255,255,255,.16); color: rgba(255,255,255,.78); font-size: .76rem; font-weight: 700; }
+.quest-action-status { min-height: 1.2em; margin: 7px 0 0; color: rgba(255,255,255,.84); font-size: .76rem; }
+.quest-trail-badges { position: relative; margin-top: 22px; padding-top: 17px; border-top: 1px solid rgba(47,70,54,.13); }
+.quest-trail-badges .roam-v2-heading { align-items: flex-start; }
+.quest-trail-badges .roam-v2-heading p:last-child { margin: 4px 0 0; color: var(--muted); font-size: .82rem; }
 .trail-badge-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 9px; }
 .trail-badge-tile { position: relative; display: grid; grid-template-rows: 44px 1.2em 5px; place-items: center; gap: 5px; min-width: 0; min-height: 88px; padding: 7px 6px; border: 1px solid rgba(47,70,54,.16); border-radius: 16px; background: linear-gradient(145deg, #fffaf0, #f5ead3); color: var(--pine-dark); font: inherit; cursor: pointer; box-shadow: 0 5px 15px rgba(47,70,54,.06); }
 .trail-badge-tile:hover, .trail-badge-tile:focus-visible, .trail-badge-tile[aria-expanded="true"] { border-color: rgba(47,70,54,.45); transform: translateY(-1px); }
@@ -122,14 +122,12 @@
 .roam-request-body { padding: 0 13px 13px; }
 .roam-request-body > p { margin: 0 0 11px; color: var(--muted); font-size: .8rem; }
 .roam-request-body .button { width: 100%; }
-[data-nav="quest"][hidden], #quest[aria-hidden="true"] { display: none !important; }
-
 @media (max-width: 760px) {
   .roam-resource-grid { grid-template-columns: 1fr; }
   .roam-resource-card { min-height: 0; }
 }
 @media (max-width: 430px) {
-  .roam-side-quest-actions { grid-template-columns: 1fr; }
+  .quest-side-quest-actions { grid-template-columns: 1fr; }
   .roam-v2-heading { align-items: flex-start; }
   .trail-badge-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
   .trail-badge-tile { padding-inline: 5px; }

@@ -12,7 +12,7 @@
       }
     },
     set(key, value) {
-      try { localStorage.setItem(`grizzlyjohn:${key}`, JSON.stringify(value)); } catch {}
+      try { localStorage.setItem(`grizzlyjohn:${key}`, JSON.stringify(value)); return true; } catch { return false; }
     }
   };
 
@@ -640,10 +640,60 @@
       : '<p>No pattern needs a label yet. A few more check-ins will make this easier to read.</p><small>Nothing is inferred from one or two isolated records.</small>';
   }
 
-  function setQuest(quest) { if (!quest) return; $('#questTitle').textContent = quest.title; $('#questDescription').textContent = quest.description; $('#questEmoji').textContent = quest.emoji; $('#questCategory').textContent = quest.category; }
-  function setupQuests() { if (!window.GRIZZLY_DATA?.quests?.length || !$('#questTitle')) return; setQuest(randomItem(GRIZZLY_DATA.quests)); $('#newQuest')?.addEventListener('click', () => setQuest(randomItem(GRIZZLY_DATA.quests))); $('#completeQuest')?.addEventListener('click', completeQuest); renderQuestProgress(); }
-  function completeQuest() { state.questCount += 1; storage.set('questCount', state.questCount); renderQuestProgress(); }
-  function renderQuestProgress() { if (!$('#questCount') || !$('#stampGrid')) return; $('#questCount').textContent = state.questCount; $('#stampGrid').innerHTML = GRIZZLY_DATA.stamps.map(stamp => { const unlocked = state.questCount >= stamp.requirement; return `<div class="stamp ${unlocked ? 'is-unlocked' : ''}"><span>${stamp.icon}</span><strong>${escapeHtml(stamp.name)}</strong><small>${unlocked ? 'Unlocked' : `${stamp.requirement} quests`}</small></div>`; }).join(''); }
+  let currentQuest = null;
+  function validQuestCount() {
+    const result = window.GrizzlyJohnStorageV2?.readers.questCount();
+    if (result?.status === 'missing') return 0;
+    return result?.status === 'valid' && Number.isFinite(result.value) && result.value >= 0 ? result.value : null;
+  }
+  function setQuest(quest) {
+    if (!quest) return false;
+    currentQuest = quest;
+    $('#questTitle').textContent = quest.title;
+    $('#questDescription').textContent = quest.description;
+    $('#questEmoji').textContent = quest.emoji;
+    $('#questCategory').textContent = quest.category;
+    const complete = $('#completeQuest');
+    if (complete) { complete.disabled = false; complete.textContent = 'Quest Completed'; delete complete.dataset.questCounted; }
+    if ($('#questActionStatus')) $('#questActionStatus').textContent = '';
+    return true;
+  }
+  function drawQuest(pool = window.GRIZZLY_DATA?.quests || []) { return pool.length ? setQuest(randomItem(pool)) : false; }
+  function setupQuests() {
+    if (!window.GRIZZLY_DATA?.quests?.length || !$('#questTitle')) return;
+    drawQuest();
+    $('#newQuest')?.addEventListener('click', () => drawQuest());
+    $('#completeQuest')?.addEventListener('click', completeQuest);
+    renderQuestProgress();
+    window.GrizzlyJohnQuest = Object.freeze({ setCurrentQuest: setQuest, drawQuest, completeQuest, current: () => currentQuest, count: validQuestCount });
+  }
+  function completeQuest() {
+    const button = $('#completeQuest');
+    if (!button || button.disabled || !currentQuest) return false;
+    const count = validQuestCount();
+    if (count === null) {
+      if ($('#questActionStatus')) $('#questActionStatus').textContent = 'Your existing Quest count needs recovery before another completion can be saved. Nothing was changed.';
+      return false;
+    }
+    button.disabled = true;
+    button.dataset.questCounted = 'true';
+    const nextCount = count + 1;
+    if (!storage.set('questCount', nextCount)) {
+      button.disabled = false;
+      delete button.dataset.questCounted;
+      if ($('#questActionStatus')) $('#questActionStatus').textContent = 'This Quest could not be saved. Please try again.';
+      return false;
+    }
+    state.questCount = nextCount;
+    const actionId = `side-quest-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const eventResult = window.GrizzlyJohnStorageV2?.sideQuestEvents.add(currentQuest, { id: actionId, resultingCount: nextCount });
+    button.textContent = 'Quest Completed';
+    if ($('#questActionStatus')) $('#questActionStatus').textContent = eventResult?.ok ? `Quest saved. ${nextCount} completed.` : `Quest count saved. The dated history entry could not be added.`;
+    renderQuestProgress();
+    document.dispatchEvent(new CustomEvent('grizzly-quest-updated', { detail: { count: nextCount, quest: currentQuest, event: eventResult?.event || null } }));
+    return true;
+  }
+  function renderQuestProgress() { const count = validQuestCount(); if ($('#questCount')) $('#questCount').textContent = count === null ? '—' : String(count); }
 
   function setupPlaces() {
     const form = $('#placeForm'); if (!form) return;

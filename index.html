@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="wisdom-v2.css">
   <link rel="stylesheet" href="my-days.css">
   <link rel="stylesheet" href="settings-v2.css">
+  <link rel="stylesheet" href="roam-v2.css">
 </head>
 <body>
   <section class="install-gate" id="installGate" hidden aria-label="Save GrizzlyJohn to your home screen">
@@ -276,26 +277,24 @@
           <p>Not because it’s productive. Because you’re alive and there’s still stuff out there.</p>
         </div>
 
-        <article class="card card-dark quest-generator">
-          <p class="eyebrow">YOUR NEXT QUEST</p>
-          <div class="quest-emoji" id="questEmoji">🧭</div>
-          <h2 id="questTitle">Find a road you’ve never driven.</h2>
-          <p id="questDescription">Take one turn you normally don’t and see where it goes. Please continue obeying actual traffic laws, John.</p>
-          <div class="quest-category" id="questCategory">WILD CARD</div>
-          <div class="button-row">
-            <button class="button button-light" id="newQuest" type="button">Different quest</button>
-            <button class="button button-accent" id="completeQuest" type="button">I did the thing ✓</button>
+        <article class="card card-dark quest-generator quest-side-quest-card">
+          <div class="quest-side-quest-main">
+            <div class="quest-emoji quest-side-quest-emoji" id="questEmoji">🧭</div>
+            <div><div class="quest-category quest-side-quest-category" id="questCategory">WILD CARD</div><h2 id="questTitle">Find a road you’ve never driven.</h2><p id="questDescription">Take one turn you normally don’t and see where it goes. Please continue obeying actual traffic laws, John.</p></div>
           </div>
+          <div class="quest-side-quest-actions">
+            <button class="button button-light" id="newQuest" type="button">Give me another</button>
+            <button class="button button-accent" id="completeQuest" type="button">Quest Completed</button>
+          </div>
+          <p class="quest-badge-connection" id="questBadgeConnection">Side Quests count toward Trail Badges.</p>
+          <p class="quest-action-status" id="questActionStatus" role="status" aria-live="polite"></p>
         </article>
 
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">TRAIL STAMPS</p>
-            <h2>Proof you left the couch</h2>
-          </div>
-          <span class="count-pill"><strong id="questCount">0</strong> done</span>
-        </div>
-        <div class="stamp-grid" id="stampGrid"></div>
+        <section class="quest-trail-badges" id="questTrailBadges" aria-labelledby="questBadgesHeading">
+          <div class="roam-v2-heading"><div><p class="eyebrow">TRAIL BADGES</p><h2 id="questBadgesHeading">A growing collection</h2><p>Side Quests count toward Trail Badges. Tap a badge to see what it takes.</p></div><span class="count-pill"><strong id="questCount">0</strong> done</span></div>
+          <div class="trail-badge-list" id="trailBadgeList"></div>
+          <div class="trail-badge-detail" id="trailBadgeDetail" hidden></div>
+        </section>
       </section>
 
       <section class="screen" id="roam" data-screen>
@@ -449,5 +448,6 @@
   <script src="oracle-cards.js"></script>
   <script src="dbt-cards.js"></script>
   <script src="my-days.js"></script>
+  <script src="roam-v2.js"></script>
 </body>
 </html>

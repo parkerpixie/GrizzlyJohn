@@ -8,75 +8,13 @@
     { name: 'AllStays', url: 'https://www.allstays.com/', icon: '🗺️', note: 'Camping and road-trip research in one familiar starting place.' }
   ];
 
-  let currentQuest = null;
-  let completionActionId = null;
-
   function escapeHtml(value = '') {
     return String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
-  }
-
-  function ensureStyles() {
-    if ($('link[data-roam-v2]')) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'roam-v2.css?v=20260827-1';
-    link.dataset.roamV2 = 'true';
-    document.head.appendChild(link);
   }
 
   function readQuestCount() {
     const result = window.GrizzlyJohnStorageV2?.readers.questCount();
     return result?.status === 'valid' ? result.value : 0;
-  }
-
-  function adventureQuestPool() {
-    const quests = window.GRIZZLY_DATA?.quests || [];
-    const preferred = new Set(['OUTDOORS', 'WILD CARD', 'BLUE TIME', 'CURIOSITY', 'BLUE APPROVED']);
-    const filtered = quests.filter(quest => preferred.has(String(quest.category || '').toUpperCase()));
-    return filtered.length ? filtered : quests;
-  }
-
-  function renderQuest(holder) {
-    if (!currentQuest) return;
-    $('[data-roam-quest-emoji]', holder).textContent = currentQuest.emoji || '🧭';
-    $('[data-roam-quest-title]', holder).textContent = currentQuest.title || 'Take the scenic route.';
-    $('[data-roam-quest-copy]', holder).textContent = currentQuest.description || 'Go find something worth noticing.';
-    $('[data-roam-quest-category]', holder).textContent = currentQuest.category || 'ROAM';
-    const complete = $('[data-complete-roam-quest]', holder);
-    if (complete) { complete.disabled = false; complete.textContent = 'Quest Completed'; }
-    completionActionId = null;
-  }
-
-  function drawQuest(holder) {
-    const pool = adventureQuestPool();
-    if (!pool.length) return;
-    currentQuest = pool[Math.floor(Math.random() * pool.length)];
-    $('#newQuest')?.click();
-    renderQuest(holder);
-  }
-
-  function completeQuest(holder) {
-    const sourceButton = $('#completeQuest');
-    if (!sourceButton || sourceButton.disabled) return;
-    const countBefore = readQuestCount();
-    completionActionId ||= `side-quest-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    sourceButton.click();
-    const countAfter = readQuestCount();
-    if (countAfter === countBefore + 1 && currentQuest) {
-      window.GrizzlyJohnStorageV2?.sideQuestEvents.add(currentQuest, {
-        id: completionActionId,
-        resultingCount: countAfter
-      });
-    }
-    const button = $('[data-complete-roam-quest]', holder);
-    if (button) { button.disabled = true; button.textContent = 'Quest Completed'; }
-    window.setTimeout(() => {
-      const count = readQuestCount();
-      const countHolder = $('[data-roam-quest-count]', holder);
-      if (countHolder) countHolder.textContent = String(count);
-      renderQuestBadgeConnection(holder);
-      renderTrailBadges(count);
-    }, 20);
   }
 
   function nextQuestBadge(count) {
@@ -87,8 +25,8 @@
       .find(stamp => Number(stamp.requirement) > count) || null;
   }
 
-  function renderQuestBadgeConnection(holder) {
-    const line = $('[data-quest-badge-connection]', holder);
+  function renderQuestBadgeConnection() {
+    const line = $('#questBadgeConnection');
     if (!line) return;
     const count = readQuestCount();
     const next = nextQuestBadge(count);
@@ -103,7 +41,7 @@
     if (!roam || !intro) return false;
     if ($('#roamV2Hub')) return true;
 
-    intro.innerHTML = '<p class="eyebrow">ROAM</p><h1>Go somewhere. Find something.</h1><p>Research a trip, pick a small adventure, or see what you earned along the way.</p>';
+    intro.innerHTML = '<p class="eyebrow">ROAM</p><h1>Where do I want to go?</h1><p>Research a trip, revisit the park passport, or save somewhere worth finding.</p>';
 
     const hub = document.createElement('div');
     hub.id = 'roamV2Hub';
@@ -111,17 +49,8 @@
       <section class="roam-v2-section trailhead-tools" aria-labelledby="trailheadToolsHeading">
         <div class="roam-v2-heading"><div><p class="eyebrow">TRAILHEAD TOOLS</p><h2 id="trailheadToolsHeading">John’s favorite places to start looking</h2></div></div>
         <div class="roam-resource-grid">${ROAM_SITES.map(site => `<a class="roam-resource-card" href="${site.url}" target="_blank" rel="noopener noreferrer"><span class="roam-resource-icon" aria-hidden="true">${site.icon}</span><span><strong>${site.name}</strong><p>${site.note}</p></span><span class="roam-resource-cta">OPEN ${site.name.toUpperCase()} ↗</span></a>`).join('')}</div>
-      </section>
-      <section class="roam-v2-section roam-side-quests" aria-labelledby="roamQuestHeading">
-        <div class="roam-v2-heading"><div><p class="eyebrow">SIDE QUESTS</p><h2 id="roamQuestHeading">Something small worth doing</h2></div><span class="count-pill"><strong data-roam-quest-count>${readQuestCount()}</strong> done</span></div>
-        <article class="card card-dark roam-side-quest-card"><div class="roam-side-quest-main"><div class="roam-side-quest-emoji" data-roam-quest-emoji>🧭</div><div><span class="roam-side-quest-category" data-roam-quest-category>ROAM</span><h3 data-roam-quest-title>Find something worth noticing.</h3><p data-roam-quest-copy>Small adventures count. The point is to go look.</p></div></div><div class="roam-side-quest-actions"><button class="button button-light" type="button" data-new-roam-quest>Give me another</button><button class="button button-accent" type="button" data-complete-roam-quest>Quest Completed</button></div><p class="roam-badge-connection" data-quest-badge-connection>Side Quests count toward Trail Badges.</p></article>
-      </section>
-      <section class="roam-v2-section roam-trail-badges" id="roamTrailBadges" aria-labelledby="roamBadgesHeading"><div class="roam-v2-heading"><div><p class="eyebrow">TRAIL BADGES</p><h2 id="roamBadgesHeading">A growing collection</h2><p>Tap a badge to see what it takes.</p></div></div><div class="trail-badge-list" id="trailBadgeList"></div><div class="trail-badge-detail" id="trailBadgeDetail" hidden></div></section>`;
+      </section>`;
     intro.insertAdjacentElement('afterend', hub);
-    drawQuest(hub);
-    renderQuestBadgeConnection(hub);
-    $('[data-new-roam-quest]', hub).addEventListener('click', () => drawQuest(hub));
-    $('[data-complete-roam-quest]', hub).addEventListener('click', () => completeQuest(hub));
     return true;
   }
 
@@ -166,8 +95,8 @@
 
   function organizeRoamingRecord() {
     const roam = $('#roam');
-    const badges = $('#roamTrailBadges');
-    if (!roam || !badges) return false;
+    const hub = $('#roamV2Hub');
+    if (!roam || !hub) return false;
     let passport = $('#nationalParkPassport');
     if (!passport) {
       passport = document.createElement('section');
@@ -175,7 +104,7 @@
       passport.id = 'nationalParkPassport';
       passport.setAttribute('aria-labelledby', 'nationalParkPassportHeading');
       passport.innerHTML = '<div class="roam-v2-heading"><div><p class="eyebrow">NATIONAL PARK PASSPORT</p><h2 id="nationalParkPassportHeading">John’s park collection</h2></div></div><div class="passport-body"></div>';
-      badges.insertAdjacentElement('afterend', passport);
+      hub.insertAdjacentElement('afterend', passport);
     }
     const passportBody = $('.passport-body', passport);
     const backpack = $('#roamBackpack');
@@ -217,15 +146,9 @@
     return Boolean($('#roamBackpack'));
   }
 
-  function retireOldQuestDestination() {
-    $$('[data-nav="quest"]').forEach(button => button.hidden = true);
-    $('#quest')?.setAttribute('aria-hidden', 'true');
-  }
-
   function upgrade() {
-    ensureStyles();
-    retireOldQuestDestination();
     buildRoamHub();
+    renderQuestBadgeConnection();
     renderTrailBadges();
     organizeRoamingRecord();
   }
@@ -233,7 +156,14 @@
   function start() {
     upgrade();
     [100, 350, 900, 1800].forEach(delay => window.setTimeout(upgrade, delay));
-    document.addEventListener('click', event => { if (event.target.closest('[data-nav="roam"]')) window.setTimeout(() => { renderTrailBadges(); organizeRoamingRecord(); }, 0); });
+    document.addEventListener('click', event => {
+      if (event.target.closest('[data-nav="quest"]')) window.setTimeout(() => { renderQuestBadgeConnection(); renderTrailBadges(); }, 0);
+      if (event.target.closest('[data-nav="roam"]')) window.setTimeout(organizeRoamingRecord, 0);
+    });
+    document.addEventListener('grizzly-quest-updated', event => {
+      renderQuestBadgeConnection();
+      renderTrailBadges(event.detail?.count);
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
