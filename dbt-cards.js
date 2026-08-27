@@ -421,7 +421,6 @@
   render();
   setupToolboxAccess();
   setupWisdomHaltQuickCheck();
-  watchFeelingSuggestions();
 
   randomButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.skills.length)));
   closeButton?.addEventListener('click', () => viewer.close());
