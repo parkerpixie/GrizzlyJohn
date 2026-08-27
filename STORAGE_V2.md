@@ -11,6 +11,14 @@
 - Imports never clear keys that are absent from an export.
 - Recovery imports snapshot the exact previous state of every key they may change. If a later write fails, all earlier writes from that attempt are rolled back; rollback status and any rollback errors are returned to the caller.
 
+## Production V1 upgrade contract
+
+The production app on `main` currently persists ten keys: `grizzlyjohn:checkIns`, `grizzlyjohn:places`, `grizzlyjohn:questCount`, `grizzlyjohn:listeningLog`, `grizzlyjohn:campfireLibrary`, `grizzlyjohn:listenShelf`, `grizzlyjohn:parkBadges`, `grizzlyjohn:weatherEnabled`, `grizzlyjohn:installComplete`, and `grizzlyjohn:installDismissed`. V2 keeps every one of those keys in place. There are no renamed production keys.
+
+`tests/fixtures/v1-production-storage.js` represents a realistic installed production app, including check-ins, saved places, Side Quest count, listening history, both generations of the Campfire shelf, park badges, weather consent, and install dismissal/completion state. `tests/production-upgrade.test.js` is the release-blocking in-place upgrade gate. It seeds that fixture, initializes V2 without clearing storage, verifies the exact legacy raw strings and protected backup, performs new V2 writes, creates a fresh storage-layer instance to represent reload, and verifies old and new records together.
+
+The gate also covers clean installs, repeated initialization, partial V1 storage, isolated malformed JSON, unexpected older structures, pre-existing V2 preview records, and explicit local-calendar dates. A future change that rewrites a supported V1 raw value during initialization, drops a supported migrated record, overwrites the protected backup, duplicates initialization output, or loses a post-upgrade V2 write must fail this suite.
+
 ## Browser API
 
 ```js
