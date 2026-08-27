@@ -8,18 +8,21 @@
 .campfire-history > summary { padding: 14px; color: var(--pine-dark); font-weight: 850; cursor: pointer; }
 .campfire-recommended #podcastList { display: grid; gap: 7px; padding: 9px; }
 .campfire-recommended .podcast-card { grid-template-columns: auto minmax(0, 1fr); margin: 0; padding: 12px; }
-.campfire-recommended .podcast-art { width: 45px; height: 45px; font-size: 1.3rem; }
+.campfire-recommended .podcast-art { width: 64px; height: 64px; overflow: hidden; border-radius: 15px; font-size: 1.3rem; }
+.podcast-artwork-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+.podcast-art-fallback { display: none; }
+.podcast-art.is-fallback .podcast-art-fallback { display: block; }
 .campfire-recommended .podcast-copy h2 { font-size: 1.05rem; }
 .campfire-recommended .podcast-copy > p { display: -webkit-box; overflow: hidden; margin: 3px 0; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
 .campfire-recommended .podcast-links { display: flex; flex-wrap: wrap; gap: 7px; }
-.campfire-recommended .podcast-links a { min-height: 34px; display: inline-flex; align-items: center; font-size: .72rem; }
-.campfire-recommended [data-log-podcast] { min-height: 34px; margin-top: 5px; padding: 6px 9px; font-size: .72rem; }
+.campfire-recommended .podcast-links a { min-height: 44px; display: inline-flex; align-items: center; font-size: .72rem; }
+.campfire-recommended [data-log-podcast] { min-height: 44px; margin-top: 5px; padding: 8px 10px; font-size: .72rem; }
 .campfire-browse { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, .45fr); gap: 10px; align-items: end; margin-bottom: 11px; }
 .campfire-filter-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-.campfire-filter-chip { flex: 0 0 auto; min-height: 42px; border: 1px solid rgba(47,70,54,.17); border-radius: 999px; background: var(--paper); padding: 8px 13px; color: var(--pine-dark); font: inherit; font-size: .8rem; font-weight: 850; cursor: pointer; }
+.campfire-filter-chip { flex: 0 0 auto; min-height: 44px; border: 1px solid rgba(47,70,54,.17); border-radius: 999px; background: var(--paper); padding: 8px 13px; color: var(--pine-dark); font: inherit; font-size: .8rem; font-weight: 850; cursor: pointer; }
 .campfire-filter-chip.is-active { background: var(--pine); color: white; }
 .campfire-browse label { display: grid; gap: 4px; color: var(--muted); font-size: .72rem; font-weight: 800; }
-.campfire-browse select { width: 100%; min-height: 42px; border: 1px solid rgba(47,70,54,.17); border-radius: 12px; background: var(--paper); padding: 7px 10px; color: var(--ink); font: inherit; }
+.campfire-browse select { width: 100%; min-height: 44px; border: 1px solid rgba(47,70,54,.17); border-radius: 12px; background: var(--paper); padding: 7px 10px; color: var(--ink); font: inherit; }
 .campfire-unified-list { display: grid; gap: 9px; }
 .campfire-library-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 14px; border: 1px solid rgba(47,70,54,.14); border-radius: 18px; background: var(--paper); }
 .campfire-library-icon { display: grid; place-items: center; width: 47px; height: 47px; border-radius: 14px; background: rgba(47,70,54,.07); font-size: 1.4rem; }
@@ -60,6 +63,7 @@
 .listen-preview-status { min-height: 1.2em; margin: 0; color: var(--muted); font-size: .76rem; }
 
 @media (max-width: 520px) {
+  .campfire-recommended .podcast-card { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
   .campfire-browse { grid-template-columns: 1fr; }
   .campfire-add-launch { display: grid; }
   .campfire-add-launch .button { width: 100%; }

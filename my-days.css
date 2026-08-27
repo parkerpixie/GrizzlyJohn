@@ -32,9 +32,9 @@
 .my-days-guided-entry { display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 8px; align-items: baseline; font-size: .78rem; }
 .my-days-guided-entry time { color: var(--muted); font-size: .72rem; }
 .my-days-content .check-in-history { margin: 12px 0 0; }
-.my-days-calendar-heading { display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; align-items: center; gap: 8px; margin-bottom: 10px; text-align: center; }
+.my-days-calendar-heading { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 8px; margin-bottom: 10px; text-align: center; }
 .my-days-calendar-heading strong { color: var(--pine-dark); font-family: var(--serif); font-size: 1.05rem; }
-.my-days-month-button { width: 42px; height: 42px; border: 0; border-radius: 12px; background: rgba(47,70,54,.08); color: var(--pine-dark); font-size: 1.45rem; cursor: pointer; }
+.my-days-month-button { width: 44px; height: 44px; border: 0; border-radius: 12px; background: rgba(47,70,54,.08); color: var(--pine-dark); font-size: 1.45rem; cursor: pointer; }
 .my-days-month-button:disabled { opacity: .35; cursor: default; }
 .calendar-day:disabled { color: var(--muted); cursor: default; opacity: .72; }
 .calendar-day.has-activity { font-weight: 850; }

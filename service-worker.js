@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v24-settings';
+const CACHE_NAME = 'grizzlyjohn-v25-polish';
 const APP_SHELL = [
   './',
   './index.html',
@@ -22,6 +22,7 @@ const APP_SHELL = [
   './storage-v2.js',
   './settings-v2.js',
   './wisdom-patterns.js',
+  './podcast-artwork.js',
   './my-days.js',
   './data.js',
   './weather.js',
@@ -56,7 +57,12 @@ const APP_SHELL = [
   './graphics/GrizzlyJohn%20Blue%2002.png',
   './graphics/GrizzlyJohn%20Blue%2003.png',
   './graphics/GrizzlyJohn%20Blue%2004.png',
-  './graphics/GrizzlyJohn%20Blue%2005.png'
+  './graphics/GrizzlyJohn%20Blue%2005.png',
+  './graphics/podcast-mel-robbins.jpg',
+  './graphics/podcast-better-human.jpg',
+  './graphics/podcast-ologies.jpg',
+  './graphics/podcast-mrballen.jpg',
+  './graphics/podcast-sysk.jpg'
 ];
 
 self.addEventListener('install', event => {

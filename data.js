@@ -174,6 +174,7 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     {
       id: 'mel-robbins',
       title: 'The Mel Robbins Podcast',
+      artwork: 'graphics/podcast-mel-robbins.jpg',
       description: 'Practical psychology, behavior change, relationships, purpose, and the occasional “well, hell, I needed to hear that.”',
       spotify: 'https://open.spotify.com/show/7vz4RYsD5MulTCrcH478t1',
       apple: 'https://podcasts.apple.com/us/podcast/the-mel-robbins-podcast/id1646101002',
@@ -182,6 +183,7 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     {
       id: 'better-human',
       title: 'How to Be a Better Human',
+      artwork: 'graphics/podcast-better-human.jpg',
       description: 'TED conversations about relationships, work, behavior, growth, and generally becoming slightly less ridiculous at being human.',
       spotify: 'https://open.spotify.com/show/5KUwV1eFkq1T2qoNdWJ5Qe',
       apple: 'https://podcasts.apple.com/us/podcast/how-to-be-a-better-human/id1544098624',
@@ -190,6 +192,7 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     {
       id: 'ologies',
       title: 'Ologies with Alie Ward',
+      artwork: 'graphics/podcast-ologies.jpg',
       description: 'Science rabbit holes with experts who know wildly specific things and a host willing to ask the questions normal people actually have.',
       spotify: 'https://open.spotify.com/show/5WjyIK3HFAlDsAaay6NvfG',
       apple: 'https://podcasts.apple.com/us/podcast/ologies-with-alie-ward/id1278815517',
@@ -198,6 +201,7 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     {
       id: 'mrballen',
       title: 'MrBallen Podcast: Strange, Dark & Mysterious Stories',
+      artwork: 'graphics/podcast-mrballen.jpg',
       description: 'Strange stories, mysteries, true crime, and exactly the sort of unsettling nonsense that makes you keep listening anyway.',
       spotify: 'https://open.spotify.com/show/4NZWQf0wUsaT0tO9unlmra',
       apple: 'https://podcasts.apple.com/us/podcast/mrballen-podcast-strange-dark-mysterious-stories/id1608813794',
@@ -206,6 +210,7 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
     {
       id: 'sysk',
       title: 'Stuff You Should Know',
+      artwork: 'graphics/podcast-sysk.jpg',
       description: 'Josh and Chuck wander through science, history, culture, and questions you did not know you needed answered until five minutes ago.',
       spotify: 'https://open.spotify.com/show/0ofXAdFIQQRsCYj9754UFx',
       apple: 'https://podcasts.apple.com/us/podcast/stuff-you-should-know/id278981407',

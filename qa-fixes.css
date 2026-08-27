@@ -3,6 +3,23 @@ html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 img, svg, video, canvas { max-width: 100%; }
 .app-shell, main, .screen, .card, .topbar, .brand, .brand > span, .card-content, .podcast-copy, .place-card > div, .weather-heading > div { min-width: 0; }
 
+/* Final mobile polish: visible keyboard focus and reliable compact targets. */
+:where(button, a, input, select, textarea, summary):focus-visible {
+  outline: 3px solid rgba(173,95,63,.42);
+  outline-offset: 3px;
+}
+.dialog-close, .oracle-viewer-close, .dbt-viewer-close, .trail-badge-detail-close,
+.oracle-share-button, .dbt-nav-button, .dbt-share-button, .wheel-arrow,
+.my-days-month-button, .gratitude-remove, .place-row-actions button,
+.backpack-filter, .badge-pack-button { min-width: 44px; min-height: 44px; }
+.gratitude-remove, .place-row-actions .text-button, .text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+.segment, .roaming-list-filter-bar .segment, .campfire-filter-chip { min-height: 44px; }
+
 /* Keep the restored daily spirit-animal card compact on Home. */
 .home-oracle-card {
   display: grid;
