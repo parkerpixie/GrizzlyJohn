@@ -121,6 +121,23 @@
     };
   }
 
+  const FAMILY_NAMES = Object.freeze({ bright: 'Bright', calm: 'Calm', neutral: 'Neutral', sad: 'Sad', fear: 'Fear', anger: 'Anger', shame: 'Shame', overwhelmed: 'Overwhelmed' });
+
+  function feelingFamilySummary(day) {
+    const counts = new Map();
+    const checkIns = Array.isArray(day?.feelings) ? day.feelings : [];
+    checkIns.forEach(entry => (Array.isArray(entry?.feelings) ? entry.feelings : []).forEach(feeling => {
+      if (!feeling || typeof feeling === 'string') return;
+      const family = String(feeling.groupId || '').trim().toLowerCase();
+      if (!FAMILY_NAMES[family]) return;
+      counts.set(family, (counts.get(family) || 0) + 1);
+    }));
+    if (!counts.size) return { kind: 'activity', families: [], counts: {}, checkInCount: checkIns.length };
+    const maximum = Math.max(...counts.values());
+    const families = [...counts.entries()].filter(([, count]) => count === maximum).map(([family]) => family).sort();
+    return { kind: families.length > 1 ? 'tie' : 'dominant', families, counts: Object.fromEntries(counts), checkInCount: checkIns.length };
+  }
+
   function anniversaryPreview(day) {
     if (!day) return null;
     const feelings = day.feelings?.flatMap(entry => Array.isArray(entry?.feelings) ? entry.feelings.map(feeling => typeof feeling === 'string' ? feeling : feeling?.word).filter(Boolean) : []) || [];
@@ -135,7 +152,7 @@
     };
   }
 
-  const exported = { aggregateMyDays, findThisDayLastYear, monthKey, shiftMonth, calendarMonth, goldStarSummary, anniversaryPreview };
+  const exported = { aggregateMyDays, findThisDayLastYear, monthKey, shiftMonth, calendarMonth, goldStarSummary, feelingFamilySummary, anniversaryPreview };
   if (typeof module !== 'undefined' && module.exports) module.exports = exported;
   if (typeof window === 'undefined') return;
   window.GrizzlyJohnMyDays = exported;
@@ -243,8 +260,22 @@
     if (!model) return;
     const blanks = Array.from({ length: model.leadingBlanks }, () => '<span aria-hidden="true"></span>').join('');
     const buttons = model.days.map(entry => {
-      const label = `${entry.day}${entry.active ? ', activity recorded' : ', no activity'}`;
-      return `<button type="button" class="calendar-day ${entry.selected ? 'is-selected' : ''} ${entry.active ? 'has-activity' : ''}" data-my-day-date="${entry.date}" aria-label="${label}" ${entry.active ? '' : 'disabled'}><span>${entry.day}</span>${entry.active ? '<i class="calendar-activity-dot" aria-hidden="true"></i>' : ''}</button>`;
+      const day = days.find(item => item.date === entry.date) || null;
+      const summary = day ? feelingFamilySummary(day) : null;
+      const familyNames = summary?.families.map(family => FAMILY_NAMES[family]);
+      const description = !entry.active
+        ? 'No activity'
+        : summary?.kind === 'dominant'
+          ? `${familyNames[0]} most reported. ${summary.checkInCount} check-in${summary.checkInCount === 1 ? '' : 's'}.`
+          : summary?.kind === 'tie'
+            ? `${familyNames.join(' and ')} tied as most reported. ${summary.checkInCount} check-in${summary.checkInCount === 1 ? '' : 's'}.`
+            : 'Activity recorded. No feeling check-in.';
+      const familyClasses = familyNames?.length ? `has-feelings ${summary.families.map(family => `dominant-${family}`).join(' ')}` : '';
+      const markers = familyNames?.length
+        ? `<span class="calendar-feeling-markers" aria-hidden="true">${summary.families.map(family => `<i class="family-${family}"></i>`).join('')}</span>`
+        : entry.active ? '<i class="calendar-activity-dot" aria-hidden="true"></i>' : '';
+      const label = `${naturalDate(entry.date, true)}: ${description}`;
+      return `<button type="button" class="calendar-day ${entry.selected ? 'is-selected' : ''} ${entry.active ? 'has-activity' : ''} ${familyClasses}" data-my-day-date="${entry.date}" aria-label="${escapeHtml(label)}" ${entry.active ? '' : 'disabled'}><span>${entry.day}</span>${markers}</button>`;
     }).join('');
     calendar.innerHTML = `<div class="my-days-calendar-heading"><button type="button" class="my-days-month-button" data-my-days-month="previous" aria-label="Previous month">‹</button><strong>${escapeHtml(model.label)}</strong><button type="button" class="my-days-month-button" data-my-days-month="next" aria-label="Next month" ${model.canGoNext ? '' : 'disabled'}>›</button></div><div class="calendar-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div><div class="calendar-days">${blanks}${buttons}</div>`;
     const selected = days.find(day => day.date === selectedDate) || null;
@@ -301,14 +332,14 @@
     const section = document.createElement('section');
     section.className = 'my-days';
     section.id = 'myDays';
-    section.innerHTML = `<details class="my-days-shell"><summary><div><p class="eyebrow">LOOK BACK</p><h2>Want to look closer?</h2><p>View My Days, then open the calendar when a date deserves a closer look.</p></div><span class="count-pill" id="myDaysCount">Days</span></summary><div class="my-days-content"><div class="this-day-last-year" id="thisDayLastYear" hidden></div><div class="my-days-list" id="myDaysList"></div></div></details>`;
+    section.innerHTML = `<div class="my-days-shell"><div class="my-days-heading"><div><p class="eyebrow">MY DAYS</p><h2 id="myDaysHeading" tabindex="-1">See how the days have been feeling.</h2><p>The calendar stays open. Choose a day for the full story.</p></div><span class="count-pill" id="myDaysCount">Days</span></div><div class="my-days-content"><div class="this-day-last-year" id="thisDayLastYear" hidden></div><details class="my-days-deeper"><summary>Browse the full day-by-day list</summary><div class="my-days-list" id="myDaysList"></div></details></div></div>`;
     toolbox.insertAdjacentElement('beforebegin', section);
     const history = $('#checkInHistory');
     if (history) {
       history.hidden = false;
       $('.history-heading .eyebrow', history).textContent = 'MY DAYS CALENDAR';
       $('.history-heading h2', history).textContent = 'Browse your days';
-      $('.my-days-content', section).insertBefore(history, $('#myDaysList'));
+      $('.my-days-content', section).insertBefore(history, $('.my-days-deeper', section));
     }
     section.addEventListener('click', event => {
       const monthButton = event.target.closest('[data-my-days-month]');
@@ -332,9 +363,14 @@
         $('#checkInHistory')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
-    $('.my-days-shell', section).addEventListener('toggle', event => { if (event.currentTarget.open) renderMyDays(); });
     renderMyDays();
     exported.refresh = renderMyDays;
+    exported.reveal = preferredDate => {
+      renderMyDays(preferredDate);
+      const heading = $('#myDaysHeading');
+      heading?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.setTimeout(() => heading?.focus({ preventScroll: true }), 350);
+    };
     return true;
   }
 

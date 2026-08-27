@@ -31,7 +31,7 @@
   };
 
   const GOLD_STAR_IDEAS = [
-    'Fill in blank item', 'Make Bed', 'Take Meds', 'Throw Ball for Blue', 'Tell Heidi I Love Her',
+    'Make Bed', 'Take Meds', 'Throw Ball for Blue', 'Tell Heidi I Love Her',
     'Call or Text a Friend', 'Go to a Meeting', 'Go to the No Judgement Zone - Planet Fitness',
     'Take Blue to Dog Park', 'Call or Text One of My Kids', 'Complete a House Project',
     'Complete a Trailer Project', 'Read Today’s Daily Reflection'
@@ -170,6 +170,12 @@
           <button class="text-button" id="editGoldStars" type="button">Edit Stars</button>
         </div>
         <div id="goldStarBadgeState" class="gold-star-badge-state" hidden aria-live="polite"></div>
+        <form class="today-inline-form custom-gold-star-form" id="quickGoldStarForm">
+          <label class="visually-hidden" for="quickGoldStarLabel">Something that counts today</label>
+          <input id="quickGoldStarLabel" maxlength="120" placeholder="Something that counts today..." required>
+          <button class="button button-primary" type="submit">Add Star</button>
+        </form>
+        <p class="today-form-status" id="quickGoldStarStatus" role="status" aria-live="polite"></p>
         <div id="goldStarChecklist" class="gold-star-checklist"></div>
         <details class="gold-star-ideas" id="goldStarIdeas"><summary>Need an idea?</summary><form id="goldStarIdeaForm"><fieldset><legend>Pick from today’s ideas</legend><div class="gold-star-idea-list">${GOLD_STAR_IDEAS.map((idea, index) => `<label><input type="checkbox" name="goldStarIdea" value="${escapeHtml(idea)}"><span>${escapeHtml(idea)}</span></label>`).join('')}</div></fieldset><button class="button button-secondary" type="submit">Add selected ideas</button><p class="today-form-status" id="goldStarIdeaStatus" role="status" aria-live="polite"></p></form></details>
       </section>
@@ -233,7 +239,10 @@
       if (!button) return;
       navigate(button.dataset.nav);
       if (button.hasAttribute('data-focus-feelings')) setTimeout(() => $('#feelingCheckIn')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 260);
-      if (button.hasAttribute('data-focus-history')) setTimeout(() => $('#checkInHistory')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 260);
+      if (button.hasAttribute('data-focus-history')) setTimeout(() => {
+        if (window.GrizzlyJohnMyDays?.reveal) window.GrizzlyJohnMyDays.reveal(todayLocalDate());
+        else $('#checkInHistory')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 260);
     });
   }
 
@@ -362,6 +371,7 @@
   function setupTodayV2() {
     const api = window.GrizzlyJohnStorageV2;
     if (!api || !$('#gratitudeForm')) return;
+    api.goldStars.archiveExactLabel('Fill in blank item');
     api.goldStarDays.get(todayLocalDate(), { syncActiveDefinitions: true });
     renderTodayV2();
 
@@ -394,6 +404,17 @@
       const result = api.goldStarDays.toggle(todayLocalDate(), checkbox.dataset.goldStarId, checkbox.checked);
       if (!result.ok) checkbox.checked = !checkbox.checked;
       renderTodayGoldStars(); renderTodaySnapshot();
+    });
+
+    $('#quickGoldStarForm')?.addEventListener('submit', event => {
+      event.preventDefault();
+      const input = $('#quickGoldStarLabel');
+      const result = api.goldStars.ensureActive(input.value);
+      $('#quickGoldStarStatus').textContent = result.ok ? 'Star added for today. ✓' : result.reason;
+      if (!result.ok) return;
+      event.currentTarget.reset();
+      api.goldStarDays.get(todayLocalDate(), { syncActiveDefinitions: true });
+      renderTodayV2();
     });
 
     $('#goldStarIdeaForm')?.addEventListener('submit', event => {
@@ -446,9 +467,9 @@
   }
 
   function setupWisdom() {
-    const thoughts = ['What deserves a little less struggle today?', 'What is already working that you could notice on purpose?', 'Where would a clean pause make the next choice easier?', 'What can be true without needing to be fixed today?', 'What would kindness toward future John look like?'];
-    const dayNumber = Math.floor(new Date().setHours(0, 0, 0, 0) / 86400000);
-    if ($('#thoughtToPonder')) $('#thoughtToPonder').textContent = thoughts[Math.abs(dayNumber) % thoughts.length];
+    const localDate = window.GrizzlyJohnStorageV2?.localDateKey(new Date());
+    const thought = window.GrizzlyJohnThoughts?.thoughtForLocalDate(localDate);
+    if ($('#thoughtToPonder') && thought) $('#thoughtToPonder').textContent = thought;
     if (window.GrizzlyJohnMyDays?.refresh) window.GrizzlyJohnMyDays.refresh(todayLocalDate());
     else renderCheckInHistory(todayLocalDate());
     renderPatterns();
@@ -482,7 +503,6 @@
       const feeling = FEELINGS[state.feelingIndex];
       if (!state.selectedFeelings.some(item => item.word === feeling.word)) state.selectedFeelings.push(feeling);
       renderSelectedFeelings();
-      openGuidedSkill(feeling);
     });
     $('#selectedFeelings')?.addEventListener('click', event => {
       const button = event.target.closest('[data-remove-selected-feeling]');
@@ -564,15 +584,17 @@
       holder.textContent = result?.reason || 'This check-in could not be saved without risking stored data.';
       return;
     }
-    const skills = suggestedSkills(state.selectedFeelings);
+    const savedFeelings = [...state.selectedFeelings];
+    const skills = suggestedSkills(savedFeelings);
     if (state.guidedSessionIds.length) api.guidedSkillSessions.associate(state.guidedSessionIds, result.entry.id);
-    holder.innerHTML = `<div class="check-in-saved"><strong>Check-in saved.</strong><span>${state.selectedFeelings.map(item => escapeHtml(item.word)).join(' · ')}</span></div><div class="check-in-suggestions"><p class="eyebrow">OPTIONAL REFERENCE</p>${skills.map(skill => `<button type="button" class="skill-suggestion-button" data-learn-skill="${escapeHtml(skill)}"><strong>Learn more about ${escapeHtml(skill)}</strong><span>Open reference card →</span></button>`).join('')}</div>`;
+    holder.innerHTML = `<div class="check-in-saved"><strong>Check-in saved ✓</strong><span>${savedFeelings.map(item => escapeHtml(item.word)).join(' · ')}</span></div><div class="check-in-suggestions"><p class="eyebrow">WANT TO WORK WITH ONE OF THESE?</p>${skills.map(skill => `<button type="button" class="skill-suggestion-button" data-guided-skill="${escapeHtml(skill)}"><strong>${escapeHtml(skill)}</strong><span>Try this tool →</span></button>`).join('')}</div>`;
     holder.hidden = false;
-    $$('[data-learn-skill]', holder).forEach(button => button.addEventListener('click', () => openSkillCard(button.dataset.learnSkill)));
+    $$('[data-guided-skill]', holder).forEach(button => button.addEventListener('click', () => openGuidedSkill(savedFeelings[0], button.dataset.guidedSkill)));
     state.selectedFeelings = [];
     state.guidedSessionIds = [];
     renderSelectedFeelings();
-    renderCheckInHistory(todayLocalDate());
+    if (window.GrizzlyJohnMyDays?.refresh) window.GrizzlyJohnMyDays.refresh(todayLocalDate());
+    else renderCheckInHistory(todayLocalDate());
     renderPatterns();
     renderTodaySnapshot();
   }

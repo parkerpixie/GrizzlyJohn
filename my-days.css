@@ -1,10 +1,13 @@
 .my-days { margin: 0 0 17px; }
 .my-days-shell { border: 1px solid var(--line); border-radius: 19px; background: linear-gradient(145deg, rgba(255,250,240,.92), rgba(47,70,54,.05)); overflow: hidden; }
-.my-days-shell > summary { display: flex; align-items: center; justify-content: space-between; gap: 13px; min-height: 74px; padding: 16px; cursor: pointer; list-style: none; }
-.my-days-shell > summary::-webkit-details-marker, .my-day-card > summary::-webkit-details-marker { display: none; }
-.my-days-shell > summary h2 { margin: 3px 0; font-size: 1.25rem; }
-.my-days-shell > summary p:last-child { margin: 0; color: var(--muted); font-size: .82rem; }
+.my-days-heading { display: flex; align-items: center; justify-content: space-between; gap: 13px; min-height: 74px; padding: 16px; }
+.my-days-heading h2 { margin: 3px 0; font-size: 1.25rem; }
+.my-days-heading h2:focus { outline: none; }
+.my-days-heading p:last-child { margin: 0; color: var(--muted); font-size: .82rem; }
+.my-day-card > summary::-webkit-details-marker { display: none; }
 .my-days-content { padding: 0 10px 10px; }
+.my-days-deeper { margin-top: 12px; border-top: 1px solid var(--line); }
+.my-days-deeper > summary { min-height: 48px; padding: 14px 3px; color: var(--pine-dark); font-weight: 800; cursor: pointer; }
 .my-days-list { display: grid; gap: 7px; }
 .my-day-card { border: 1px solid rgba(47,70,54,.13); border-radius: 15px; background: var(--paper); overflow: hidden; }
 .my-day-card > summary { min-height: 56px; padding: 12px; cursor: pointer; list-style: none; }
@@ -38,6 +41,16 @@
 .my-days-month-button:disabled { opacity: .35; cursor: default; }
 .calendar-day:disabled { color: var(--muted); cursor: default; opacity: .72; }
 .calendar-day.has-activity { font-weight: 850; }
+.calendar-day.has-feelings { box-shadow: inset 0 0 0 2px rgba(47,70,54,.12); }
+.calendar-day.dominant-bright { background: rgba(215,166,49,.13); }
+.calendar-day.dominant-calm { background: rgba(102,133,109,.13); }
+.calendar-day.dominant-neutral { background: rgba(139,145,142,.13); }
+.calendar-day.dominant-sad { background: rgba(102,137,165,.13); }
+.calendar-day.dominant-fear { background: rgba(119,107,151,.13); }
+.calendar-day.dominant-anger { background: rgba(181,95,66,.13); }
+.calendar-day.dominant-shame { background: rgba(154,107,120,.13); }
+.calendar-day.dominant-overwhelmed { background: rgba(111,104,120,.13); }
+.calendar-day.is-selected { background: var(--pine); color: white; }
 .calendar-activity-dot { position: absolute; right: 50%; bottom: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--rust); transform: translateX(50%); }
 .calendar-day.is-selected .calendar-activity-dot { background: var(--gold); }
 .my-days-gold-stars > strong { display: block; margin-bottom: 6px; color: var(--pine-dark); }
@@ -52,7 +65,7 @@
 .this-day-last-year span, .this-day-last-year small { color: var(--muted); font-size: .76rem; }
 .this-day-last-year .text-button { flex: 0 0 auto; font-size: .76rem; }
 @media (max-width: 430px) {
-  .my-days-shell > summary { align-items: flex-start; }
+  .my-days-heading { align-items: flex-start; }
   .my-days-feeling-entry { grid-template-columns: 58px minmax(0,1fr); }
   .this-day-last-year { align-items: flex-start; flex-direction: column; }
 }

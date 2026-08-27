@@ -2,10 +2,10 @@
 .wisdom-reflection, .wisdom-check-in, .check-in-history, .pattern-card { margin-bottom: 16px; }
 .reflection-pull-prompt { text-align: center; padding-block: 30px; }
 .reflection-pull-prompt .button { width: 100%; margin-top: 8px; }
-.wisdom-reflection .oracle-daily-card { display: grid; grid-template-columns: 112px minmax(0, 1fr); align-items: center; }
-.wisdom-reflection .oracle-daily-image-button { align-self: stretch; background: rgba(47,70,54,.06); }
-.wisdom-reflection .oracle-daily-image { width: 100%; height: 100%; max-height: 150px; object-fit: contain; }
-.wisdom-reflection .oracle-daily-copy { padding: 14px; }
+.wisdom-reflection .oracle-daily-card { display: grid; grid-template-columns: minmax(0, 1fr); }
+.wisdom-reflection .oracle-daily-image-button { background: rgba(47,70,54,.06); }
+.wisdom-reflection .oracle-daily-image { width: 100%; height: auto; max-height: none; object-fit: contain; }
+.wisdom-reflection .oracle-daily-copy { padding: 16px 18px 18px; }
 .wisdom-library-details { margin-top: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,250,240,.62); }
 .wisdom-library-details summary { color: var(--pine-dark); font-weight: 800; cursor: pointer; }
 .thought-card { margin-bottom: 16px; background: linear-gradient(145deg, rgba(212,166,75,.13), rgba(255,250,240,.95)); }
@@ -75,8 +75,6 @@
 .pattern-observations p { margin-top: 2px; line-height: 1.45; }
 
 @media (max-width: 520px) {
-  .wisdom-reflection .oracle-daily-card { grid-template-columns: 96px minmax(0, 1fr); }
-  .wisdom-reflection .oracle-daily-image { max-height: 128px; }
   .feeling-check-in-actions { grid-template-columns: 1fr; }
   .history-entry { grid-template-columns: 62px 1fr; }
 }

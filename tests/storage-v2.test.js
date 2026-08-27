@@ -335,6 +335,35 @@ test('Gold Star completion toggles are isolated by local date', () => {
   assert.deepEqual(api.goldStarDays.get('2026-08-23').day.completedStarIds, []);
 });
 
+test('archives only the exact placeholder Star while preserving historical references and remaining idempotent', () => {
+  const { storage, api } = layer();
+  const placeholder = api.goldStars.add('Fill in blank item', { id: 'placeholder' }).definition;
+  const userStar = api.goldStars.add('My blank canvas', { id: 'user-star' }).definition;
+  api.goldStarDays.get('2026-08-20', { syncActiveDefinitions: true });
+  api.goldStarDays.toggle('2026-08-20', placeholder.id, true);
+  assert.equal(api.goldStars.archiveExactLabel('Fill in blank item').changed, true);
+  assert.equal(api.goldStars.archiveExactLabel('Fill in blank item').changed, false);
+  const definitions = api.goldStars.list({ includeInactive: true }).definitions;
+  assert.equal(definitions.find(item => item.id === placeholder.id).active, false);
+  assert.equal(definitions.find(item => item.id === userStar.id).active, true);
+  assert.deepEqual(api.goldStarDays.get('2026-08-20').day.completedStarIds, ['placeholder']);
+  assert.ok(storage.getItem('grizzlyjohn:v2:goldStarDays').includes('placeholder'));
+});
+
+test('ensures a custom Star is nonblank, unique among normalized labels, and reactivates matches', () => {
+  const { api } = layer();
+  assert.equal(api.goldStars.ensureActive('   ').ok, false);
+  const created = api.goldStars.ensureActive('  Called my son  ');
+  assert.equal(created.ok, true);
+  assert.equal(created.definition.label, 'Called my son');
+  assert.equal(api.goldStars.ensureActive('called MY son').definition.id, created.definition.id);
+  assert.equal(api.goldStars.list({ includeInactive: true }).definitions.length, 1);
+  api.goldStars.setActive(created.definition.id, false);
+  const reactivated = api.goldStars.ensureActive('Called my son');
+  assert.equal(reactivated.reactivated, true);
+  assert.equal(api.goldStars.list().definitions[0].id, created.definition.id);
+});
+
 test('daily badge requires strictly more than half and is awarded only once per date', () => {
   const { api } = todayLayer();
   const stars = ['One', 'Two', 'Three', 'Four'].map(label => api.goldStars.add(label).definition);

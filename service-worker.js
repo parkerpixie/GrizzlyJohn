@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v26-quest-roam';
+const CACHE_NAME = 'grizzlyjohn-v27-acceptance-fixes';
 const APP_SHELL = [
   './',
   './index.html',
@@ -22,6 +22,7 @@ const APP_SHELL = [
   './storage-v2.js',
   './settings-v2.js',
   './wisdom-patterns.js',
+  './wisdom-thoughts.js',
   './podcast-artwork.js',
   './my-days.js',
   './data.js',

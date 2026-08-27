@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { aggregateMyDays, findThisDayLastYear, shiftMonth, calendarMonth, goldStarSummary, anniversaryPreview } = require('../my-days.js');
+const { aggregateMyDays, findThisDayLastYear, shiftMonth, calendarMonth, goldStarSummary, feelingFamilySummary, anniversaryPreview } = require('../my-days.js');
 
 test('aggregates gratitude, multiple feeling check-ins, and badge awards by local date', () => {
   const days = aggregateMyDays({
@@ -62,6 +62,25 @@ test('days without Side Quest events retain their existing records', () => {
   assert.equal(days[0].feelings.length, 1);
   assert.equal(days[0].gratitude.length, 1);
   assert.equal(days[0].badgeAwards.length, 1);
+});
+
+test('dominant feeling family counts every stored feeling across multiple check-ins', () => {
+  const summary = feelingFamilySummary({ feelings: [
+    { feelings: [{ word: 'Frustrated', groupId: 'anger' }, { word: 'Hopeful', groupId: 'bright' }] },
+    { feelings: [{ word: 'Enraged', groupId: 'anger' }] }
+  ] });
+  assert.deepEqual(summary.families, ['anger']);
+  assert.equal(summary.kind, 'dominant');
+  assert.equal(summary.counts.anger, 2);
+  assert.equal(summary.checkInCount, 2);
+});
+
+test('dominant feeling family preserves ties and neutral non-feeling activity', () => {
+  const tied = feelingFamilySummary({ feelings: [{ feelings: [{ groupId: 'calm' }, { groupId: 'bright' }] }] });
+  assert.equal(tied.kind, 'tie');
+  assert.deepEqual(tied.families, ['bright', 'calm']);
+  const activity = feelingFamilySummary({ feelings: [], gratitude: [{ text: 'Blue' }] });
+  assert.deepEqual(activity, { kind: 'activity', families: [], counts: {}, checkInCount: 0 });
 });
 
 test('A: preserves stored Gold Star counts, completed labels, and badge awards without inventing missing detail', () => {

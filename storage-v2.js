@@ -404,6 +404,29 @@
         const written = writeArray(V2_KEYS.goldStarDefinitions, [...definitions.value, definition]);
         return written.ok ? { ok: true, definition } : written;
       },
+      ensureActive(label) {
+        const normalized = cleanText(label);
+        if (!normalized) return { ok: false, reason: 'Gold Star label is required.' };
+        const definitions = mutableArray(V2_KEYS.goldStarDefinitions);
+        if (!definitions.ok) return definitions;
+        const comparable = normalized.toLocaleLowerCase();
+        const existing = definitions.value.find(item => cleanText(item?.label).toLocaleLowerCase() === comparable);
+        if (!existing) return goldStars.add(normalized);
+        if (existing.active === true) return { ok: true, definition: existing, created: false, reactivated: false };
+        const next = definitions.value.map(item => item?.id === existing.id ? { ...item, active: true } : item);
+        const written = writeArray(V2_KEYS.goldStarDefinitions, next);
+        return written.ok ? { ok: true, definition: next.find(item => item?.id === existing.id), created: false, reactivated: true } : written;
+      },
+      archiveExactLabel(label) {
+        const definitions = mutableArray(V2_KEYS.goldStarDefinitions);
+        if (!definitions.ok) return definitions;
+        const targets = definitions.value.filter(item => item?.label === label && item?.active === true);
+        if (!targets.length) return { ok: true, changed: false, definitions: orderedDefinitions(definitions.value) };
+        const ids = new Set(targets.map(item => item.id));
+        const next = definitions.value.map(item => ids.has(item?.id) ? { ...item, active: false } : item);
+        const written = writeArray(V2_KEYS.goldStarDefinitions, next);
+        return written.ok ? { ok: true, changed: true, definitions: orderedDefinitions(next) } : written;
+      },
       rename(id, label) {
         const normalized = cleanText(label);
         if (!normalized) return { ok: false, reason: 'Gold Star label is required.' };
