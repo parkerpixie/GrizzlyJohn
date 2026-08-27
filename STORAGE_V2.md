@@ -42,12 +42,21 @@ storage.readers.reflectionCardPulls();
 storage.readers.campfireItems();
 storage.readers.sideQuestEvents();
 storage.readers.guidedSkillSessions();
+storage.readers.settings();
 
 const recoveryJson = storage.exportData();
 storage.importData(recoveryJson); // skips conflicts
 storage.importData(recoveryJson, { dryRun: true });
 storage.importData(recoveryJson, { conflict: 'overwrite' }); // explicit recovery only
 ```
+
+## Settings and portable backup
+
+Settings uses one V2 key, `grizzlyjohn:v2:settings`, currently shaped as `{ homeLocation: string }`. Unknown fields in a valid settings object are retained when Home Location changes. Missing settings safely read as an empty Home Location; malformed or unexpected settings remain untouched and must be recovered rather than overwritten.
+
+The Settings drawer uses `storage.createBackup()` to export every present `grizzlyjohn:` key as its exact raw string in `grizzlyjohn-portable-backup-v1`. Unrelated site keys are excluded. `storage.validateBackup()` validates the complete file before writes, and `storage.restoreBackup()` uses the transactional recovery importer to overwrite only included GrizzlyJohn keys. Keys absent from an older backup and all unrelated site keys remain untouched. An existing protected legacy backup is still never overwritten.
+
+Home Location is stored for a future home-based weather integration. Current weather remains explicitly GPS-on-tap; saving Home Location does not request location permission or introduce automatic tracking.
 
 Future V2 code should use these readers instead of parsing legacy keys directly. It should treat any status other than `valid` or `missing` as recoverable data that must remain untouched.
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v23-roaming-list';
+const CACHE_NAME = 'grizzlyjohn-v24-settings';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './today-v2.css',
   './wisdom-v2.css',
   './my-days.css',
+  './settings-v2.css',
   './roam-v2.css',
   './weather.css',
   './oracle-cards.css',
@@ -19,6 +20,7 @@ const APP_SHELL = [
   './listen-upgrades.css',
   './app.js',
   './storage-v2.js',
+  './settings-v2.js',
   './wisdom-patterns.js',
   './my-days.js',
   './data.js',

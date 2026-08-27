@@ -27,11 +27,13 @@
     reflectionCardPulls: 'grizzlyjohn:v2:reflectionCardPulls',
     campfireItems: 'grizzlyjohn:v2:campfireItems',
     sideQuestEvents: 'grizzlyjohn:v2:sideQuestEvents',
-    guidedSkillSessions: 'grizzlyjohn:v2:guidedSkillSessions'
+    guidedSkillSessions: 'grizzlyjohn:v2:guidedSkillSessions',
+    settings: 'grizzlyjohn:v2:settings'
   });
 
   const SCHEMA_VERSION = 2;
   const EXPORT_FORMAT = 'grizzlyjohn-localstorage-export-v1';
+  const BACKUP_FORMAT = 'grizzlyjohn-portable-backup-v1';
 
   function localDateKey(value = new Date()) {
     const date = value instanceof Date ? value : new Date(value);
@@ -136,7 +138,11 @@
       reflectionCardPulls: () => validateJson(V2_KEYS.reflectionCardPulls, Array.isArray, value => inspectRecords(value, ['date', 'cardId', 'pulledAt'])),
       campfireItems: () => validateJson(V2_KEYS.campfireItems, Array.isArray, value => inspectRecords(value, ['id', 'kind', 'title'])),
       sideQuestEvents: () => validateJson(V2_KEYS.sideQuestEvents, Array.isArray, value => inspectRecords(value, ['id', 'date', 'timestamp', 'questId', 'title', 'resultingCount'])),
-      guidedSkillSessions: () => validateJson(V2_KEYS.guidedSkillSessions, Array.isArray, value => inspectRecords(value, ['id', 'date', 'timestamp', 'feeling', 'skill', 'responses']))
+      guidedSkillSessions: () => validateJson(V2_KEYS.guidedSkillSessions, Array.isArray, value => inspectRecords(value, ['id', 'date', 'timestamp', 'feeling', 'skill', 'responses'])),
+      settings: () => validateJson(V2_KEYS.settings, value => Boolean(value) && typeof value === 'object' && !Array.isArray(value), value => {
+        if ('homeLocation' in value && typeof value.homeLocation !== 'string') return ['homeLocation must be a string.'];
+        return [];
+      })
     });
 
     function setJson(key, value) {
@@ -243,6 +249,31 @@
     function cleanText(value) {
       return typeof value === 'string' ? value.trim() : '';
     }
+
+    const settings = Object.freeze({
+      get() {
+        const result = readers.settings();
+        if (result.status === 'missing') return { ok: true, status: 'missing', value: { homeLocation: '' } };
+        if (result.status !== 'valid') {
+          return { ok: false, status: result.status, value: { homeLocation: '' }, reason: 'Saved settings could not be read and were preserved unchanged.' };
+        }
+        return { ok: true, status: 'valid', value: { ...result.value, homeLocation: cleanText(result.value.homeLocation) } };
+      },
+      saveHomeLocation(homeLocation) {
+        const current = readers.settings();
+        if (!['missing', 'valid'].includes(current.status)) {
+          return { ok: false, reason: 'Saved settings are malformed or unexpected and were preserved unchanged.' };
+        }
+        const next = current.status === 'valid' ? { ...current.value } : {};
+        next.homeLocation = cleanText(homeLocation).slice(0, 180);
+        try {
+          setJson(V2_KEYS.settings, next);
+          return { ok: true, value: next };
+        } catch (error) {
+          return { ok: false, reason: String(error?.message || error) };
+        }
+      }
+    });
 
     const gratitude = Object.freeze({
       all() {
@@ -670,6 +701,51 @@
       return JSON.stringify({ format: EXPORT_FORMAT, exportedAt: now(), entries }, null, 2);
     }
 
+    function createBackup() {
+      const data = {};
+      try {
+        for (let index = 0; index < storage.length; index += 1) {
+          const key = storage.key(index);
+          if (typeof key === 'string' && key.startsWith('grizzlyjohn:')) data[key] = storage.getItem(key);
+        }
+      } catch (error) {
+        return { ok: false, reason: String(error?.message || error) };
+      }
+      const createdAt = now();
+      const backup = { app: 'GrizzlyJohn', backupVersion: 1, format: BACKUP_FORMAT, createdAt, data };
+      let date;
+      try { date = localDateKey(createdAt); } catch { date = localDateKey(); }
+      return { ok: true, backup, json: JSON.stringify(backup, null, 2), filename: `grizzlyjohn-backup-${date}.json` };
+    }
+
+    function validateBackup(payload) {
+      let backup;
+      try {
+        backup = typeof payload === 'string' ? JSON.parse(payload) : payload;
+      } catch (error) {
+        return { ok: false, errors: [`That file is not valid JSON: ${String(error?.message || error)}`] };
+      }
+      const errors = [];
+      if (!backup || typeof backup !== 'object' || Array.isArray(backup)) errors.push('That file is not a GrizzlyJohn backup.');
+      if (backup?.app !== 'GrizzlyJohn' || backup?.format !== BACKUP_FORMAT) errors.push('That file is not a supported GrizzlyJohn backup.');
+      if (backup?.backupVersion !== 1) errors.push('That GrizzlyJohn backup version is not supported.');
+      if (!backup?.data || typeof backup.data !== 'object' || Array.isArray(backup.data)) errors.push('The backup does not contain a valid data section.');
+      const data = backup?.data && typeof backup.data === 'object' && !Array.isArray(backup.data) ? backup.data : {};
+      Object.entries(data).forEach(([key, value]) => {
+        if (!key.startsWith('grizzlyjohn:')) errors.push(`The backup contains an unrelated key: ${key}.`);
+        if (typeof value !== 'string') errors.push(`The backup value for ${key} is not an exact stored string.`);
+      });
+      return errors.length ? { ok: false, errors } : { ok: true, backup, entries: Object.entries(data).map(([key, raw]) => ({ key, raw })) };
+    }
+
+    function restoreBackup(payload, options = {}) {
+      const validated = validateBackup(payload);
+      if (!validated.ok) return { ...validated, imported: [], skipped: [] };
+      const recoveryPayload = { format: EXPORT_FORMAT, exportedAt: validated.backup.createdAt || now(), entries: validated.entries };
+      const restored = importData(recoveryPayload, { conflict: 'overwrite', dryRun: options.dryRun === true, journal: false });
+      return { ...restored, backup: validated.backup };
+    }
+
     function importData(payload, options = {}) {
       let parsedPayload;
       try {
@@ -736,7 +812,7 @@
           rollbackErrors
         };
       }
-      if (!dryRun) appendJournal('recovery-import', { imported: imported.length, skipped: skipped.length, conflict: overwrite ? 'overwrite' : 'skip' });
+      if (!dryRun && options.journal !== false) appendJournal('recovery-import', { imported: imported.length, skipped: skipped.length, conflict: overwrite ? 'overwrite' : 'skip' });
       return { ok: true, errors: [], imported, skipped, dryRun: false };
     }
 
@@ -769,6 +845,7 @@
       gratitude,
       sideQuestEvents,
       guidedSkillSessions,
+      settings,
       goldStars,
       goldStarDays,
       feelingCheckIns,
@@ -776,11 +853,14 @@
       campfire,
       exportData,
       importData,
+      createBackup,
+      validateBackup,
+      restoreBackup,
       initialize
     });
   }
 
-  const api = { createStorageLayer, LEGACY_KEYS, V2_KEYS, SCHEMA_VERSION, EXPORT_FORMAT, localDateKey };
+  const api = { createStorageLayer, LEGACY_KEYS, V2_KEYS, SCHEMA_VERSION, EXPORT_FORMAT, BACKUP_FORMAT, localDateKey };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined' && window.localStorage) {
     window.GrizzlyJohnStorageV2 = createStorageLayer(window.localStorage);

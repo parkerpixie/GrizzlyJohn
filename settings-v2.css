@@ -1,0 +1,76 @@
+.settings-menu-button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--pine-dark);
+  cursor: pointer;
+}
+
+.settings-menu-button svg { width: 21px; height: 21px; }
+.settings-menu-button:hover,
+.settings-menu-button:focus-visible { background: rgba(47, 70, 54, .08); }
+
+.settings-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(90vw, 390px);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: max(22px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
+  overflow: auto;
+  border-radius: 24px 0 0 24px;
+}
+
+.settings-drawer[open] { animation: settings-slide-in .2s ease-out; }
+.settings-drawer::backdrop { background: rgba(22, 30, 24, .48); }
+
+@keyframes settings-slide-in {
+  from { transform: translateX(24px); opacity: .7; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.settings-drawer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.settings-drawer-header h2 { margin-bottom: 0; }
+.settings-close { flex: 0 0 auto; float: none; width: 44px; height: 44px; }
+
+.settings-section {
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+
+.settings-section h3 { margin-bottom: 6px; }
+.settings-section p { margin-bottom: 12px; font-size: .9rem; }
+.settings-section label { display: block; margin-bottom: 8px; font-size: .78rem; font-weight: 800; color: var(--pine-dark); }
+.settings-section input[type='text'] { width: 100%; }
+.settings-section .button { width: 100%; justify-content: center; }
+
+.settings-status {
+  min-height: 1.35em;
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.settings-status[data-kind='success'] { color: var(--pine); font-weight: 700; }
+.settings-status[data-kind='error'] { color: #8c413d; font-weight: 700; }
+.settings-data-actions { display: grid; gap: 9px; }
+.settings-file-input { display: none; }
+.settings-app-info p:last-child { margin-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-drawer[open] { animation: none; }
+}

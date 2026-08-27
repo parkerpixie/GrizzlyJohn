@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="today-v2.css">
   <link rel="stylesheet" href="wisdom-v2.css">
   <link rel="stylesheet" href="my-days.css">
+  <link rel="stylesheet" href="settings-v2.css">
 </head>
 <body>
   <section class="install-gate" id="installGate" hidden aria-label="Save GrizzlyJohn to your home screen">
@@ -85,7 +86,9 @@
           <small>Stay grounded. Stay curious. Behave-ish.</small>
         </span>
       </button>
-      <button class="icon-button" id="settingsButton" type="button" aria-label="About GrizzlyJohn">☰</button>
+      <button class="settings-menu-button" id="settingsButton" type="button" aria-label="Open Settings" aria-controls="settingsDrawer" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
     </header>
 
     <main>
@@ -394,18 +397,49 @@
     </div>
   </dialog>
 
-  <dialog id="aboutDialog">
-    <button class="dialog-close" id="closeDialog" type="button" aria-label="Close">×</button>
-    <p class="eyebrow">ABOUT THIS APP</p>
-    <h2>GrizzlyJohn</h2>
-    <p>A little bit AA wisdom, a little bit wilderness adventure, a little bit “what weird thing should I learn today?” and a whole lot of John.</p>
-    <p>Built for a man who looks suspiciously like Santa Claus, has the heart of a teddy bear, the life experience of a very well-traveled grizzly, and enough self-awareness to know when even lunch might be a questionable life choice.</p>
-    <p><strong>There’s no fixing you in here.</strong> After nearly 25 years of sobriety, you’ve probably learned a thing or two already.</p>
-    <p>Just keep wandering, keep laughing, keep thinking, keep noticing the good stuff.</p>
-    <div class="bear-note">🐻 Stay grounded. Stay curious. Behave-ish.</div>
+  <dialog class="settings-drawer" id="settingsDrawer" aria-labelledby="settingsTitle">
+    <div class="settings-drawer-header">
+      <div><p class="eyebrow">TRAIL UTILITIES</p><h2 id="settingsTitle">Settings</h2></div>
+      <button class="dialog-close settings-close" id="closeSettings" type="button" aria-label="Close Settings">×</button>
+    </div>
+
+    <section class="settings-section">
+      <h3>Home Location</h3>
+      <p>Save the city, state, or postal code that feels like home.</p>
+      <form id="homeLocationForm">
+        <label for="homeLocationInput">Home Location</label>
+        <input id="homeLocationInput" type="text" maxlength="180" autocomplete="postal-code" placeholder="Madison, WI or 53703">
+        <button class="button button-secondary" type="submit">Save Home Location</button>
+      </form>
+      <p class="settings-status" id="homeLocationStatus" aria-live="polite"></p>
+    </section>
+
+    <section class="settings-section">
+      <h3>Report a Problem</h3>
+      <p>Open a text draft with basic app details. No saved personal information is included.</p>
+      <a class="button button-secondary" id="reportProblem" href="sms:?body=">Create Text Message</a>
+    </section>
+
+    <section class="settings-section">
+      <h3>Backup / Restore</h3>
+      <p>Keep a copy before changing phones, browsers, or clearing site data.</p>
+      <div class="settings-data-actions">
+        <button class="button button-primary" id="backupData" type="button">Back Up My Data</button>
+        <button class="button button-secondary" id="restoreData" type="button">Restore From Backup</button>
+        <input class="settings-file-input" id="restoreFile" type="file" accept="application/json,.json">
+      </div>
+      <p class="settings-status" id="backupRestoreStatus" aria-live="polite"></p>
+    </section>
+
+    <section class="settings-section settings-app-info">
+      <h3>Grizzly John</h3>
+      <p><strong>Version 2</strong></p>
+      <p>Your Grizzly John information lives on this device. Use Backup to keep a copy before changing phones, browsers, or clearing site data.</p>
+    </section>
   </dialog>
 
   <script src="storage-v2.js"></script>
+  <script src="settings-v2.js"></script>
   <script src="wisdom-patterns.js"></script>
   <script src="install.js"></script>
   <script src="data.js"></script>

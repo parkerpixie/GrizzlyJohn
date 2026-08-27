@@ -720,11 +720,5 @@
     $$('[data-delete-log]').forEach(button => button.addEventListener('click', () => { state.listeningLog = state.listeningLog.filter(entry => entry.id !== button.dataset.deleteLog); storage.set('listeningLog', state.listeningLog); renderListeningLog(); }));
   }
 
-  function setupAbout() {
-    const dialog = $('#aboutDialog'); if (!dialog) return;
-    $('#settingsButton')?.addEventListener('click', () => dialog.showModal()); $('#closeDialog')?.addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', event => { const rect = dialog.getBoundingClientRect(); const inside = event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom; if (!inside) dialog.close(); });
-  }
-
-  rebuildHome(); rebuildWisdom(); setupNavigation(); setupDateAndGreeting(); setupTodayV2(); setupWisdom(); setupFeelings(); setupQuests(); setupPlaces(); setupPodcasts(); setupAbout();
+  rebuildHome(); rebuildWisdom(); setupNavigation(); setupDateAndGreeting(); setupTodayV2(); setupWisdom(); setupFeelings(); setupQuests(); setupPlaces(); setupPodcasts();
 })();
