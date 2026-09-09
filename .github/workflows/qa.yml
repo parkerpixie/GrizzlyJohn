@@ -16,6 +16,8 @@ jobs:
   node-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      TZ: America/Chicago
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
