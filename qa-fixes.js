@@ -62,11 +62,20 @@
     document.body.appendChild(script);
   }
 
+  function loadSkillRouting() {
+    if (document.querySelector('script[data-john-skill-routing]')) return;
+    const script = document.createElement('script');
+    script.src = 'john-skill-routing.js?v=20260909-1';
+    script.dataset.johnSkillRouting = 'true';
+    document.body.appendChild(script);
+  }
+
   function init() {
     loadQaStyles();
     expandQuestRewards();
     fixPodcastLinks();
     loadBreneReflection();
+    loadSkillRouting();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
