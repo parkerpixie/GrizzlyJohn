@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v28-family-patterns';
+const CACHE_NAME = 'grizzlyjohn-v29-halt-routing';
 const APP_SHELL = [
   './',
   './index.html',
@@ -31,6 +31,7 @@ const APP_SHELL = [
   './oracle-cards.js',
   './install.js',
   './dbt-cards.js',
+  './john-skill-routing.js',
   './park-badges.js',
   './qa-fixes.js',
   './john-extras.js',
