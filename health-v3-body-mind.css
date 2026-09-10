@@ -1,0 +1,100 @@
+.health-body-mind-dashboard {
+  margin-top: 28px;
+}
+
+.health-body-mind-content {
+  display: grid;
+  gap: 9px;
+}
+
+.health-body-mind-observation,
+.health-body-mind-empty {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px 15px;
+  border: 1px solid rgba(47, 70, 54, .11);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .48);
+  box-shadow: 0 7px 20px rgba(32, 49, 39, .04);
+}
+
+.health-body-mind-icon,
+.health-body-mind-empty > span {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(47, 70, 54, .07);
+  font-size: 1.25rem;
+}
+
+.health-body-mind-observation small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: .62rem;
+  font-weight: 850;
+  letter-spacing: .055em;
+}
+
+.health-body-mind-observation p,
+.health-body-mind-empty p {
+  margin: 0;
+  color: var(--ink);
+  font-size: .78rem;
+  line-height: 1.48;
+}
+
+.health-body-mind-empty strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--pine-dark);
+  font-size: .8rem;
+}
+
+.health-body-mind-empty p {
+  color: var(--muted);
+  font-size: .73rem;
+}
+
+.health-body-mind-skill {
+  margin-top: 9px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--pine-dark);
+  font: inherit;
+  font-size: .73rem;
+  font-weight: 850;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (min-width: 700px) {
+  .health-body-mind-content:has(.health-body-mind-observation:nth-child(2)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .health-body-mind-content:has(.health-body-mind-observation:nth-child(3)) .health-body-mind-observation:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .health-body-mind-observation,
+  .health-body-mind-empty {
+    grid-template-columns: 40px minmax(0, 1fr);
+    padding: 13px;
+  }
+
+  .health-body-mind-icon,
+  .health-body-mind-empty > span {
+    width: 40px;
+    height: 40px;
+    font-size: 1.08rem;
+  }
+}
