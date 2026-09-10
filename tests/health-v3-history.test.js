@@ -122,7 +122,17 @@ test('Health history and goals load after the base Health dashboard and are avai
   const worker = read('service-worker.js');
   assert.ok(html.indexOf('health-v3-history.css') > html.indexOf('health-v3-dashboard.css'));
   assert.ok(html.indexOf('health-v3-history.js') > html.indexOf('health-v3-dashboard.js'));
-  assert.match(worker, /grizzlyjohn-v32-health-history-goals/);
+  assert.match(worker, /grizzlyjohn-v33-health-goal-save-polish/);
   assert.ok(worker.includes("'./health-v3-history.css'"));
   assert.ok(worker.includes("'./health-v3-history.js'"));
+});
+
+test('saved goals close the dialog, confirm the update, and collapse the edit control', () => {
+  const source = read('health-v3-history.js');
+  const css = read('health-v3-history.css');
+  assert.match(source, /Health goals updated\./);
+  assert.match(source, /requestAnimationFrame\(\(\) => \{ renderAll\(\); showGoalsSaved\(\); \}\)/);
+  assert.match(source, /manage\.classList\.toggle\('is-compact', configured\)/);
+  assert.match(css, /\.health-manage-goals\.is-compact/);
+  assert.match(css, /\.health-goals-confirmation/);
 });

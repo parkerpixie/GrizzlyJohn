@@ -868,3 +868,34 @@
     font-size: 1.45rem;
   }
 }
+
+
+.health-goals-confirmation {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: -2px 0 12px;
+  padding: 8px 11px;
+  border: 1px solid rgba(47, 70, 54, .16);
+  border-radius: 999px;
+  background: rgba(47, 70, 54, .08);
+  color: var(--pine-dark);
+  font-size: .74rem;
+  font-weight: 800;
+}
+
+.health-goals-confirmation[hidden] {
+  display: none;
+}
+
+.health-manage-goals.is-compact {
+  min-height: 0;
+  padding: 5px 2px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--pine-dark);
+  font-size: .72rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

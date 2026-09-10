@@ -238,6 +238,7 @@
             <div><p class="eyebrow">MY HEALTH GOALS</p><h2 id="healthGoalsHeading">Progress, not perfection.</h2><p>Goals are John's choices. The app tracks them; it does not prescribe them.</p></div>
             <button class="button button-secondary health-manage-goals" id="healthManageGoals" type="button">Set goals</button>
           </div>
+          <div class="health-goals-confirmation" id="healthGoalsConfirmation" role="status" aria-live="polite" hidden><span aria-hidden="true">✓</span><strong>Health goals updated.</strong></div>
           <article class="health-checkin-card" id="healthCheckInCard"></article>
           <div class="health-goal-grid" id="healthGoalGrid"></div>
         </section>
@@ -413,6 +414,9 @@
         grid.innerHTML = cards.join('');
         manage.textContent = 'Edit goals';
       }
+      const configured = (prefs.checkInItems || []).length > 0 || Object.values(goals).some(goal => Boolean(goal?.enabled));
+      manage.textContent = configured ? 'Edit goals' : 'Set goals';
+      manage.classList.toggle('is-compact', configured);
     }
 
     function collectCalendarMap(data) {
@@ -538,6 +542,18 @@
       } finally { rendering = false; }
     }
 
+    function showGoalsSaved() {
+      const notice = document.getElementById('healthGoalsConfirmation');
+      if (!notice) return;
+      notice.hidden = false;
+      notice.classList.add('is-visible');
+      window.clearTimeout(showGoalsSaved.timeoutId);
+      showGoalsSaved.timeoutId = window.setTimeout(() => {
+        notice.classList.remove('is-visible');
+        notice.hidden = true;
+      }, 4200);
+    }
+
     function openGoals() {
       const dialog = document.getElementById('healthGoalsDialog'); const form = document.getElementById('healthGoalsForm');
       if (!dialog || !form) return;
@@ -555,7 +571,9 @@
 
     function closeGoals() {
       const dialog = document.getElementById('healthGoalsDialog');
-      if (dialog?.open && typeof dialog.close === 'function') dialog.close(); else dialog?.removeAttribute('open');
+      if (!dialog) return;
+      try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch {}
+      dialog.removeAttribute('open');
     }
 
     function updateGoalFieldVisibility() {
@@ -584,7 +602,8 @@
       const rangePairs = [['systolicMin','systolicMax'],['diastolicMin','diastolicMax'],['pulseMin','pulseMax']];
       if (next.goals.vitals.enabled && rangePairs.some(([min,max]) => next.goals.vitals[min] !== null && next.goals.vitals[max] !== null && next.goals.vitals[max] < next.goals.vitals[min])) { error.textContent = 'A clinician range cannot have a maximum below its minimum.'; return; }
       const saved = savePrefs(localStorage, next); if (!saved.ok) { error.textContent = saved.reason || 'Goals could not be saved.'; return; }
-      prefs = next; closeGoals(); renderAll();
+      prefs = next; closeGoals();
+      requestAnimationFrame(() => { renderAll(); showGoalsSaved(); });
     }
 
     function bind() {
