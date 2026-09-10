@@ -37,3 +37,4 @@ if (!worker.includes("'./health-v3-history.js'")) {
 
 fs.writeFileSync('service-worker.js', worker);
 console.log('V3 Health history + goals wired into app shell.');
+// Triggered after the workflow existed so GitHub Actions can perform the safe shell rewrite.
