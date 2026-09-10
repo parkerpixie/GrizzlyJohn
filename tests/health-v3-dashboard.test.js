@@ -28,7 +28,7 @@ test('every Health snapshot tile opens its own fast logger', () => {
   });
 
   assert.match(source, /openDialog\(type\)/);
-  assert.match(source, /data\.healthDashboardType/);
+  assert.match(source, /tile\.dataset\.healthDashboardType/);
   assert.match(source, /Tap any tile to log or update it\./);
 });
 
