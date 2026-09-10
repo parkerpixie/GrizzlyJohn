@@ -116,3 +116,13 @@ test('history UI includes calendar, doctor view, goal editor, and Health Gold St
   assert.match(css, /\.health-calendar-day/);
   assert.match(css, /\.health-goal-progress/);
 });
+
+test('Health history and goals load after the base Health dashboard and are available offline', () => {
+  const html = read('index.html');
+  const worker = read('service-worker.js');
+  assert.ok(html.indexOf('health-v3-history.css') > html.indexOf('health-v3-dashboard.css'));
+  assert.ok(html.indexOf('health-v3-history.js') > html.indexOf('health-v3-dashboard.js'));
+  assert.match(worker, /grizzlyjohn-v32-health-history-goals/);
+  assert.ok(worker.includes("'./health-v3-history.css'"));
+  assert.ok(worker.includes("'./health-v3-history.js'"));
+});
