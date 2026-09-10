@@ -8,3 +8,4 @@ if (!source.includes(from) && !source.includes(to)) throw new Error('Could not f
 source = source.replace(from, to);
 fs.writeFileSync(path, source);
 console.log('Health Check-In now waits for John to choose what counts.');
+// Triggered after workflow creation.
