@@ -2,8 +2,6 @@
   'use strict';
 
   const LITTLE_CREEK_SOURCE = 'https://littlecreekrecovery.org/principles-of-the-12-steps/';
-  const LAKOTA_ART = 'assets/wisdom/lakota-prayer.png';
-  const PRINCIPLE_SPRITE = 'assets/wisdom/principles-sprite.webp';
 
   const LAKOTA_PRAYER = `Wakan Tanka, Great Mystery,
 teach me how to trust
@@ -22,11 +20,12 @@ And
 Passing Season`;
 
   // This is John's illustrated principle set, preserved in the order supplied for GrizzlyJohn.
-  // The card captions are part of the artwork concept and are also rendered as readable text.
+  // The short captions are also printed on the supplied artwork.
   const PRINCIPLES = Object.freeze([
     {
       step: 1,
       name: 'Honesty',
+      file: 'Honesty.png',
       caption: 'See it. Say it. Start here.',
       reflection: 'Recovery starts with being willing to see what is actually true. Honesty is not punishment. It is the point where you finally stop spending energy protecting the story and can use that energy to move forward.',
       john: 'If you have to explain the loophole three times, you probably already know the answer.'
@@ -34,6 +33,7 @@ Passing Season`;
     {
       step: 2,
       name: 'Faith',
+      file: 'Faith.png',
       caption: 'I don’t have to see the whole path.',
       reflection: 'Faith does not require certainty or a perfect map. Sometimes it is simply trusting that the next useful step can exist before you can see where the whole trail ends.',
       john: 'Take the next damn step. The trail does not owe you a satellite view.'
@@ -41,6 +41,7 @@ Passing Season`;
     {
       step: 3,
       name: 'Trust',
+      file: 'Trust.png',
       caption: 'Open hands. Let go.',
       reflection: 'Trust asks you to loosen your grip on the things you cannot control without giving up on the things that are yours to do. You can participate fully without trying to supervise every outcome.',
       john: 'Open your hands. Not everything improves because John supervises it harder.'
@@ -48,6 +49,7 @@ Passing Season`;
     {
       step: 4,
       name: 'Soul Searching',
+      file: 'Soul-Searching.png',
       caption: 'Look within. Be willing to see.',
       reflection: 'Looking inward takes courage because the point is not to build a case against yourself. It is to notice the patterns, fears, strengths, hurts, and choices that become easier to work with once they are visible.',
       john: 'Inventory, not prosecution. Find the crap, label it, and stop pretending the closet is fine.'
@@ -55,6 +57,7 @@ Passing Season`;
     {
       step: 5,
       name: 'Integrity',
+      file: 'Integrity.png',
       caption: 'Do the right thing anyway.',
       reflection: 'Integrity is what happens when what you know, what you say, and what you do begin lining up. It is less about looking good and more about becoming someone you can reliably live with.',
       john: 'Do the right thing even when nobody is handing out Gold Stars. Annoying, but apparently that is the deal.'
@@ -62,6 +65,7 @@ Passing Season`;
     {
       step: 6,
       name: 'Acceptance',
+      file: 'Acceptance.png',
       caption: 'Let reality be what it is.',
       reflection: 'Acceptance does not mean approval. It means letting reality be real enough that you can respond to what is actually happening instead of spending all your strength arguing with the fact that it happened.',
       john: 'Reality already RSVP’d. You can argue with it or deal with what actually showed up.'
@@ -69,6 +73,7 @@ Passing Season`;
     {
       step: 7,
       name: 'Humility',
+      file: 'Humility.png',
       caption: 'I am part of something bigger.',
       reflection: 'Humility is not shrinking yourself. It is remembering that you matter without having to be the center of everything, and that being teachable, connected, and willing to need other people is a kind of strength.',
       john: 'Important? Yes. Center of the fucking universe? Tragically, no.'
@@ -76,6 +81,7 @@ Passing Season`;
     {
       step: 8,
       name: 'Willingness',
+      file: 'Willingness.png',
       caption: 'Show up. Stay open. Try.',
       reflection: 'Willingness is often quieter than confidence. You do not have to feel ready or enthusiastic. You only have to stay open enough to try the next thing recovery is asking of you.',
       john: 'You do not have to love the idea. Just stop welding the door shut.'
@@ -83,6 +89,7 @@ Passing Season`;
     {
       step: 9,
       name: 'Forgiveness',
+      file: 'Forgiveness.png',
       caption: 'Release the weight. Keep going.',
       reflection: 'Forgiveness can mean releasing your obligation to keep carrying an old injury every day. It does not erase what happened, excuse harm, or require renewed access to you. It makes room for your own life to keep moving.',
       john: 'Put down the suitcase. You do not have to invite the person back into the house.'
@@ -90,6 +97,7 @@ Passing Season`;
     {
       step: 10,
       name: 'Maintenance',
+      file: 'Maintenance.png',
       caption: 'Small actions keep me steady.',
       reflection: 'Recovery is maintained in ordinary moments. Notice what is happening, own your part, make the repair when one is needed, and keep returning to the practices that help you stay steady.',
       john: 'Tiny boring shit works. Keep doing the tiny boring shit.'
@@ -97,6 +105,7 @@ Passing Season`;
     {
       step: 11,
       name: 'Making Contact',
+      file: 'Making-Contact.png',
       caption: 'Be still. Listen. Stay connected.',
       reflection: 'Making contact means creating enough quiet to hear something beyond the loudest thought in your head. Prayer, meditation, nature, community, and stillness can all become places where direction has room to arrive.',
       john: 'Shut up for a minute. There may be useful information arriving.'
@@ -104,22 +113,62 @@ Passing Season`;
     {
       step: 12,
       name: 'Service',
+      file: 'Service.png',
       caption: 'Lift someone up. Pass it on.',
       reflection: 'What recovery has given you becomes even more powerful when some of it can be passed along. Service does not require saving anyone. Sometimes it is simply being the person who reaches back with a steady hand.',
       john: 'Somebody helped your ass up the hill. Turn around and offer a hand.'
     }
   ]);
 
+  const LAKOTA_ART_CANDIDATES = Object.freeze([
+    'assets/Lakota Prayer.png',
+    'assets/Lakota%20Prayer.png',
+    'graphics/Lakota Prayer.png',
+    'graphics/Lakota%20Prayer.png',
+    'Lakota Prayer.png',
+    'Lakota%20Prayer.png'
+  ]);
+
+  const THREE_PS_ART_CANDIDATES = Object.freeze([
+    'assets/The 3 Ps.png',
+    'assets/3 Ps.png',
+    'graphics/The 3 Ps.png',
+    'graphics/3 Ps.png'
+  ]);
+
+  function principleArtCandidates(item) {
+    const file = item.file;
+    return [
+      `assets/${file}`,
+      `assets/12-step-principles/${file}`,
+      `assets/principles/${file}`,
+      `graphics/${file}`,
+      `graphics/12-step-principles/${file}`,
+      file
+    ];
+  }
+
   function escapeHtml(value = '') {
     return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   }
 
-  function artPosition(index) {
-    const col = index % 4;
-    const row = Math.floor(index / 4);
-    const x = col === 0 ? 0 : col === 1 ? 33.333 : col === 2 ? 66.667 : 100;
-    const y = row === 0 ? 0 : row === 1 ? 50 : 100;
-    return { x, y };
+  function attachCandidateImage(img, candidates, fallback) {
+    if (!img || !Array.isArray(candidates) || !candidates.length) return;
+    let index = 0;
+    const tryNext = () => {
+      if (index >= candidates.length) {
+        img.hidden = true;
+        if (fallback) fallback.hidden = false;
+        return;
+      }
+      img.src = candidates[index++];
+    };
+    img.addEventListener('load', () => {
+      img.hidden = false;
+      if (fallback) fallback.hidden = true;
+    });
+    img.addEventListener('error', tryNext);
+    tryNext();
   }
 
   function buildDialog() {
@@ -155,13 +204,18 @@ Passing Season`;
     body.innerHTML = `
       <section class="wisdom-prayer-reader">
         <div class="wisdom-prayer-art-stage">
-          <img src="${LAKOTA_ART}" alt="Lakota Prayer artwork with the complete prayer text">
+          <img id="lakotaPrayerArt" alt="Lakota Prayer artwork with the complete prayer text" hidden>
+          <div class="wisdom-prayer-native" id="lakotaPrayerFallback">
+            <p class="eyebrow">LAKOTA PRAYER</p>
+            <div class="wisdom-prayer-text">${escapeHtml(LAKOTA_PRAYER).replaceAll('\n', '<br>')}</div>
+          </div>
         </div>
         <details class="wisdom-readable-copy">
           <summary>Read as text</summary>
           <div class="wisdom-prayer-text">${escapeHtml(LAKOTA_PRAYER).replaceAll('\n', '<br>')}</div>
         </details>
       </section>`;
+    attachCandidateImage(body.querySelector('#lakotaPrayerArt'), LAKOTA_ART_CANDIDATES, body.querySelector('#lakotaPrayerFallback'));
   }
 
   function renderPrinciples(dialog) {
@@ -207,11 +261,10 @@ Passing Season`;
 
     function paint() {
       const item = PRINCIPLES[index];
-      const position = artPosition(index);
       slide.innerHTML = `
         <div class="principle-art-panel">
-          <div class="principle-art-fallback" aria-hidden="true"><span>${item.step}</span><strong>${escapeHtml(item.name)}</strong></div>
-          <div class="principle-art-sprite" style="--art-x:${position.x}%; --art-y:${position.y}%; background-image:url('${PRINCIPLE_SPRITE}')" role="img" aria-label="${escapeHtml(item.name)} illustration. ${escapeHtml(item.caption)}"></div>
+          <div class="principle-art-fallback"><span>${item.step}</span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.caption)}</small></div>
+          <img class="principle-art-image" data-principle-art alt="${escapeHtml(item.name)}. ${escapeHtml(item.caption)}" hidden>
         </div>
         <div class="principle-copy">
           <p class="eyebrow">STEP ${item.step} · ${escapeHtml(item.name).toUpperCase()}</p>
@@ -225,6 +278,7 @@ Passing Season`;
             <p>${escapeHtml(item.john)}</p>
           </div>
         </div>`;
+      attachCandidateImage(slide.querySelector('[data-principle-art]'), principleArtCandidates(item), slide.querySelector('.principle-art-fallback'));
       count.textContent = `${index + 1} of ${PRINCIPLES.length}`;
       dots.querySelectorAll('[data-principle-dot]').forEach((dot, dotIndex) => {
         const active = dotIndex === index;
@@ -276,13 +330,14 @@ Passing Season`;
     title.textContent = 'The 3 Ps';
     body.innerHTML = `
       <section class="three-ps-reader">
-        <img src="assets/wisdom/the-3-ps.png" alt="The 3 Ps artwork" onerror="this.hidden=true;this.nextElementSibling.hidden=false" hidden>
-        <div class="three-ps-native">
+        <img id="threePsArt" alt="The 3 Ps artwork" hidden>
+        <div class="three-ps-native" id="threePsFallback">
           <p class="eyebrow">POCKET WISDOM</p>
           <h2>Nothing is Perfect,<br>Personal,<br>or Permanent.</h2>
           <p>Three Ps. Considerably fewer reasons to let one bad moment run the whole damn day.</p>
         </div>
       </section>`;
+    attachCandidateImage(body.querySelector('#threePsArt'), THREE_PS_ART_CANDIDATES, body.querySelector('#threePsFallback'));
   }
 
   function openItem(item) {
@@ -365,7 +420,7 @@ Passing Season`;
     window.setTimeout(() => observer.disconnect(), 15000);
   }
 
-  const api = Object.freeze({ LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, LAKOTA_ART, PRINCIPLE_SPRITE, artPosition });
+  const api = Object.freeze({ LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, LAKOTA_ART_CANDIDATES, THREE_PS_ART_CANDIDATES, principleArtCandidates });
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     window.GrizzlyJohnWisdomShelfV3 = api;
