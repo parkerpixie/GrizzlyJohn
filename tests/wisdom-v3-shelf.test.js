@@ -8,6 +8,7 @@ const {
   LAKOTA_PRAYER,
   PRINCIPLES,
   LITTLE_CREEK_SOURCE,
+  SECULAR_REFERENCE,
   LAKOTA_ART_CANDIDATES,
   principleArtCandidates
 } = require('../wisdom-v3-shelf.js');
@@ -31,9 +32,9 @@ with the passing of each glorious Day
 And
 Passing Season`;
 
-test('Lakota Prayer is preserved exactly as John supplied it and looks for Jen supplied artwork first', () => {
+test('Lakota Prayer is preserved exactly and points at the confirmed graphics file', () => {
   assert.equal(LAKOTA_PRAYER, EXACT_LAKOTA);
-  assert.equal(LAKOTA_ART_CANDIDATES[0], 'assets/Lakota Prayer.png');
+  assert.equal(LAKOTA_ART_CANDIDATES[0], 'graphics/Lakota Prayer.png');
 });
 
 test('Wisdom Shelf uses Johns supplied illustrated twelve-principle set in order', () => {
@@ -70,31 +71,28 @@ test('Wisdom Shelf uses Johns supplied illustrated twelve-principle set in order
   assert.deepEqual(PRINCIPLES.map(item => item.step), Array.from({ length: 12 }, (_, index) => index + 1));
 });
 
-test('supplied artwork captions stay paired with the correct principle', () => {
-  assert.deepEqual(PRINCIPLES.map(item => item.caption), [
-    'See it. Say it. Start here.',
-    'I don’t have to see the whole path.',
-    'Open hands. Let go.',
-    'Look within. Be willing to see.',
-    'Do the right thing anyway.',
-    'Let reality be what it is.',
-    'I am part of something bigger.',
-    'Show up. Stay open. Try.',
-    'Release the weight. Keep going.',
-    'Small actions keep me steady.',
-    'Be still. Listen. Stay connected.',
-    'Lift someone up. Pass it on.'
-  ]);
+test('principle copy follows Johns preferred secular recovery framing', () => {
+  assert.equal(SECULAR_REFERENCE, 'Twelve Secular Steps: An Addiction Recovery Guide');
+  const trust = PRINCIPLES.find(item => item.name === 'Trust');
+  const faith = PRINCIPLES.find(item => item.name === 'Faith');
+  const contact = PRINCIPLES.find(item => item.name === 'Making Contact');
+
+  assert.equal(trust.caption, 'Choose the work. Keep choosing it.');
+  assert.match(trust.reflection, /actively work a recovery plan/i);
+  assert.doesNotMatch(trust.caption, /open hands|let go/i);
+  assert.match(faith.reflection, /honesty, effort, practice, and help from other people/i);
+  assert.match(contact.reflection, /ethical principles, values, and standards/i);
+
+  const allPrincipleCopy = PRINCIPLES.map(item => `${item.caption} ${item.reflection} ${item.john}`).join(' ');
+  assert.doesNotMatch(allPrincipleCopy, /higher power|will of god|turn it over to god/i);
 });
 
-test('every principle keeps separate reflective copy and John interpretation', () => {
+test('every principle keeps separate reflective copy and John interpretation and loads from graphics', () => {
   PRINCIPLES.forEach(item => {
     assert.ok(item.reflection.length > 60, `Step ${item.step} should have a real reflection`);
     assert.ok(item.john.length > 30, `Step ${item.step} should have a John interpretation`);
     assert.notEqual(item.reflection, item.john);
-    const candidates = principleArtCandidates(item);
-    assert.equal(candidates[0], `assets/${item.file}`);
-    assert.ok(candidates.includes(`graphics/${item.file}`));
+    assert.deepEqual(principleArtCandidates(item), [`graphics/${item.file}`]);
   });
 });
 
@@ -115,13 +113,15 @@ test('Principles reader is one-card-at-a-time swipe UI, not a stacked grid', () 
   assert.doesNotMatch(source, /principles-grid/);
 });
 
-test('Wisdom Shelf has Lakota, swipe principles, 3 Ps, and one shared Campfire shortcut', () => {
+test('Wisdom Shelf has Lakota, secular swipe principles, 3 Ps, and one shared Campfire shortcut', () => {
   const source = read('wisdom-v3-shelf.js');
   assert.match(source, /JOHN’S WISDOM SHELF/);
   assert.match(source, /The stuff worth keeping close\./);
   assert.match(source, /data-wisdom-shelf-item="lakota"/);
   assert.match(source, /data-wisdom-shelf-item="principles"/);
   assert.match(source, /data-wisdom-shelf-item="threePs"/);
+  assert.match(source, /SECULAR RECOVERY/);
+  assert.match(source, /framed through a secular recovery lens/);
   assert.match(source, /Nothing is Perfect,<br>Personal,<br>or Permanent\./);
   assert.match(source, /The mushy reflection/);
   assert.match(source, /John’s interpretation/);
@@ -129,11 +129,11 @@ test('Wisdom Shelf has Lakota, swipe principles, 3 Ps, and one shared Campfire s
   assert.match(source, /Swipe the cards/);
 });
 
-test('Little Creek remains a reference link without replacing Johns supplied illustrated set', () => {
+test('Little Creek remains supplemental rather than defining Johns principle set', () => {
   assert.equal(LITTLE_CREEK_SOURCE, 'https://littlecreekrecovery.org/principles-of-the-12-steps/');
   const source = read('wisdom-v3-shelf.js');
-  assert.match(source, /John’s saved illustrated principle set is shown here as supplied/);
-  assert.match(source, /Reference: Little Creek Recovery PA/);
+  assert.match(source, /Little Creek Recovery PA remains a supplemental principles reference/);
+  assert.match(source, /Open the supplemental reference/);
 });
 
 test('Wisdom Shelf does not create a new primary navigation destination or write storage', () => {
