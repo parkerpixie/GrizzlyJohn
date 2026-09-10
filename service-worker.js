@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v36-wisdom-swipe-correction';
+const CACHE_NAME = 'grizzlyjohn-v37-wisdom-secular';
 const APP_SHELL = [
   './',
   './index.html',
