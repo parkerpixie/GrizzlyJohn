@@ -1,0 +1,35 @@
+name: Wire V3 Health History
+
+on:
+  push:
+    branches:
+      - v3/health-foundation
+    paths:
+      - scripts/wire-v3-history.mjs
+
+permissions:
+  contents: write
+
+jobs:
+  wire-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out V3 branch
+        uses: actions/checkout@v4
+        with:
+          ref: v3/health-foundation
+          fetch-depth: 0
+      - name: Wire Health history and goals into app shell
+        run: node scripts/wire-v3-history.mjs
+      - name: Commit generated wiring
+        run: |
+          if git diff --quiet -- index.html service-worker.js; then
+            echo "V3 Health history wiring is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html service-worker.js
+          git commit -m "Wire V3 Health history and goals"
+          git push origin HEAD:v3/health-foundation
