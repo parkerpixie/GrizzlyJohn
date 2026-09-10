@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v29-halt-routing';
+const CACHE_NAME = 'grizzlyjohn-v30-health-fast-logging';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './my-days.css',
   './settings-v2.css',
   './roam-v2.css',
+  './health-v3.css',
   './weather.css',
   './oracle-cards.css',
   './install.css',
@@ -20,6 +21,7 @@ const APP_SHELL = [
   './listen-upgrades.css',
   './app.js',
   './storage-v2.js',
+  './health-v3.js',
   './settings-v2.js',
   './feeling-families.js',
   './wisdom-patterns.js',
@@ -41,6 +43,7 @@ const APP_SHELL = [
   './jen-quests.js',
   './brene-reflection.js',
   './roam-v2.js',
+  './health-v3-ui.js',
   './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
