@@ -47,3 +47,4 @@ for (const file of fs.readdirSync('tests').filter(name => name.endsWith('.test.j
 }
 
 console.log('Polished Body + Mind copy and bumped offline cache.');
+// Trigger copy-polish workflow after workflow creation.
