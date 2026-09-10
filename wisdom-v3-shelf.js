@@ -2,6 +2,8 @@
   'use strict';
 
   const LITTLE_CREEK_SOURCE = 'https://littlecreekrecovery.org/principles-of-the-12-steps/';
+  const LAKOTA_ART = 'assets/wisdom/lakota-prayer.png';
+  const PRINCIPLE_SPRITE = 'assets/wisdom/principles-sprite.webp';
 
   const LAKOTA_PRAYER = `Wakan Tanka, Great Mystery,
 teach me how to trust
@@ -19,130 +21,105 @@ with the passing of each glorious Day
 And
 Passing Season`;
 
+  // This is John's illustrated principle set, preserved in the order supplied for GrizzlyJohn.
+  // The card captions are part of the artwork concept and are also rendered as readable text.
   const PRINCIPLES = Object.freeze([
     {
       step: 1,
       name: 'Honesty',
-      reflection: 'Recovery gets lighter when you stop spending energy defending a version of reality you already know is not true. Honesty is the door that lets the rest of the work in.',
-      john: 'Quit bullshitting yourself. You are the one guy in the room who already knows the whole story.'
+      caption: 'See it. Say it. Start here.',
+      reflection: 'Recovery starts with being willing to see what is actually true. Honesty is not punishment. It is the point where you finally stop spending energy protecting the story and can use that energy to move forward.',
+      john: 'If you have to explain the loophole three times, you probably already know the answer.'
     },
     {
       step: 2,
       name: 'Faith',
-      reflection: 'Faith does not require certainty. It asks for enough openness to believe that your worst day does not get to be the final authority on what comes next.',
-      john: 'You do not need the whole map. Just stop insisting you are the only qualified driver in the universe.'
+      caption: 'I don’t have to see the whole path.',
+      reflection: 'Faith does not require certainty or a perfect map. Sometimes it is simply trusting that the next useful step can exist before you can see where the whole trail ends.',
+      john: 'Take the next damn step. The trail does not owe you a satellite view.'
     },
     {
       step: 3,
-      name: 'Turning it over',
-      reflection: 'Some peace arrives when you stop demanding control over every person, outcome, and tomorrow. You can still show up fully without white-knuckling the steering wheel.',
-      john: 'Do your part. Then put down the damn clipboard. You are not management for the entire cosmos.'
+      name: 'Trust',
+      caption: 'Open hands. Let go.',
+      reflection: 'Trust asks you to loosen your grip on the things you cannot control without giving up on the things that are yours to do. You can participate fully without trying to supervise every outcome.',
+      john: 'Open your hands. Not everything improves because John supervises it harder.'
     },
     {
       step: 4,
       name: 'Soul Searching',
-      reflection: 'Looking inward with courage means making room for the whole story: the good, the painful, and the parts you would rather edit. Awareness gives you choices.',
-      john: 'Open the junk drawer. We are not throwing you away. We are figuring out why there are seventeen mystery keys.'
+      caption: 'Look within. Be willing to see.',
+      reflection: 'Looking inward takes courage because the point is not to build a case against yourself. It is to notice the patterns, fears, strengths, hurts, and choices that become easier to work with once they are visible.',
+      john: 'Inventory, not prosecution. Find the crap, label it, and stop pretending the closet is fine.'
     },
     {
       step: 5,
       name: 'Integrity',
-      reflection: 'Integrity turns honesty into something lived. It is the quiet alignment between what you know, what you say, and what you do when nobody is grading you.',
-      john: 'Same guy in every room. Considerably less paperwork.'
+      caption: 'Do the right thing anyway.',
+      reflection: 'Integrity is what happens when what you know, what you say, and what you do begin lining up. It is less about looking good and more about becoming someone you can reliably live with.',
+      john: 'Do the right thing even when nobody is handing out Gold Stars. Annoying, but apparently that is the deal.'
     },
     {
       step: 6,
       name: 'Acceptance',
-      reflection: 'Acceptance makes room for reality without asking you to approve of it. Once you stop arguing with what already is, you get your hands back for what comes next.',
-      john: 'You can hate the weather. It is still raining. Grab the damn jacket.'
+      caption: 'Let reality be what it is.',
+      reflection: 'Acceptance does not mean approval. It means letting reality be real enough that you can respond to what is actually happening instead of spending all your strength arguing with the fact that it happened.',
+      john: 'Reality already RSVP’d. You can argue with it or deal with what actually showed up.'
     },
     {
       step: 7,
       name: 'Humility',
-      reflection: 'Humility is not making yourself smaller. It is remembering that you are human, teachable, connected, and allowed to need help.',
-      john: 'You are not the worst person alive or the messiah. Congratulations, you are a guy. Proceed accordingly.'
+      caption: 'I am part of something bigger.',
+      reflection: 'Humility is not shrinking yourself. It is remembering that you matter without having to be the center of everything, and that being teachable, connected, and willing to need other people is a kind of strength.',
+      john: 'Important? Yes. Center of the fucking universe? Tragically, no.'
     },
     {
       step: 8,
       name: 'Willingness',
-      reflection: 'You do not have to feel ready for every next step. Sometimes willingness is simply leaving the door unlocked for change.',
-      john: 'You do not have to sprint toward enlightenment. Just stop barricading the door.'
+      caption: 'Show up. Stay open. Try.',
+      reflection: 'Willingness is often quieter than confidence. You do not have to feel ready or enthusiastic. You only have to stay open enough to try the next thing recovery is asking of you.',
+      john: 'You do not have to love the idea. Just stop welding the door shut.'
     },
     {
       step: 9,
       name: 'Forgiveness',
-      reflection: 'Forgiveness can loosen the grip of old harm without rewriting what happened. Sometimes it is less about excusing someone and more about refusing to keep carrying them.',
-      john: 'You can put the suitcase down without sending the asshole a thank-you card.'
+      caption: 'Release the weight. Keep going.',
+      reflection: 'Forgiveness can mean releasing your obligation to keep carrying an old injury every day. It does not erase what happened, excuse harm, or require renewed access to you. It makes room for your own life to keep moving.',
+      john: 'Put down the suitcase. You do not have to invite the person back into the house.'
     },
     {
       step: 10,
       name: 'Maintenance',
-      reflection: 'Recovery is built in ordinary moments after the dramatic ones are over. Notice, own, repair, repeat. Small course corrections keep you on the road.',
-      john: 'Clean up today’s mess while it still fits in a dustpan.'
+      caption: 'Small actions keep me steady.',
+      reflection: 'Recovery is maintained in ordinary moments. Notice what is happening, own your part, make the repair when one is needed, and keep returning to the practices that help you stay steady.',
+      john: 'Tiny boring shit works. Keep doing the tiny boring shit.'
     },
     {
       step: 11,
       name: 'Making Contact',
-      reflection: 'Quiet creates room to listen for something larger than impulse, fear, or noise. Prayer and meditation can be less about getting answers and more about becoming available to them.',
-      john: 'Maybe stop talking for sixty seconds. Terrifying concept, I know.'
+      caption: 'Be still. Listen. Stay connected.',
+      reflection: 'Making contact means creating enough quiet to hear something beyond the loudest thought in your head. Prayer, meditation, nature, community, and stillness can all become places where direction has room to arrive.',
+      john: 'Shut up for a minute. There may be useful information arriving.'
     },
     {
       step: 12,
       name: 'Service',
-      reflection: 'What you survived becomes more meaningful when some of what you learned can help another person feel less alone. Service turns recovery outward.',
-      john: 'Hold the door for the next guy. Somebody held it for you.'
+      caption: 'Lift someone up. Pass it on.',
+      reflection: 'What recovery has given you becomes even more powerful when some of it can be passed along. Service does not require saving anyone. Sometimes it is simply being the person who reaches back with a steady hand.',
+      john: 'Somebody helped your ass up the hill. Turn around and offer a hand.'
     }
   ]);
-
-  const ART_CANDIDATES = Object.freeze({
-    lakota: [
-      'assets/Lakota Prayer.png',
-      'graphics/Lakota Prayer.png',
-      'Lakota Prayer.png'
-    ],
-    threePs: [
-      'assets/The 3 Ps.png',
-      'assets/3 Ps.png',
-      'graphics/The 3 Ps.png',
-      'graphics/3 Ps.png'
-    ]
-  });
-
-  function principleArtCandidates(item) {
-    const number = String(item.step).padStart(2, '0');
-    const safeName = item.name;
-    return [
-      `assets/12-step-principles/${number} - ${safeName}.png`,
-      `assets/12-step-principles/${number}-${safeName}.png`,
-      `assets/${number} - ${safeName}.png`,
-      `assets/${safeName}.png`,
-      `graphics/12-step-principles/${number} - ${safeName}.png`,
-      `graphics/${number} - ${safeName}.png`,
-      `graphics/${safeName}.png`
-    ];
-  }
 
   function escapeHtml(value = '') {
     return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   }
 
-  function attachCandidateImage(img, candidates, fallback) {
-    if (!img || !Array.isArray(candidates) || !candidates.length) return;
-    let index = 0;
-    const tryNext = () => {
-      if (index >= candidates.length) {
-        img.hidden = true;
-        if (fallback) fallback.hidden = false;
-        return;
-      }
-      img.src = candidates[index++];
-    };
-    img.addEventListener('load', () => {
-      img.hidden = false;
-      if (fallback) fallback.hidden = true;
-    });
-    img.addEventListener('error', tryNext);
-    tryNext();
+  function artPosition(index) {
+    const col = index % 4;
+    const row = Math.floor(index / 4);
+    const x = col === 0 ? 0 : col === 1 ? 33.333 : col === 2 ? 66.667 : 100;
+    const y = row === 0 ? 0 : row === 1 ? 50 : 100;
+    return { x, y };
   }
 
   function buildDialog() {
@@ -162,91 +139,150 @@ Passing Season`;
     dialog.addEventListener('click', event => {
       if (event.target === dialog || event.target.closest('[data-wisdom-shelf-close]')) dialog.close();
     });
+    dialog.addEventListener('keydown', event => {
+      if (dialog.dataset.viewerMode !== 'principles') return;
+      if (event.key === 'ArrowLeft') dialog.querySelector('[data-principle-prev]')?.click();
+      if (event.key === 'ArrowRight') dialog.querySelector('[data-principle-next]')?.click();
+    });
     return dialog;
   }
 
   function renderLakota(dialog) {
+    dialog.dataset.viewerMode = 'lakota';
     const title = dialog.querySelector('#wisdomShelfViewerTitle');
     const body = dialog.querySelector('#wisdomShelfViewerBody');
     title.textContent = 'Lakota Prayer';
     body.innerHTML = `
       <section class="wisdom-prayer-reader">
         <div class="wisdom-prayer-art-stage">
-          <img id="lakotaPrayerArt" alt="Lakota Prayer artwork" hidden>
-          <div class="wisdom-prayer-native" id="lakotaPrayerFallback">
-            <p class="eyebrow">LAKOTA PRAYER</p>
-            <div class="wisdom-prayer-text">${escapeHtml(LAKOTA_PRAYER).replaceAll('\n', '<br>')}</div>
-          </div>
+          <img src="${LAKOTA_ART}" alt="Lakota Prayer artwork with the complete prayer text">
         </div>
         <details class="wisdom-readable-copy">
           <summary>Read as text</summary>
           <div class="wisdom-prayer-text">${escapeHtml(LAKOTA_PRAYER).replaceAll('\n', '<br>')}</div>
         </details>
       </section>`;
-    attachCandidateImage(body.querySelector('#lakotaPrayerArt'), ART_CANDIDATES.lakota, body.querySelector('#lakotaPrayerFallback'));
   }
 
   function renderPrinciples(dialog) {
+    dialog.dataset.viewerMode = 'principles';
     const title = dialog.querySelector('#wisdomShelfViewerTitle');
     const body = dialog.querySelector('#wisdomShelfViewerBody');
     title.textContent = 'Principles of the 12-Step Program';
     body.innerHTML = `
       <section class="principles-reader">
         <div class="principles-reader-intro">
-          <p class="eyebrow">TWELVE PRINCIPLES · ONE AT A TIME</p>
-          <h2>The useful part, with a little John translation.</h2>
-          <p>Each principle gets the reflective version and the version Grizz suspects John would actually remember.</p>
+          <p class="eyebrow">TWELVE PRINCIPLES · ONE CARD AT A TIME</p>
+          <h2>Swipe the trail.</h2>
+          <p>The artwork gets the big seat. Reflection underneath. John gets the last word.</p>
         </div>
-        <div class="principles-grid">
-          ${PRINCIPLES.map(item => `
-            <article class="principle-card" data-principle-step="${item.step}">
-              <div class="principle-art">
-                <img alt="Step ${item.step}: ${escapeHtml(item.name)}" hidden>
-                <div class="principle-art-fallback">
-                  <span>${item.step}</span>
-                  <strong>${escapeHtml(item.name)}</strong>
-                </div>
-              </div>
-              <div class="principle-copy">
-                <p class="eyebrow">STEP ${item.step}</p>
-                <h3>${escapeHtml(item.name)}</h3>
-                <div class="principle-reflection">
-                  <strong>💛 The mushy reflection</strong>
-                  <p>${escapeHtml(item.reflection)}</p>
-                </div>
-                <div class="principle-john">
-                  <strong>🐻 John’s interpretation</strong>
-                  <p>${escapeHtml(item.john)}</p>
-                </div>
-              </div>
-            </article>`).join('')}
+        <div class="principle-deck" data-principle-deck>
+          <article class="principle-slide" data-principle-slide tabindex="0" aria-live="polite"></article>
+          <nav class="principle-swipe-nav" aria-label="Move through the twelve principles">
+            <button class="principle-arrow" type="button" data-principle-prev aria-label="Previous principle">‹</button>
+            <div class="principle-progress">
+              <strong data-principle-count>1 of 12</strong>
+              <div class="principle-dots" data-principle-dots></div>
+            </div>
+            <button class="principle-arrow" type="button" data-principle-next aria-label="Next principle">›</button>
+          </nav>
+          <p class="principle-swipe-hint">Swipe left or right, use the arrows, or tap a dot.</p>
         </div>
         <footer class="principles-source">
-          <p>Principle names and step pairing are attributed to Little Creek Recovery PA. Reflections and John interpretations are original GrizzlyJohn copy.</p>
-          <a href="${LITTLE_CREEK_SOURCE}" target="_blank" rel="noopener noreferrer">View the Little Creek source ↗</a>
+          <p>John’s saved illustrated principle set is shown here as supplied. Reference: Little Creek Recovery PA.</p>
+          <a href="${LITTLE_CREEK_SOURCE}" target="_blank" rel="noopener noreferrer">Open the reference source ↗</a>
         </footer>
       </section>`;
 
-    body.querySelectorAll('[data-principle-step]').forEach(card => {
-      const item = PRINCIPLES.find(principle => principle.step === Number(card.dataset.principleStep));
-      attachCandidateImage(card.querySelector('img'), principleArtCandidates(item), card.querySelector('.principle-art-fallback'));
+    const slide = body.querySelector('[data-principle-slide]');
+    const count = body.querySelector('[data-principle-count]');
+    const dots = body.querySelector('[data-principle-dots]');
+    const prev = body.querySelector('[data-principle-prev]');
+    const next = body.querySelector('[data-principle-next]');
+    let index = 0;
+    let touchStartX = null;
+    let touchStartY = null;
+
+    dots.innerHTML = PRINCIPLES.map((item, dotIndex) => `<button type="button" class="principle-dot" data-principle-dot="${dotIndex}" aria-label="Open ${escapeHtml(item.name)}"></button>`).join('');
+
+    function paint() {
+      const item = PRINCIPLES[index];
+      const position = artPosition(index);
+      slide.innerHTML = `
+        <div class="principle-art-panel">
+          <div class="principle-art-fallback" aria-hidden="true"><span>${item.step}</span><strong>${escapeHtml(item.name)}</strong></div>
+          <div class="principle-art-sprite" style="--art-x:${position.x}%; --art-y:${position.y}%; background-image:url('${PRINCIPLE_SPRITE}')" role="img" aria-label="${escapeHtml(item.name)} illustration. ${escapeHtml(item.caption)}"></div>
+        </div>
+        <div class="principle-copy">
+          <p class="eyebrow">STEP ${item.step} · ${escapeHtml(item.name).toUpperCase()}</p>
+          <p class="principle-card-caption">${escapeHtml(item.caption)}</p>
+          <div class="principle-reflection">
+            <strong>💛 The mushy reflection</strong>
+            <p>${escapeHtml(item.reflection)}</p>
+          </div>
+          <div class="principle-john">
+            <strong>🐻 John’s interpretation</strong>
+            <p>${escapeHtml(item.john)}</p>
+          </div>
+        </div>`;
+      count.textContent = `${index + 1} of ${PRINCIPLES.length}`;
+      dots.querySelectorAll('[data-principle-dot]').forEach((dot, dotIndex) => {
+        const active = dotIndex === index;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+      prev.disabled = index === 0;
+      next.disabled = index === PRINCIPLES.length - 1;
+      slide.scrollTop = 0;
+    }
+
+    function go(delta) {
+      const nextIndex = Math.min(PRINCIPLES.length - 1, Math.max(0, index + delta));
+      if (nextIndex === index) return;
+      index = nextIndex;
+      paint();
+    }
+
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+    dots.addEventListener('click', event => {
+      const dot = event.target.closest('[data-principle-dot]');
+      if (!dot) return;
+      index = Number(dot.dataset.principleDot);
+      paint();
     });
+    slide.addEventListener('touchstart', event => {
+      const touch = event.changedTouches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+    slide.addEventListener('touchend', event => {
+      if (touchStartX === null || touchStartY === null) return;
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      touchStartX = null;
+      touchStartY = null;
+      if (Math.abs(dx) < 45 || Math.abs(dx) <= Math.abs(dy)) return;
+      go(dx < 0 ? 1 : -1);
+    }, { passive: true });
+    paint();
   }
 
   function renderThreePs(dialog) {
+    dialog.dataset.viewerMode = 'threePs';
     const title = dialog.querySelector('#wisdomShelfViewerTitle');
     const body = dialog.querySelector('#wisdomShelfViewerBody');
     title.textContent = 'The 3 Ps';
     body.innerHTML = `
       <section class="three-ps-reader">
-        <img id="threePsArt" alt="The 3 Ps artwork" hidden>
-        <div class="three-ps-native" id="threePsFallback">
+        <img src="assets/wisdom/the-3-ps.png" alt="The 3 Ps artwork" onerror="this.hidden=true;this.nextElementSibling.hidden=false" hidden>
+        <div class="three-ps-native">
           <p class="eyebrow">POCKET WISDOM</p>
           <h2>Nothing is Perfect,<br>Personal,<br>or Permanent.</h2>
           <p>Three Ps. Considerably fewer reasons to let one bad moment run the whole damn day.</p>
         </div>
       </section>`;
-    attachCandidateImage(body.querySelector('#threePsArt'), ART_CANDIDATES.threePs, body.querySelector('#threePsFallback'));
   }
 
   function openItem(item) {
@@ -281,11 +317,11 @@ Passing Season`;
       <div class="wisdom-shelf-grid">
         <button type="button" class="wisdom-shelf-card" data-wisdom-shelf-item="lakota">
           <span class="wisdom-shelf-icon">🌄</span>
-          <span><small>PRAYER</small><strong>Lakota Prayer</strong><em>Open full screen →</em></span>
+          <span><small>PRAYER</small><strong>Lakota Prayer</strong><em>Open the artwork full screen →</em></span>
         </button>
         <button type="button" class="wisdom-shelf-card" data-wisdom-shelf-item="principles">
           <span class="wisdom-shelf-icon">🧭</span>
-          <span><small>RECOVERY</small><strong>Principles of the 12-Step Program</strong><em>12 principles →</em></span>
+          <span><small>RECOVERY</small><strong>Principles of the 12-Step Program</strong><em>Swipe through 12 cards →</em></span>
         </button>
         <button type="button" class="wisdom-shelf-card" data-wisdom-shelf-item="threePs">
           <span class="wisdom-shelf-icon">🪧</span>
@@ -301,16 +337,35 @@ Passing Season`;
     return true;
   }
 
+  function buildCampfireShortcut() {
+    if (document.getElementById('principlesCampfireShortcut')) return true;
+    const campfire = document.getElementById('listen');
+    if (!campfire) return false;
+    const intro = campfire.querySelector('.screen-intro');
+    if (!intro) return false;
+    const card = document.createElement('article');
+    card.id = 'principlesCampfireShortcut';
+    card.className = 'card wisdom-campfire-shortcut';
+    card.innerHTML = `
+      <span class="wisdom-campfire-icon" aria-hidden="true">🧭</span>
+      <div><p class="eyebrow">FROM JOHN’S WISDOM SHELF</p><h3>12-Step Principles</h3><p>Twelve illustrated reminders. One card at a time.</p></div>
+      <button type="button" class="button button-secondary" data-open-principles>Swipe the cards</button>`;
+    intro.insertAdjacentElement('afterend', card);
+    card.querySelector('[data-open-principles]').addEventListener('click', () => openItem('principles'));
+    return true;
+  }
+
   function init() {
-    if (buildShelf()) return;
+    const ready = () => buildShelf() && buildCampfireShortcut();
+    if (ready()) return;
     const observer = new MutationObserver(() => {
-      if (buildShelf()) observer.disconnect();
+      if (ready()) observer.disconnect();
     });
     observer.observe(document.body, { childList: true, subtree: true });
     window.setTimeout(() => observer.disconnect(), 15000);
   }
 
-  const api = Object.freeze({ LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, principleArtCandidates });
+  const api = Object.freeze({ LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, LAKOTA_ART, PRINCIPLE_SPRITE, artPosition });
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     window.GrizzlyJohnWisdomShelfV3 = api;
