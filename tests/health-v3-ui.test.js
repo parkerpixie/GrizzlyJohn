@@ -28,10 +28,13 @@ test('V3 app shell loads Health foundation, UI, and styles in safe order', () =>
   const healthStoreIndex = html.indexOf('src="health-v3.js"');
   const appIndex = html.indexOf('src="app.js"');
   const healthUiIndex = html.indexOf('src="health-v3-ui.js"');
+  const healthDashboardIndex = html.indexOf('src="health-v3-dashboard.js"');
 
   assert.ok(html.includes('href="health-v3.css"'));
+  assert.ok(html.includes('href="health-v3-dashboard.css"'));
   assert.ok(storageIndex >= 0 && healthStoreIndex > storageIndex);
   assert.ok(appIndex >= 0 && healthUiIndex > appIndex);
+  assert.ok(healthDashboardIndex > healthUiIndex);
   assert.ok(html.includes('<strong>Version 3</strong>'));
 });
 
@@ -54,8 +57,8 @@ test('Health navigation makes room for the sixth and final primary destination',
 
 test('offline app shell caches all V3 Health assets', () => {
   const worker = read('service-worker.js');
-  assert.match(worker, /grizzlyjohn-v30-health-fast-logging/);
-  for (const asset of ['./health-v3.css', './health-v3.js', './health-v3-ui.js']) {
+  assert.match(worker, /grizzlyjohn-v31-health-dashboard-polish/);
+  for (const asset of ['./health-v3.css', './health-v3-dashboard.css', './health-v3.js', './health-v3-ui.js', './health-v3-dashboard.js']) {
     assert.ok(worker.includes(`'${asset}'`), `missing ${asset} from app shell cache`);
   }
 });
