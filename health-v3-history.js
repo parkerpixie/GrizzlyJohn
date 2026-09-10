@@ -15,7 +15,7 @@
   const TYPE_ICONS = Object.freeze({ vitals: '🩺', weight: '⚖️', activity: '🥾', medication: '💊', sleep: '🌙', note: '📝', bodyFeel: '🌤️' });
   const DEFAULT_PREFS = Object.freeze({
     version: PREFS_VERSION,
-    checkInItems: ['sleep', 'bodyFeel'],
+    checkInItems: [],
     goals: {
       activity: { enabled: false, targetMinutes: 30 },
       sleep: { enabled: false, minHours: 7, maxHours: 8 },
