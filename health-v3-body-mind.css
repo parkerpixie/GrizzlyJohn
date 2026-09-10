@@ -98,3 +98,10 @@
     font-size: 1.08rem;
   }
 }
+.health-body-mind-disclaimer {
+  margin: 8px 2px 0;
+  color: var(--muted);
+  font-size: .61rem;
+  line-height: 1.35;
+  opacity: .82;
+}

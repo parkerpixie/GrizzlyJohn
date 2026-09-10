@@ -269,11 +269,12 @@
         <div class="health-subsection-heading">
           <div>
             <p class="eyebrow">BODY + MIND</p>
-            <h2 id="healthBodyMindHeading">A few things showing up together.</h2>
-            <p>These are repeated overlaps in John's own logs, not explanations, diagnoses, or medical advice.</p>
+            <h2 id="healthBodyMindHeading">Grizz spotted a pattern. 🐻</h2>
+            <p>A few things have been traveling together often enough to catch his attention. He is observing, not diagnosing.</p>
           </div>
         </div>
-        <div class="health-body-mind-content" id="healthBodyMindContent"></div>`;
+        <div class="health-body-mind-content" id="healthBodyMindContent"></div>
+        <p class="health-body-mind-disclaimer">Based only on your own check-ins. Not a medical conclusion.</p>`;
       history.insertAdjacentElement('beforebegin', section);
     }
 

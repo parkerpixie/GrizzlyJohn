@@ -99,11 +99,13 @@ test('Body + Mind UI lives between goals and Health History and links recovery t
   const source = read('health-v3-body-mind.js');
   const css = read('health-v3-body-mind.css');
   assert.match(source, /BODY \+ MIND/);
-  assert.match(source, /A few things showing up together\./);
+  assert.match(source, /Grizz spotted a pattern\. 🐻/);
   assert.match(source, /history\.insertAdjacentElement\('beforebegin', section\)/);
   assert.match(source, /data-body-mind-skill/);
   assert.match(source, /\[data-nav="wisdom"\]/);
-  assert.match(source, /not explanations, diagnoses, or medical advice/);
+  assert.match(source, /He is observing, not diagnosing/);
+  assert.match(source, /Based only on your own check-ins\. Not a medical conclusion\./);
+  assert.match(css, /\.health-body-mind-disclaimer/);
   assert.match(css, /\.health-body-mind-observation/);
   assert.match(css, /\.health-body-mind-empty/);
 });
