@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v31-health-dashboard-polish';
+const CACHE_NAME = 'grizzlyjohn-v32-health-history-goals';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './roam-v2.css',
   './health-v3.css',
   './health-v3-dashboard.css',
+  './health-v3-history.css',
   './weather.css',
   './oracle-cards.css',
   './install.css',
@@ -46,6 +47,7 @@ const APP_SHELL = [
   './roam-v2.js',
   './health-v3-ui.js',
   './health-v3-dashboard.js',
+  './health-v3-history.js',
   './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
