@@ -4,7 +4,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
-const { LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, principleArtCandidates } = require('../wisdom-v3-shelf.js');
+const {
+  LAKOTA_PRAYER,
+  PRINCIPLES,
+  LITTLE_CREEK_SOURCE,
+  LAKOTA_ART_CANDIDATES,
+  principleArtCandidates
+} = require('../wisdom-v3-shelf.js');
 
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
@@ -25,16 +31,17 @@ with the passing of each glorious Day
 And
 Passing Season`;
 
-test('Lakota Prayer is preserved exactly as John supplied it', () => {
+test('Lakota Prayer is preserved exactly as John supplied it and looks for Jen supplied artwork first', () => {
   assert.equal(LAKOTA_PRAYER, EXACT_LAKOTA);
+  assert.equal(LAKOTA_ART_CANDIDATES[0], 'assets/Lakota Prayer.png');
 });
 
-test('Wisdom Shelf uses the twelve Little Creek principle names in step order', () => {
+test('Wisdom Shelf uses Johns supplied illustrated twelve-principle set in order', () => {
   assert.equal(PRINCIPLES.length, 12);
   assert.deepEqual(PRINCIPLES.map(item => item.name), [
     'Honesty',
     'Faith',
-    'Turning it over',
+    'Trust',
     'Soul Searching',
     'Integrity',
     'Acceptance',
@@ -45,33 +52,71 @@ test('Wisdom Shelf uses the twelve Little Creek principle names in step order', 
     'Making Contact',
     'Service'
   ]);
+  assert.deepEqual(PRINCIPLES.map(item => item.file), [
+    'Honesty.png',
+    'Faith.png',
+    'Trust.png',
+    'Soul-Searching.png',
+    'Integrity.png',
+    'Acceptance.png',
+    'Humility.png',
+    'Willingness.png',
+    'Forgiveness.png',
+    'Maintenance.png',
+    'Making-Contact.png',
+    'Service.png'
+  ]);
+  assert.doesNotMatch(PRINCIPLES.map(item => item.name).join(' '), /Turning it over/i);
   assert.deepEqual(PRINCIPLES.map(item => item.step), Array.from({ length: 12 }, (_, index) => index + 1));
-  assert.equal(LITTLE_CREEK_SOURCE, 'https://littlecreekrecovery.org/principles-of-the-12-steps/');
 });
 
-test('every principle has original reflective copy and a distinct John interpretation', () => {
+test('supplied artwork captions stay paired with the correct principle', () => {
+  assert.deepEqual(PRINCIPLES.map(item => item.caption), [
+    'See it. Say it. Start here.',
+    'I don’t have to see the whole path.',
+    'Open hands. Let go.',
+    'Look within. Be willing to see.',
+    'Do the right thing anyway.',
+    'Let reality be what it is.',
+    'I am part of something bigger.',
+    'Show up. Stay open. Try.',
+    'Release the weight. Keep going.',
+    'Small actions keep me steady.',
+    'Be still. Listen. Stay connected.',
+    'Lift someone up. Pass it on.'
+  ]);
+});
+
+test('every principle keeps separate reflective copy and John interpretation', () => {
   PRINCIPLES.forEach(item => {
-    assert.ok(item.reflection.length > 50, `Step ${item.step} should have a real reflection`);
+    assert.ok(item.reflection.length > 60, `Step ${item.step} should have a real reflection`);
     assert.ok(item.john.length > 30, `Step ${item.step} should have a John interpretation`);
     assert.notEqual(item.reflection, item.john);
-  });
-});
-
-test('principle artwork can arrive later without making the reader depend on it', () => {
-  PRINCIPLES.forEach(item => {
     const candidates = principleArtCandidates(item);
-    assert.ok(candidates.length >= 3);
-    assert.ok(candidates.some(candidate => candidate.startsWith('assets/')));
-    assert.ok(candidates.some(candidate => candidate.startsWith('graphics/')));
+    assert.equal(candidates[0], `assets/${item.file}`);
+    assert.ok(candidates.includes(`graphics/${item.file}`));
   });
-  const source = read('wisdom-v3-shelf.js');
-  assert.match(source, /principle-art-fallback/);
-  assert.match(source, /attachCandidateImage/);
 });
 
-test('Wisdom Shelf is one permanent Wisdom section with Lakota, principles, and the 3 Ps', () => {
+test('Principles reader is one-card-at-a-time swipe UI, not a stacked grid', () => {
   const source = read('wisdom-v3-shelf.js');
   const css = read('wisdom-v3-shelf.css');
+  assert.match(source, /ONE CARD AT A TIME/);
+  assert.match(source, /data-principle-slide/);
+  assert.match(source, /data-principle-prev/);
+  assert.match(source, /data-principle-next/);
+  assert.match(source, /data-principle-dots/);
+  assert.match(source, /touchstart/);
+  assert.match(source, /touchend/);
+  assert.match(source, /Swipe left or right/);
+  assert.match(css, /\.principle-slide/);
+  assert.match(css, /\.principle-swipe-nav/);
+  assert.match(css, /\.principle-dots/);
+  assert.doesNotMatch(source, /principles-grid/);
+});
+
+test('Wisdom Shelf has Lakota, swipe principles, 3 Ps, and one shared Campfire shortcut', () => {
+  const source = read('wisdom-v3-shelf.js');
   assert.match(source, /JOHN’S WISDOM SHELF/);
   assert.match(source, /The stuff worth keeping close\./);
   assert.match(source, /data-wisdom-shelf-item="lakota"/);
@@ -80,12 +125,18 @@ test('Wisdom Shelf is one permanent Wisdom section with Lakota, principles, and 
   assert.match(source, /Nothing is Perfect,<br>Personal,<br>or Permanent\./);
   assert.match(source, /The mushy reflection/);
   assert.match(source, /John’s interpretation/);
-  assert.match(source, /Little Creek Recovery PA/);
-  assert.match(css, /\.wisdom-shelf-viewer/);
-  assert.match(css, /\.principle-card/);
+  assert.match(source, /principlesCampfireShortcut/);
+  assert.match(source, /Swipe the cards/);
 });
 
-test('Wisdom Shelf itself does not create a new primary navigation destination or write storage', () => {
+test('Little Creek remains a reference link without replacing Johns supplied illustrated set', () => {
+  assert.equal(LITTLE_CREEK_SOURCE, 'https://littlecreekrecovery.org/principles-of-the-12-steps/');
+  const source = read('wisdom-v3-shelf.js');
+  assert.match(source, /John’s saved illustrated principle set is shown here as supplied/);
+  assert.match(source, /Reference: Little Creek Recovery PA/);
+});
+
+test('Wisdom Shelf does not create a new primary navigation destination or write storage', () => {
   const source = read('wisdom-v3-shelf.js');
   assert.doesNotMatch(source, /localStorage\.setItem|sessionStorage\.setItem/);
   assert.doesNotMatch(source, /data-nav=["'](?:shelf|principles|prayer)["']/);
