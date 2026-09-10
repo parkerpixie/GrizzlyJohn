@@ -2,6 +2,7 @@
   'use strict';
 
   const LITTLE_CREEK_SOURCE = 'https://littlecreekrecovery.org/principles-of-the-12-steps/';
+  const SECULAR_REFERENCE = 'Twelve Secular Steps: An Addiction Recovery Guide';
 
   const LAKOTA_PRAYER = `Wakan Tanka, Great Mystery,
 teach me how to trust
@@ -19,133 +20,118 @@ with the passing of each glorious Day
 And
 Passing Season`;
 
-  // This is John's illustrated principle set, preserved in the order supplied for GrizzlyJohn.
-  // The short captions are also printed on the supplied artwork.
   const PRINCIPLES = Object.freeze([
     {
       step: 1,
       name: 'Honesty',
       file: 'Honesty.png',
       caption: 'See it. Say it. Start here.',
-      reflection: 'Recovery starts with being willing to see what is actually true. Honesty is not punishment. It is the point where you finally stop spending energy protecting the story and can use that energy to move forward.',
-      john: 'If you have to explain the loophole three times, you probably already know the answer.'
+      reflection: 'Recovery starts by naming what is actually happening, including the parts of addiction that have become unmanageable. That is not a moral verdict. It is usable information, and honesty gives you something real to work with.',
+      john: 'If the facts suck, they still beat negotiating with fiction.'
     },
     {
       step: 2,
       name: 'Faith',
       file: 'Faith.png',
-      caption: 'I don’t have to see the whole path.',
-      reflection: 'Faith does not require certainty or a perfect map. Sometimes it is simply trusting that the next useful step can exist before you can see where the whole trail ends.',
-      john: 'Take the next damn step. The trail does not owe you a satellite view.'
+      caption: 'Recovery is possible. I don’t have to do it alone.',
+      reflection: 'Here, faith means confidence that recovery is possible through honesty, effort, practice, and help from other people. It does not require a supernatural explanation. It is enough to believe that change can happen and that you can participate in it.',
+      john: 'You do not need the whole answer. You need enough evidence to keep going and people who will answer the damn phone.'
     },
     {
       step: 3,
       name: 'Trust',
       file: 'Trust.png',
-      caption: 'Open hands. Let go.',
-      reflection: 'Trust asks you to loosen your grip on the things you cannot control without giving up on the things that are yours to do. You can participate fully without trying to supervise every outcome.',
-      john: 'Open your hands. Not everything improves because John supervises it harder.'
+      caption: 'Choose the work. Keep choosing it.',
+      reflection: 'Trust is the decision to actively work a recovery plan to the best of your ability. Not surrendering your judgment, not waiting for a sign, and not pretending the plan works by magic. You choose the work, try it, learn, and keep choosing what helps you recover.',
+      john: 'Make the plan. Work the plan. Re-decide tomorrow. That is plenty.'
     },
     {
       step: 4,
       name: 'Soul Searching',
       file: 'Soul-Searching.png',
       caption: 'Look within. Be willing to see.',
-      reflection: 'Looking inward takes courage because the point is not to build a case against yourself. It is to notice the patterns, fears, strengths, hurts, and choices that become easier to work with once they are visible.',
+      reflection: 'Take a searching, honest inventory of yourself. The point is not to build a prosecution case. It is to notice the patterns, fears, strengths, harms, habits, and choices that become easier to change once they are visible.',
       john: 'Inventory, not prosecution. Find the crap, label it, and stop pretending the closet is fine.'
     },
     {
       step: 5,
       name: 'Integrity',
       file: 'Integrity.png',
-      caption: 'Do the right thing anyway.',
-      reflection: 'Integrity is what happens when what you know, what you say, and what you do begin lining up. It is less about looking good and more about becoming someone you can reliably live with.',
-      john: 'Do the right thing even when nobody is handing out Gold Stars. Annoying, but apparently that is the deal.'
+      caption: 'Say what I found. Own what is mine.',
+      reflection: 'Integrity means being honest with yourself and another person about what your inventory uncovered, including the parts of your own behavior that need attention. Shame likes secrecy. Recovery gets stronger when the truth can survive being spoken out loud.',
+      john: 'Say the thing without adding a closing argument about why it technically does not count.'
     },
     {
       step: 6,
       name: 'Acceptance',
       file: 'Acceptance.png',
-      caption: 'Let reality be what it is.',
-      reflection: 'Acceptance does not mean approval. It means letting reality be real enough that you can respond to what is actually happening instead of spending all your strength arguing with the fact that it happened.',
-      john: 'Reality already RSVP’d. You can argue with it or deal with what actually showed up.'
+      caption: 'Be willing to change what no longer works.',
+      reflection: 'Acceptance is not deciding that every part of you is fine forever. It is seeing the habits and character patterns that cause trouble clearly enough to become willing to change them. You cannot work on the pattern you are still busy defending.',
+      john: 'You can accept that the pattern exists without giving it a permanent parking spot.'
     },
     {
       step: 7,
       name: 'Humility',
       file: 'Humility.png',
-      caption: 'I am part of something bigger.',
-      reflection: 'Humility is not shrinking yourself. It is remembering that you matter without having to be the center of everything, and that being teachable, connected, and willing to need other people is a kind of strength.',
-      john: 'Important? Yes. Center of the fucking universe? Tragically, no.'
+      caption: 'Own my actions. Drop the excuses.',
+      reflection: 'Humility is accepting responsibility for your actions without turning responsibility into self-hatred. You can own your part, repair what you can, and still remember that being wrong about something does not make you worthless.',
+      john: 'Own your shit. You do not have to become the shit.'
     },
     {
       step: 8,
       name: 'Willingness',
       file: 'Willingness.png',
-      caption: 'Show up. Stay open. Try.',
-      reflection: 'Willingness is often quieter than confidence. You do not have to feel ready or enthusiastic. You only have to stay open enough to try the next thing recovery is asking of you.',
-      john: 'You do not have to love the idea. Just stop welding the door shut.'
+      caption: 'Name the harm. Get ready to repair it.',
+      reflection: 'Willingness means looking directly at the people you have harmed and becoming open to making amends. You do not have to perform the repair before you are ready. First comes the willingness to stop avoiding the list.',
+      john: 'You do not have to fix the whole damn thing today. You do have to stop pretending the list is blank.'
     },
     {
       step: 9,
       name: 'Forgiveness',
       file: 'Forgiveness.png',
-      caption: 'Release the weight. Keep going.',
-      reflection: 'Forgiveness can mean releasing your obligation to keep carrying an old injury every day. It does not erase what happened, excuse harm, or require renewed access to you. It makes room for your own life to keep moving.',
-      john: 'Put down the suitcase. You do not have to invite the person back into the house.'
+      caption: 'Make the repair when it is safe.',
+      reflection: 'This is about direct amends where possible, except when doing so would create more harm. Forgiveness is not something you get to demand from another person. Your job is the repair you can responsibly make, then allowing the other person to decide what happens next.',
+      john: 'Clean up your side of the street. Do not drive the apology truck through somebody else’s living room.'
     },
     {
       step: 10,
       name: 'Maintenance',
       file: 'Maintenance.png',
       caption: 'Small actions keep me steady.',
-      reflection: 'Recovery is maintained in ordinary moments. Notice what is happening, own your part, make the repair when one is needed, and keep returning to the practices that help you stay steady.',
+      reflection: 'Recovery is maintained by continuing to notice your behavior, admit when you are wrong, and make corrections before a small problem grows legs and moves into the guest room. This is maintenance, not perfection.',
       john: 'Tiny boring shit works. Keep doing the tiny boring shit.'
     },
     {
       step: 11,
       name: 'Making Contact',
       file: 'Making-Contact.png',
-      caption: 'Be still. Listen. Stay connected.',
-      reflection: 'Making contact means creating enough quiet to hear something beyond the loudest thought in your head. Prayer, meditation, nature, community, and stillness can all become places where direction has room to arrive.',
-      john: 'Shut up for a minute. There may be useful information arriving.'
+      caption: 'Check my values. Act like I mean them.',
+      reflection: 'Making contact does not have to mean contacting a deity. It can mean deliberately checking your ethical principles, values, and standards, then using them consistently when you make decisions. The goal is conscious alignment between what matters to you and what you actually do.',
+      john: 'Before you do the thing, ask whether it lines up with who you keep saying you want to be.'
     },
     {
       step: 12,
       name: 'Service',
       file: 'Service.png',
       caption: 'Lift someone up. Pass it on.',
-      reflection: 'What recovery has given you becomes even more powerful when some of it can be passed along. Service does not require saving anyone. Sometimes it is simply being the person who reaches back with a steady hand.',
+      reflection: 'Recovery becomes part of daily life when you keep using these principles and help other people where you can. Service does not mean rescuing everyone. It means letting what you learned make you more useful, connected, and willing to reach back.',
       john: 'Somebody helped your ass up the hill. Turn around and offer a hand.'
     }
   ]);
 
   const LAKOTA_ART_CANDIDATES = Object.freeze([
-    'assets/Lakota Prayer.png',
-    'assets/Lakota%20Prayer.png',
-    'graphics/Lakota Prayer.png',
-    'graphics/Lakota%20Prayer.png',
-    'Lakota Prayer.png',
-    'Lakota%20Prayer.png'
+    'graphics/Lakota Prayer.png'
   ]);
 
   const THREE_PS_ART_CANDIDATES = Object.freeze([
-    'assets/The 3 Ps.png',
-    'assets/3 Ps.png',
     'graphics/The 3 Ps.png',
-    'graphics/3 Ps.png'
+    'graphics/3 Ps.png',
+    'assets/The 3 Ps.png',
+    'assets/3 Ps.png'
   ]);
 
   function principleArtCandidates(item) {
-    const file = item.file;
-    return [
-      `assets/${file}`,
-      `assets/12-step-principles/${file}`,
-      `assets/principles/${file}`,
-      `graphics/${file}`,
-      `graphics/12-step-principles/${file}`,
-      file
-    ];
+    return [`graphics/${item.file}`];
   }
 
   function escapeHtml(value = '') {
@@ -228,7 +214,7 @@ Passing Season`;
         <div class="principles-reader-intro">
           <p class="eyebrow">TWELVE PRINCIPLES · ONE CARD AT A TIME</p>
           <h2>Swipe the trail.</h2>
-          <p>The artwork gets the big seat. Reflection underneath. John gets the last word.</p>
+          <p>John’s illustrated principles, framed through a secular recovery lens.</p>
         </div>
         <div class="principle-deck" data-principle-deck>
           <article class="principle-slide" data-principle-slide tabindex="0" aria-live="polite"></article>
@@ -243,8 +229,8 @@ Passing Season`;
           <p class="principle-swipe-hint">Swipe left or right, use the arrows, or tap a dot.</p>
         </div>
         <footer class="principles-source">
-          <p>John’s saved illustrated principle set is shown here as supplied. Reference: Little Creek Recovery PA.</p>
-          <a href="${LITTLE_CREEK_SOURCE}" target="_blank" rel="noopener noreferrer">Open the reference source ↗</a>
+          <p>Secular framing follows John’s preferred approach from <em>${SECULAR_REFERENCE}</em>. Little Creek Recovery PA remains a supplemental principles reference.</p>
+          <a href="${LITTLE_CREEK_SOURCE}" target="_blank" rel="noopener noreferrer">Open the supplemental reference ↗</a>
         </footer>
       </section>`;
 
@@ -264,7 +250,7 @@ Passing Season`;
       slide.innerHTML = `
         <div class="principle-art-panel">
           <div class="principle-art-fallback"><span>${item.step}</span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.caption)}</small></div>
-          <img class="principle-art-image" data-principle-art alt="${escapeHtml(item.name)}. ${escapeHtml(item.caption)}" hidden>
+          <img class="principle-art-image" data-principle-art alt="${escapeHtml(item.name)} principle artwork" hidden>
         </div>
         <div class="principle-copy">
           <p class="eyebrow">STEP ${item.step} · ${escapeHtml(item.name).toUpperCase()}</p>
@@ -376,7 +362,7 @@ Passing Season`;
         </button>
         <button type="button" class="wisdom-shelf-card" data-wisdom-shelf-item="principles">
           <span class="wisdom-shelf-icon">🧭</span>
-          <span><small>RECOVERY</small><strong>Principles of the 12-Step Program</strong><em>Swipe through 12 cards →</em></span>
+          <span><small>SECULAR RECOVERY</small><strong>Principles of the 12-Step Program</strong><em>Swipe through 12 cards →</em></span>
         </button>
         <button type="button" class="wisdom-shelf-card" data-wisdom-shelf-item="threePs">
           <span class="wisdom-shelf-icon">🪧</span>
@@ -403,7 +389,7 @@ Passing Season`;
     card.className = 'card wisdom-campfire-shortcut';
     card.innerHTML = `
       <span class="wisdom-campfire-icon" aria-hidden="true">🧭</span>
-      <div><p class="eyebrow">FROM JOHN’S WISDOM SHELF</p><h3>12-Step Principles</h3><p>Twelve illustrated reminders. One card at a time.</p></div>
+      <div><p class="eyebrow">FROM JOHN’S WISDOM SHELF</p><h3>12-Step Principles</h3><p>Twelve illustrated, secular recovery reminders. One card at a time.</p></div>
       <button type="button" class="button button-secondary" data-open-principles>Swipe the cards</button>`;
     intro.insertAdjacentElement('afterend', card);
     card.querySelector('[data-open-principles]').addEventListener('click', () => openItem('principles'));
@@ -420,7 +406,7 @@ Passing Season`;
     window.setTimeout(() => observer.disconnect(), 15000);
   }
 
-  const api = Object.freeze({ LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, LAKOTA_ART_CANDIDATES, THREE_PS_ART_CANDIDATES, principleArtCandidates });
+  const api = Object.freeze({ LAKOTA_PRAYER, PRINCIPLES, LITTLE_CREEK_SOURCE, SECULAR_REFERENCE, LAKOTA_ART_CANDIDATES, THREE_PS_ART_CANDIDATES, principleArtCandidates });
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     window.GrizzlyJohnWisdomShelfV3 = api;
