@@ -181,6 +181,17 @@
   object-fit: contain;
 }
 
+.wisdom-prayer-native {
+  width: min(100%, 620px);
+  padding: clamp(28px, 7vw, 64px);
+  color: #6f181f;
+  text-align: center;
+}
+
+.wisdom-prayer-native .eyebrow {
+  color: #6f181f;
+}
+
 .wisdom-prayer-text {
   font-family: 'Libre Baskerville', Georgia, serif;
   font-size: clamp(1rem, 3.6vw, 1.45rem);
@@ -261,11 +272,10 @@
 }
 
 .principle-art-fallback {
-  position: absolute;
-  inset: 0;
   display: grid;
   place-content: center;
-  gap: 8px;
+  gap: 7px;
+  padding: 22px;
   color: #56422f;
   text-align: center;
 }
@@ -273,21 +283,28 @@
 .principle-art-fallback span {
   font-family: 'Libre Baskerville', Georgia, serif;
   font-size: 4rem;
+  line-height: 1;
   opacity: .24;
 }
 
 .principle-art-fallback strong {
   font-family: 'Libre Baskerville', Georgia, serif;
   font-size: 1.25rem;
-  opacity: .52;
+  opacity: .68;
 }
 
-.principle-art-sprite {
-  position: absolute;
-  inset: 0;
-  background-repeat: no-repeat;
-  background-size: 400% 300%;
-  background-position: var(--art-x) var(--art-y);
+.principle-art-fallback small {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: .78rem;
+  opacity: .7;
+}
+
+.principle-art-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 54vh;
+  object-fit: contain;
 }
 
 .principle-copy {
@@ -509,6 +526,10 @@
     min-height: min(51dvh, 470px);
   }
 
+  .principle-art-image {
+    max-height: 51dvh;
+  }
+
   .wisdom-campfire-shortcut {
     grid-template-columns: auto minmax(0, 1fr);
   }
@@ -555,6 +576,10 @@
 
   .principle-art-panel {
     min-height: 49dvh;
+  }
+
+  .principle-art-image {
+    max-height: 49dvh;
   }
 
   .principle-copy {
