@@ -37,3 +37,4 @@ if (!worker.includes("'./health-v3-dashboard.js'")) {
 
 fs.writeFileSync('service-worker.js', worker);
 console.log('V3 Health dashboard polish wired into app shell.');
+// One-shot helper: remove after successful wiring.
