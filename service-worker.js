@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v34-body-mind-copy';
+const CACHE_NAME = 'grizzlyjohn-v34-health-body-mind-copy';
 const APP_SHELL = [
   './',
   './index.html',
