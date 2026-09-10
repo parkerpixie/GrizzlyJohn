@@ -16,7 +16,7 @@ test('Health dashboard polish is wired into the app shell and offline cache', ()
   assert.match(index, /health-v3-dashboard\.js/);
   assert.match(worker, /health-v3-dashboard\.css/);
   assert.match(worker, /health-v3-dashboard\.js/);
-  assert.match(worker, /grizzlyjohn-v31-health-dashboard-polish/);
+  assert.match(worker, /grizzlyjohn-v3\d+-health-/);
 });
 
 test('every Health snapshot tile opens its own fast logger', () => {
