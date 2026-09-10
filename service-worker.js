@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v34-health-body-mind-copy';
+const CACHE_NAME = 'grizzlyjohn-v35-health-wisdom-shelf';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,8 @@ const APP_SHELL = [
   './health-v3-dashboard.css',
   './health-v3-history.css',
   './health-v3-body-mind.css',
+  './wisdom-v3-shelf.css',
+  './breath-v3-clock.css',
   './weather.css',
   './oracle-cards.css',
   './install.css',
@@ -50,6 +52,8 @@ const APP_SHELL = [
   './health-v3-dashboard.js',
   './health-v3-history.js',
   './health-v3-body-mind.js',
+  './wisdom-v3-shelf.js',
+  './breath-v3-clock.js',
   './backpack-suggestion.html',
   './manifest.json',
   './GrizzlyJohn%20App%20Icon.png',
