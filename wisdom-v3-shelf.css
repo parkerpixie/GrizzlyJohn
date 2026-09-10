@@ -171,26 +171,14 @@
   place-items: center;
   border-radius: 22px;
   overflow: hidden;
-  background: linear-gradient(160deg, #314c3a, #1f3327);
+  background: #e6d1af;
 }
 
-.wisdom-prayer-art-stage > img,
-.three-ps-reader > img {
+.wisdom-prayer-art-stage > img {
   display: block;
   width: 100%;
   max-height: 78vh;
   object-fit: contain;
-}
-
-.wisdom-prayer-native {
-  width: min(100%, 620px);
-  padding: clamp(28px, 7vw, 64px);
-  color: #fffaf0;
-  text-align: center;
-}
-
-.wisdom-prayer-native .eyebrow {
-  color: #ded0b7;
 }
 
 .wisdom-prayer-text {
@@ -219,51 +207,57 @@
   font-size: .92rem;
 }
 
+.principles-reader {
+  width: min(100%, 720px);
+  margin: 0 auto;
+}
+
 .principles-reader-intro {
-  max-width: 700px;
-  margin: 0 auto 20px;
+  margin: 0 auto 12px;
   text-align: center;
 }
 
 .principles-reader-intro h2 {
-  margin: 3px 0 8px;
+  margin: 3px 0 6px;
   font-family: 'Libre Baskerville', Georgia, serif;
   color: #293f31;
+  font-size: 1.3rem;
 }
 
 .principles-reader-intro p:last-child {
   margin: 0;
   color: #6f746f;
-  font-size: .82rem;
+  font-size: .78rem;
 }
 
-.principles-grid {
+.principle-deck {
   display: grid;
-  gap: 14px;
+  gap: 11px;
 }
 
-.principle-card {
+.principle-slide {
   display: grid;
-  grid-template-columns: minmax(190px, 32%) minmax(0, 1fr);
+  grid-template-rows: auto auto;
   overflow: hidden;
   border: 1px solid rgba(47, 70, 54, .12);
-  border-radius: 21px;
-  background: rgba(255, 255, 255, .67);
-  box-shadow: 0 9px 25px rgba(33, 48, 38, .045);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .72);
+  box-shadow: 0 10px 28px rgba(33, 48, 38, .075);
+  outline: none;
+  touch-action: pan-y;
 }
 
-.principle-art {
+.principle-slide:focus-visible {
+  box-shadow: 0 0 0 3px rgba(63, 94, 72, .2), 0 10px 28px rgba(33, 48, 38, .075);
+}
+
+.principle-art-panel {
   position: relative;
-  min-height: 290px;
-  background: linear-gradient(145deg, #304b39, #c7ad7b);
+  display: grid;
+  min-height: min(54vh, 520px);
+  place-items: center;
   overflow: hidden;
-}
-
-.principle-art > img {
-  width: 100%;
-  height: 100%;
-  min-height: 290px;
-  object-fit: cover;
+  background: radial-gradient(circle at 50% 40%, #f4e5c7, #d9c39d 70%, #c4ab80);
 }
 
 .principle-art-fallback {
@@ -272,37 +266,50 @@
   display: grid;
   place-content: center;
   gap: 8px;
-  padding: 20px;
-  color: #fff8ea;
+  color: #56422f;
   text-align: center;
 }
 
 .principle-art-fallback span {
   font-family: 'Libre Baskerville', Georgia, serif;
   font-size: 4rem;
-  line-height: 1;
-  opacity: .82;
+  opacity: .24;
 }
 
 .principle-art-fallback strong {
   font-family: 'Libre Baskerville', Georgia, serif;
   font-size: 1.25rem;
+  opacity: .52;
+}
+
+.principle-art-sprite {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 400% 300%;
+  background-position: var(--art-x) var(--art-y);
 }
 
 .principle-copy {
-  padding: 19px;
+  padding: 16px 17px 17px;
 }
 
-.principle-copy h3 {
-  margin: 3px 0 14px;
+.principle-copy > .eyebrow {
+  margin: 0 0 4px;
+}
+
+.principle-card-caption {
+  margin: 0 0 12px;
+  color: #314738;
   font-family: 'Libre Baskerville', Georgia, serif;
-  color: #293f31;
-  font-size: 1.28rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .principle-reflection,
 .principle-john {
-  padding: 13px 14px;
+  padding: 12px 13px;
   border-radius: 15px;
 }
 
@@ -311,7 +318,7 @@
 }
 
 .principle-john {
-  margin-top: 9px;
+  margin-top: 8px;
   background: rgba(47, 70, 54, .08);
 }
 
@@ -320,22 +327,91 @@
   display: block;
   margin-bottom: 5px;
   color: #314738;
-  font-size: .72rem;
+  font-size: .71rem;
 }
 
 .principle-reflection p,
 .principle-john p {
   margin: 0;
   font-size: .82rem;
-  line-height: 1.55;
+  line-height: 1.52;
+}
+
+.principle-swipe-nav {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 46px;
+  align-items: center;
+  gap: 10px;
+}
+
+.principle-arrow {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid rgba(47, 70, 54, .16);
+  border-radius: 50%;
+  background: #efe5d3;
+  color: #2e4635;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.principle-arrow:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+.principle-progress {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+}
+
+.principle-progress > strong {
+  color: #334b3a;
+  font-size: .72rem;
+  letter-spacing: .04em;
+}
+
+.principle-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 16px;
+}
+
+.principle-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(47, 70, 54, .23);
+  cursor: pointer;
+}
+
+.principle-dot.is-active {
+  width: 10px;
+  height: 10px;
+  background: #36543f;
+}
+
+.principle-swipe-hint {
+  margin: -2px 0 0;
+  color: #7c7a73;
+  font-size: .65rem;
+  text-align: center;
 }
 
 .principles-source {
-  margin: 18px 4px 4px;
-  padding-top: 14px;
+  margin: 15px 4px 4px;
+  padding-top: 12px;
   border-top: 1px solid rgba(47, 70, 54, .13);
   color: #6d726e;
-  font-size: .68rem;
+  font-size: .66rem;
   line-height: 1.45;
   text-align: center;
 }
@@ -349,6 +425,35 @@
   font-weight: 800;
 }
 
+.wisdom-campfire-shortcut {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  margin: 14px 0 22px;
+  padding: 14px;
+}
+
+.wisdom-campfire-shortcut h3,
+.wisdom-campfire-shortcut p {
+  margin: 0;
+}
+
+.wisdom-campfire-shortcut h3 {
+  margin: 2px 0 3px;
+  color: #2d4534;
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+
+.wisdom-campfire-shortcut p:last-child {
+  color: #6f746f;
+  font-size: .74rem;
+}
+
+.wisdom-campfire-icon {
+  font-size: 1.65rem;
+}
+
 .three-ps-reader {
   display: grid;
   min-height: 72vh;
@@ -356,6 +461,13 @@
   overflow: hidden;
   border-radius: 22px;
   background: linear-gradient(160deg, #2f4636, #1f3126);
+}
+
+.three-ps-reader > img {
+  display: block;
+  width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
 }
 
 .three-ps-native {
@@ -393,14 +505,17 @@
     min-height: 92px;
   }
 
-  .principle-card {
-    grid-template-columns: 1fr;
+  .principle-art-panel {
+    min-height: min(51dvh, 470px);
   }
 
-  .principle-art,
-  .principle-art > img {
-    min-height: 0;
-    aspect-ratio: 4 / 3;
+  .wisdom-campfire-shortcut {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .wisdom-campfire-shortcut .button {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 
@@ -413,20 +528,51 @@
   }
 
   .wisdom-shelf-viewer-body {
-    padding: 14px;
+    padding: 12px;
   }
 
   .wisdom-shelf-viewer-topbar {
-    padding-top: max(12px, env(safe-area-inset-top));
+    padding: max(12px, env(safe-area-inset-top)) 14px 11px;
   }
 
   .wisdom-prayer-art-stage,
-  .three-ps-reader {
+  .three-ps-reader,
+  .principle-slide {
     border-radius: 16px;
   }
 
-  .principle-card {
-    border-radius: 17px;
+  .principles-reader-intro {
+    margin-bottom: 9px;
+  }
+
+  .principles-reader-intro h2 {
+    font-size: 1.1rem;
+  }
+
+  .principles-reader-intro p:last-child {
+    font-size: .7rem;
+  }
+
+  .principle-art-panel {
+    min-height: 49dvh;
+  }
+
+  .principle-copy {
+    padding: 13px 14px 14px;
+  }
+
+  .principle-reflection p,
+  .principle-john p {
+    font-size: .78rem;
+  }
+
+  .principle-swipe-nav {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+  }
+
+  .principle-arrow {
+    width: 42px;
+    height: 42px;
   }
 }
 
