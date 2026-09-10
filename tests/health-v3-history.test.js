@@ -78,11 +78,11 @@ test('weight goal progress measures movement from the saved starting point towar
   assert.equal(weightGoalProgress(200, 200, 200), null);
 });
 
-test('goal preferences default gently and preserve malformed saved data instead of overwriting it', () => {
+test('goal preferences start unassigned and preserve malformed saved data instead of overwriting it', () => {
   const clean = memoryStorage();
   const loaded = loadPrefs(clean);
   assert.equal(loaded.ok, true);
-  assert.deepEqual(loaded.prefs.checkInItems, ['sleep', 'bodyFeel']);
+  assert.deepEqual(loaded.prefs.checkInItems, []);
   assert.equal(DEFAULT_PREFS.goals.activity.enabled, false);
 
   const bad = memoryStorage({ 'grizzlyjohn:v3:health:dashboardPrefs': '{broken' });
