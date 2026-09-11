@@ -122,7 +122,7 @@ test('Health history and goals load after the base Health dashboard and are avai
   const worker = read('service-worker.js');
   assert.ok(html.indexOf('health-v3-history.css') > html.indexOf('health-v3-dashboard.css'));
   assert.ok(html.indexOf('health-v3-history.js') > html.indexOf('health-v3-dashboard.js'));
-  assert.match(worker, /grizzlyjohn-v39-final-regression/);
+  assert.match(worker, /grizzlyjohn-v40-breath-polish/);
   assert.ok(worker.includes("'./health-v3-history.css'"));
   assert.ok(worker.includes("'./health-v3-history.js'"));
 });
