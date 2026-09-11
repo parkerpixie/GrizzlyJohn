@@ -49,7 +49,7 @@ test('Wisdom Shelf uses the supplied Lakota and principle artwork paths', () => 
 
 test('final offline shell contains Health trends and Wisdom assets remain reachable', () => {
   const worker = read('service-worker.js');
-  assert.match(worker, /grizzlyjohn-v40-breath-polish/);
+  assert.match(worker, /grizzlyjohn-v41-breath-sync/);
   assert.ok(worker.includes("'./health-v3-trends.css'"));
   assert.ok(worker.includes("'./health-v3-trends.js'"));
   assert.ok(worker.includes("'./graphics/Lakota%20Prayer.png'"));
