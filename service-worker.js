@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v39-final-regression';
+const CACHE_NAME = 'grizzlyjohn-v40-breath-polish';
 const APP_SHELL = [
   './',
   './index.html',
