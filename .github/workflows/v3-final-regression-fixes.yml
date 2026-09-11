@@ -13,6 +13,8 @@ permissions:
 jobs:
   final-regression-fixes:
     runs-on: ubuntu-latest
+    env:
+      TZ: America/Chicago
     steps:
       - name: Check out V3 branch
         uses: actions/checkout@v4
