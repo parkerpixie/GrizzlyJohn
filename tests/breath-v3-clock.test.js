@@ -39,6 +39,16 @@ test('clock enhancement can attach to the existing breathing card and has a safe
   assert.match(source, /dataset\.breathClockV3/);
 });
 
+test('the existing breathing card drives the V3 clock presentation instead of creating a second competing cycle', () => {
+  const source = read('breath-v3-clock.js');
+  assert.match(source, /syncPhaseFromOrb/);
+  assert.match(source, /new MutationObserver\(syncPhaseFromOrb\)/);
+  assert.match(source, /orb\.classList\.contains\('is-inhaling'\)/);
+  assert.match(source, /orb\.classList\.contains\('is-holding'\)/);
+  assert.match(source, /orb\.classList\.contains\('is-exhaling'\)/);
+  assert.match(source, /stage\.classList\.toggle\('is-breath-complete', phase === 'complete'\)/);
+});
+
 test('the visible cue and clock follow 4 seconds in, 2 hold, and 6 out', () => {
   const source = read('breath-v3-clock.js');
   const css = read('breath-v3-clock.css');
