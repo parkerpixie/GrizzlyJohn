@@ -1,0 +1,108 @@
+name: Apply V3 Final Regression Fixes
+
+on:
+  push:
+    branches:
+      - v3/health-foundation
+    paths:
+      - .github/workflows/v3-final-regression-fixes.yml
+
+permissions:
+  contents: write
+
+jobs:
+  final-regression-fixes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out V3 branch
+        uses: actions/checkout@v4
+        with:
+          ref: v3/health-foundation
+      - name: Apply final regression fixes
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          function replaceRequired(source, from, to, label) {
+            if (!source.includes(from)) {
+              if (source.includes(to)) return source;
+              throw new Error(`Could not find ${label}; refusing to rewrite.`);
+            }
+            return source.replace(from, to);
+          }
+
+          let ui = fs.readFileSync('health-v3-ui.js', 'utf8');
+          ui = replaceRequired(
+            ui,
+            "      forms.forEach(form => { form.hidden = true; formStatus(form, ''); });",
+            "      forms.forEach(form => { form.hidden = true; formStatus(form, ''); form.reset(); });",
+            'Health chooser reset'
+          );
+          ui = replaceRequired(
+            ui,
+            "    dialog?.addEventListener('click', event => {\n      if (event.target === dialog) closeDialog();\n    });",
+            "    dialog?.addEventListener('click', event => {\n      if (event.target === dialog) closeDialog();\n    });\n    dialog?.addEventListener('close', showChooser);",
+            'Health dialog close reset'
+          );
+          fs.writeFileSync('health-v3-ui.js', ui);
+
+          let history = fs.readFileSync('health-v3-history.js', 'utf8');
+          history = replaceRequired(
+            history,
+            "      if (!check.total) {\n        node.innerHTML = `<div class=\"health-checkin-star\">☆</div><div><strong>Choose your daily Health Check-In</strong><p>Pick the few things that mean “I showed up for my health today.”</p><button type=\"button\" class=\"health-inline-link\" data-open-health-goals>Choose items →</button></div>`;\n        return;\n      }",
+            "      if (!check.total) {\n        node.classList.remove('is-complete');\n        node.innerHTML = `<div class=\"health-checkin-star\">☆</div><div><strong>Choose your daily Health Check-In</strong><p>Pick the few things that mean “I showed up for my health today.”</p><button type=\"button\" class=\"health-inline-link\" data-open-health-goals>Choose items →</button></div>`;\n        return;\n      }",
+            'Health check-in completed class reset'
+          );
+          history = replaceRequired(
+            history,
+            "      updateGoalFieldVisibility(); document.getElementById('healthGoalsError').textContent = '';\n      if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');",
+            "      updateGoalFieldVisibility();\n      const goalError = document.getElementById('healthGoalsError');\n      const submit = form.querySelector('[type=\"submit\"]');\n      if (!prefsState.ok) {\n        if (goalError) goalError.textContent = `${prefsState.reason || 'Saved Health goals could not be read.'} Editing is disabled to protect the saved goal data.`;\n        if (submit) submit.disabled = true;\n      } else {\n        if (goalError) goalError.textContent = '';\n        if (submit) submit.disabled = false;\n      }\n      if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');",
+            'Malformed goal preferences open guard'
+          );
+          history = replaceRequired(
+            history,
+            "    function saveGoals(event) {\n      event.preventDefault();\n      const form = event.currentTarget; const error = document.getElementById('healthGoalsError');",
+            "    function saveGoals(event) {\n      event.preventDefault();\n      const form = event.currentTarget; const error = document.getElementById('healthGoalsError');\n      if (!prefsState.ok) {\n        error.textContent = `${prefsState.reason || 'Saved Health goals could not be read.'} Editing is disabled to protect the saved goal data.`;\n        return;\n      }",
+            'Malformed goal preferences save guard'
+          );
+          fs.writeFileSync('health-v3-history.js', history);
+
+          let worker = fs.readFileSync('service-worker.js', 'utf8');
+          worker = replaceRequired(
+            worker,
+            "const CACHE_NAME = 'grizzlyjohn-v38-health-trends';",
+            "const CACHE_NAME = 'grizzlyjohn-v39-final-regression';",
+            'final cache name'
+          );
+          worker = replaceRequired(
+            worker,
+            "  './graphics/HALT%20Skill.png',",
+            "  './graphics/HALT%20Skill.png',\n  './graphics/Lakota%20Prayer.png',\n  './graphics/Honesty.png',\n  './graphics/Faith.png',\n  './graphics/Trust.png',\n  './graphics/Soul-Searching.png',\n  './graphics/Integrity.png',\n  './graphics/Acceptance.png',\n  './graphics/Humility.png',\n  './graphics/Willingness.png',\n  './graphics/Forgiveness.png',\n  './graphics/Maintenance.png',\n  './graphics/Making-Contact.png',\n  './graphics/Service.png',",
+            'Wisdom graphics offline cache anchor'
+          );
+          fs.writeFileSync('service-worker.js', worker);
+
+          let historyTest = fs.readFileSync('tests/health-v3-history.test.js', 'utf8');
+          historyTest = replaceRequired(
+            historyTest,
+            'assert.match(worker, /grizzlyjohn-v38-health-trends/);',
+            'assert.match(worker, /grizzlyjohn-v39-final-regression/);',
+            'Health history final cache assertion'
+          );
+          fs.writeFileSync('tests/health-v3-history.test.js', historyTest);
+          NODE
+      - name: Run regression tests
+        run: node --test tests/*.test.js
+      - name: Commit fixes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add health-v3-ui.js health-v3-history.js service-worker.js tests/health-v3-history.test.js
+          if git diff --cached --quiet; then
+            echo "Final regression fixes already applied."
+          else
+            git commit -m "Harden V3 final regression edge cases"
+            git push origin HEAD:v3/health-foundation
+          fi
