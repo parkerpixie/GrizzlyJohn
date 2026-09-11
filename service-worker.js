@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v37-wisdom-secular';
+const CACHE_NAME = 'grizzlyjohn-v38-health-trends';
 const APP_SHELL = [
   './',
   './index.html',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   './health-v3.css',
   './health-v3-dashboard.css',
   './health-v3-history.css',
+  './health-v3-trends.css',
   './health-v3-body-mind.css',
   './wisdom-v3-shelf.css',
   './breath-v3-clock.css',
@@ -51,6 +52,7 @@ const APP_SHELL = [
   './health-v3-ui.js',
   './health-v3-dashboard.js',
   './health-v3-history.js',
+  './health-v3-trends.js',
   './health-v3-body-mind.js',
   './wisdom-v3-shelf.js',
   './breath-v3-clock.js',
