@@ -124,6 +124,7 @@
 }
 
 .health-trend-line {
+  fill: none;
   stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -135,35 +136,16 @@
   stroke-width: 3;
 }
 
-.health-trend-line.series-a,
-.health-trend-point.series-a {
-  stroke: #4b6955;
-  fill: #4b6955;
-}
-
-.health-trend-line.series-b,
-.health-trend-point.series-b {
-  stroke: #a66d54;
-  fill: #a66d54;
-}
-
-.health-trend-line.series-pulse,
-.health-trend-point.series-pulse {
-  stroke: #607a84;
-  fill: #607a84;
-}
-
-.health-trend-line.series-weight,
-.health-trend-point.series-weight {
-  stroke: #796b8d;
-  fill: #796b8d;
-}
-
-.health-trend-line.series-sleep,
-.health-trend-point.series-sleep {
-  stroke: #5f728f;
-  fill: #5f728f;
-}
+.health-trend-line.series-a { stroke: #4b6955; }
+.health-trend-point.series-a { fill: #4b6955; }
+.health-trend-line.series-b { stroke: #a66d54; }
+.health-trend-point.series-b { fill: #a66d54; }
+.health-trend-line.series-pulse { stroke: #607a84; }
+.health-trend-point.series-pulse { fill: #607a84; }
+.health-trend-line.series-weight { stroke: #796b8d; }
+.health-trend-point.series-weight { fill: #796b8d; }
+.health-trend-line.series-sleep { stroke: #5f728f; }
+.health-trend-point.series-sleep { fill: #5f728f; }
 
 .health-trend-bar.series-activity {
   fill: #708a62;
