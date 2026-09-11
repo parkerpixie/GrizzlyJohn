@@ -1,0 +1,219 @@
+.breath-v3-clock {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.breath-clock-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+}
+
+.breath-clock-face {
+  position: relative;
+  width: clamp(150px, 44vw, 210px);
+  aspect-ratio: 1;
+  border: 9px solid #4a3828;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #f8f0dc 0 64%, #e5d2ad 65% 70%, #f6ecd7 71% 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, .65),
+    inset 0 0 22px rgba(76, 50, 27, .14),
+    0 8px 22px rgba(37, 31, 23, .16);
+  transform: scale(.88);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.breath-clock-tick {
+  position: absolute;
+  left: calc(50% - .5px);
+  top: 5px;
+  width: 1px;
+  height: 7px;
+  background: rgba(64, 49, 33, .46);
+  transform-origin: .5px calc((clamp(150px, 44vw, 210px) - 18px) / 2);
+  transform: rotate(calc(var(--tick) * 6deg));
+}
+
+.breath-clock-tick.is-major {
+  width: 2px;
+  height: 11px;
+  background: rgba(56, 42, 29, .82);
+}
+
+.breath-clock-number {
+  position: absolute;
+  color: #4b3927;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: clamp(.65rem, 2.4vw, .86rem);
+  font-weight: 700;
+}
+
+.breath-clock-number.is-xii { top: 17px; left: 50%; transform: translateX(-50%); }
+.breath-clock-number.is-iii { right: 16px; top: 50%; transform: translateY(-50%); }
+.breath-clock-number.is-vi { bottom: 15px; left: 50%; transform: translateX(-50%); }
+.breath-clock-number.is-ix { left: 17px; top: 50%; transform: translateY(-50%); }
+
+.breath-clock-hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: 50% 100%;
+  border-radius: 99px;
+}
+
+.breath-clock-minute {
+  width: 4px;
+  height: 31%;
+  margin-left: -2px;
+  background: #4a3928;
+}
+
+.breath-clock-second {
+  width: 2px;
+  height: 38%;
+  margin-left: -1px;
+  background: #9b5d45;
+}
+
+.breath-clock-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 3px solid #f4e8ce;
+  border-radius: 50%;
+  background: #4a3928;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px rgba(47, 34, 22, .25);
+}
+
+.breath-exact-time {
+  min-width: 114px;
+  padding: 7px 13px 8px;
+  border: 1px solid rgba(67, 53, 38, .18);
+  border-radius: 10px;
+  background: #e9dfca;
+  color: #403629;
+  text-align: center;
+  box-shadow: inset 0 1px 3px rgba(51, 39, 25, .08);
+}
+
+.breath-exact-time span,
+.breath-exact-time strong {
+  display: block;
+}
+
+.breath-exact-time span {
+  margin-bottom: 2px;
+  font-size: .52rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.breath-exact-time strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .92rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .035em;
+}
+
+.breath-v3-card .breathing-stage,
+#breathingCard .breathing-stage {
+  text-align: center;
+}
+
+.breath-v3-card .breathing-cue,
+#breathingCard .breathing-cue {
+  min-height: 3.4rem;
+  margin: 14px auto 2px;
+  color: var(--pine-dark, #203127);
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: clamp(1.8rem, 7vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -.025em;
+  transition: transform .4s ease, opacity .4s ease;
+}
+
+#breathingStage[data-breath-phase="inhaling"] .breath-clock-face {
+  animation: breathClockIn 4s ease-in-out forwards;
+}
+
+#breathingStage[data-breath-phase="holding"] .breath-clock-face {
+  transform: scale(1.08);
+}
+
+#breathingStage[data-breath-phase="exhaling"] .breath-clock-face {
+  animation: breathClockOut 6s ease-in-out forwards;
+}
+
+#breathingStage[data-breath-phase="inhaling"] .breathing-cue {
+  transform: scale(1.04);
+}
+
+#breathingStage[data-breath-phase="holding"] .breathing-cue {
+  transform: scale(1.06);
+}
+
+#breathingStage[data-breath-phase="exhaling"] .breathing-cue {
+  transform: scale(.98);
+}
+
+#breathingStage:not(.is-breath-complete) .breathing-orb {
+  display: none;
+}
+
+#breathingStage.is-breath-complete .breath-v3-clock {
+  display: none;
+}
+
+#breathingStage.is-breath-complete .breathing-orb {
+  display: grid;
+  margin-inline: auto;
+}
+
+#breathingStage.is-breath-complete .breathing-cue {
+  transform: none;
+}
+
+@keyframes breathClockIn {
+  from { transform: scale(.88); }
+  to { transform: scale(1.08); }
+}
+
+@keyframes breathClockOut {
+  from { transform: scale(1.08); }
+  to { transform: scale(.88); }
+}
+
+@media (max-width: 520px) {
+  .breath-clock-face {
+    border-width: 8px;
+  }
+
+  .breath-v3-card .breathing-cue,
+  #breathingCard .breathing-cue {
+    font-size: clamp(1.75rem, 8vw, 2.35rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breath-clock-hand,
+  .breath-clock-face,
+  .breathing-cue {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  #breathingStage[data-breath-phase="inhaling"] .breath-clock-face,
+  #breathingStage[data-breath-phase="holding"] .breath-clock-face,
+  #breathingStage[data-breath-phase="exhaling"] .breath-clock-face {
+    transform: scale(1);
+  }
+}

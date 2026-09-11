@@ -1,0 +1,239 @@
+.health-trends-dashboard {
+  margin: 26px 0 30px;
+}
+
+.health-trends-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 13px;
+}
+
+.health-trends-heading h2 {
+  margin: 2px 0 5px;
+  color: var(--pine-dark, #23382b);
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+
+.health-trends-heading p:last-child {
+  margin: 0;
+  max-width: 690px;
+  color: var(--muted, #6f746f);
+  font-size: .8rem;
+  line-height: 1.45;
+}
+
+.health-trends-range {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid rgba(47, 70, 54, .12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .56);
+  color: #405646;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+}
+
+.health-trends-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.health-trend-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(47, 70, 54, .11);
+  border-radius: 19px;
+  background: rgba(255, 255, 255, .66);
+  box-shadow: 0 8px 24px rgba(31, 50, 38, .045);
+}
+
+.health-trend-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.health-trend-card h3 {
+  margin: 0 0 3px;
+  color: #2d4434;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: .96rem;
+}
+
+.health-trend-card-head p {
+  margin: 0;
+  color: #737873;
+  font-size: .68rem;
+  line-height: 1.4;
+}
+
+.health-trend-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 9px;
+  color: #6c716d;
+  font-size: .6rem;
+  white-space: nowrap;
+}
+
+.health-trend-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.health-trend-legend i {
+  width: 13px;
+  height: 3px;
+  border-radius: 99px;
+  background: #4b6955;
+}
+
+.health-trend-legend i.series-b {
+  background: #a66d54;
+}
+
+.health-trend-chart {
+  width: 100%;
+  overflow: hidden;
+}
+
+.health-trend-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.health-trend-gridline {
+  stroke: rgba(58, 75, 63, .12);
+  stroke-width: 1;
+}
+
+.health-trend-axis-label {
+  fill: #8a8c87;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 18px;
+}
+
+.health-trend-line {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .92;
+}
+
+.health-trend-point {
+  stroke: #f8f4ec;
+  stroke-width: 3;
+}
+
+.health-trend-line.series-a { stroke: #4b6955; }
+.health-trend-point.series-a { fill: #4b6955; }
+.health-trend-line.series-b { stroke: #a66d54; }
+.health-trend-point.series-b { fill: #a66d54; }
+.health-trend-line.series-pulse { stroke: #607a84; }
+.health-trend-point.series-pulse { fill: #607a84; }
+.health-trend-line.series-weight { stroke: #796b8d; }
+.health-trend-point.series-weight { fill: #796b8d; }
+.health-trend-line.series-sleep { stroke: #5f728f; }
+.health-trend-point.series-sleep { fill: #5f728f; }
+
+.health-trend-bar.series-activity {
+  fill: #708a62;
+  opacity: .88;
+}
+
+.health-trend-bar.series-medication {
+  fill: #92795c;
+  opacity: .88;
+}
+
+.health-trend-footnote {
+  margin: 7px 0 0;
+  color: #70746f;
+  font-size: .64rem;
+  line-height: 1.4;
+}
+
+.health-trend-footnote strong {
+  color: #4b5f50;
+}
+
+.health-trend-empty {
+  display: grid;
+  min-height: 145px;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  border-radius: 14px;
+  background: rgba(47, 70, 54, .035);
+  color: #81847f;
+  text-align: center;
+}
+
+.health-trend-empty span {
+  letter-spacing: .2em;
+}
+
+.health-trend-empty p,
+.health-trends-error {
+  margin: 0;
+  font-size: .72rem;
+}
+
+.health-trends-error {
+  padding: 14px;
+  border: 1px solid rgba(47, 70, 54, .12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .55);
+  color: #636a64;
+}
+
+@media (max-width: 760px) {
+  .health-trends-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-trend-card {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .health-trends-heading {
+    align-items: flex-start;
+  }
+
+  .health-trends-heading h2 {
+    font-size: 1.05rem;
+  }
+
+  .health-trends-heading p:last-child {
+    font-size: .72rem;
+  }
+
+  .health-trend-card-head {
+    align-items: flex-start;
+  }
+
+  .health-trend-legend {
+    font-size: .56rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .health-trend-line,
+  .health-trend-point,
+  .health-trend-bar {
+    transition: none !important;
+  }
+}

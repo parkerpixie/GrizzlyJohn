@@ -1,0 +1,558 @@
+.health-screen {
+  padding-bottom: 34px;
+}
+
+.health-intro {
+  margin-bottom: 18px;
+}
+
+.health-intro p:last-child {
+  max-width: 42rem;
+}
+
+.health-snapshot-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(47, 70, 54, .16);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(114, 130, 107, .16), transparent 17rem),
+    var(--paper);
+}
+
+.health-snapshot-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.health-snapshot-heading h2 {
+  margin-bottom: .3rem;
+}
+
+.health-snapshot-date {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(47, 70, 54, .08);
+  color: var(--pine-dark);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.health-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.health-snapshot-item {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(43, 42, 39, .09);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, .56);
+}
+
+.health-snapshot-item .health-snapshot-icon {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 1.2rem;
+}
+
+.health-snapshot-item strong,
+.health-snapshot-item small {
+  display: block;
+}
+
+.health-snapshot-item strong {
+  overflow: hidden;
+  color: var(--pine-dark);
+  font-family: var(--serif);
+  font-size: 1.18rem;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.health-snapshot-item small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: .69rem;
+  line-height: 1.25;
+}
+
+.health-snapshot-item.health-snapshot-wide {
+  grid-column: 1 / -1;
+}
+
+.health-log-main-button {
+  width: 100%;
+  min-height: 52px;
+  font-size: 1rem;
+}
+
+.health-main-status {
+  min-height: 1.3em;
+  margin: 10px 0 0;
+  color: var(--pine-dark);
+  font-size: .78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.health-privacy-note {
+  margin: 12px 2px 0;
+  color: var(--muted);
+  font-size: .72rem;
+  text-align: center;
+}
+
+.health-today-section {
+  margin-top: 24px;
+}
+
+.health-section-heading {
+  margin-bottom: 12px;
+}
+
+.health-section-heading h2 {
+  margin-bottom: .3rem;
+}
+
+.health-log-list {
+  display: grid;
+  gap: 9px;
+}
+
+.health-log-entry {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--paper);
+  box-shadow: 0 7px 20px rgba(32, 49, 39, .05);
+}
+
+.health-log-entry-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(47, 70, 54, .08);
+  font-size: 1.2rem;
+}
+
+.health-log-entry strong,
+.health-log-entry small {
+  display: block;
+}
+
+.health-log-entry strong {
+  color: var(--pine-dark);
+  font-size: .9rem;
+}
+
+.health-log-entry p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: .77rem;
+  line-height: 1.35;
+}
+
+.health-log-entry > time {
+  color: var(--muted);
+  font-size: .67rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.health-empty {
+  padding: 28px 18px;
+  border: 1px dashed rgba(43, 42, 39, .18);
+  border-radius: 19px;
+  background: rgba(255, 255, 255, .24);
+  text-align: center;
+}
+
+.health-empty span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 1.8rem;
+}
+
+.health-empty p {
+  margin-bottom: 0;
+}
+
+.health-log-dialog {
+  width: min(calc(100% - 22px), 590px);
+  max-height: min(92vh, 820px);
+  padding: 0;
+  overflow: hidden;
+}
+
+.health-log-shell {
+  display: flex;
+  max-height: min(92vh, 820px);
+  flex-direction: column;
+}
+
+.health-log-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 42px 1fr 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 250, 240, .96);
+  backdrop-filter: blur(12px);
+}
+
+.health-log-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.health-log-back,
+.health-log-close {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(47, 70, 54, .08);
+  cursor: pointer;
+}
+
+.health-log-back[hidden] {
+  visibility: hidden;
+  display: grid;
+}
+
+.health-log-close {
+  font-size: 1.25rem;
+}
+
+.health-log-content {
+  overflow-y: auto;
+  padding: 18px;
+  overscroll-behavior: contain;
+}
+
+.health-log-chooser > p {
+  margin-bottom: 16px;
+}
+
+.health-log-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.health-log-choice {
+  min-height: 108px;
+  padding: 15px 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .52);
+  cursor: pointer;
+  text-align: left;
+}
+
+.health-log-choice:hover,
+.health-log-choice:focus-visible {
+  border-color: rgba(47, 70, 54, .3);
+  background: rgba(47, 70, 54, .07);
+}
+
+.health-log-choice span,
+.health-log-choice strong,
+.health-log-choice small {
+  display: block;
+}
+
+.health-log-choice span {
+  margin-bottom: 8px;
+  font-size: 1.45rem;
+}
+
+.health-log-choice strong {
+  color: var(--pine-dark);
+}
+
+.health-log-choice small {
+  margin-top: 4px;
+  color: var(--muted);
+  line-height: 1.25;
+}
+
+.health-log-form {
+  display: grid;
+  gap: 15px;
+}
+
+.health-log-form[hidden] {
+  display: none;
+}
+
+.health-form-intro {
+  margin-bottom: -2px;
+}
+
+.health-form-intro h3 {
+  margin-bottom: .35rem;
+  color: var(--pine-dark);
+  font-family: var(--serif);
+  font-size: 1.25rem;
+}
+
+.health-form-intro p {
+  margin-bottom: 0;
+  font-size: .84rem;
+}
+
+.health-field,
+.health-fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.health-field > span,
+.health-fieldset legend {
+  color: var(--pine-dark);
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+.health-field input,
+.health-field select,
+.health-field textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 1px solid rgba(43, 42, 39, .18);
+  border-radius: 12px;
+  outline: none;
+  background: #fffdf7;
+  color: var(--ink);
+}
+
+.health-field textarea {
+  min-height: 98px;
+  resize: vertical;
+}
+
+.health-field input:focus,
+.health-field select:focus,
+.health-field textarea:focus {
+  border-color: var(--pine);
+  box-shadow: 0 0 0 3px rgba(47, 70, 54, .1);
+}
+
+.health-vitals-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.health-vitals-row .health-field input {
+  text-align: center;
+}
+
+.health-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.health-chip {
+  position: relative;
+}
+
+.health-chip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.health-chip span {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid rgba(43, 42, 39, .14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .56);
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.health-chip input:checked + span {
+  border-color: rgba(47, 70, 54, .26);
+  background: rgba(47, 70, 54, .1);
+  color: var(--pine-dark);
+}
+
+.health-chip input:focus-visible + span {
+  outline: 3px solid rgba(47, 70, 54, .16);
+  outline-offset: 2px;
+}
+
+.health-med-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.health-med-option {
+  position: relative;
+}
+
+.health-med-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.health-med-option span {
+  display: grid;
+  min-height: 76px;
+  place-items: center;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .55);
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+}
+
+.health-med-option input:checked + span {
+  border-color: rgba(47, 70, 54, .28);
+  background: rgba(47, 70, 54, .11);
+  color: var(--pine-dark);
+}
+
+.health-med-option input:checked + span::before {
+  content: '✓';
+  display: block;
+  margin-bottom: 2px;
+  font-size: 1.15rem;
+}
+
+.health-estimate {
+  margin: -2px 0 0;
+  padding: 12px 13px;
+  border-radius: 13px;
+  background: rgba(212, 166, 75, .13);
+  color: #6e521c;
+  font-size: .75rem;
+  line-height: 1.4;
+}
+
+.health-form-status {
+  min-height: 1.3em;
+  margin: 0;
+  color: #8a463e;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.health-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 2px;
+}
+
+.health-form-actions .button {
+  width: 100%;
+  min-height: 48px;
+}
+
+.health-footnote {
+  margin: 18px 2px 0;
+  color: var(--muted);
+  font-size: .68rem;
+  line-height: 1.4;
+}
+
+/* Six primary destinations is the V3 architecture cap. */
+.bottom-nav {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+@media (min-width: 620px) {
+  .health-snapshot-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .health-snapshot-item.health-snapshot-wide {
+    grid-column: auto;
+  }
+
+  .health-log-choices {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .bottom-nav .nav-item {
+    min-height: 56px;
+    padding-inline: 2px;
+  }
+
+  .bottom-nav .nav-item span {
+    font-size: 1.12rem;
+  }
+
+  .bottom-nav .nav-item small {
+    font-size: .59rem;
+  }
+
+  .health-log-dialog {
+    width: calc(100% - 14px);
+  }
+
+  .health-log-content {
+    padding: 16px 14px 20px;
+  }
+
+  .health-vitals-row {
+    gap: 6px;
+  }
+
+  .health-vitals-row .health-field > span {
+    font-size: .68rem;
+  }
+
+  .health-vitals-row .health-field input {
+    padding-inline: 6px;
+  }
+
+  .health-log-entry {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .health-log-entry > time {
+    grid-column: 2;
+  }
+}
