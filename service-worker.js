@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v42-campfire-artwork';
+const CACHE_NAME = 'grizzlyjohn-v43-campfire-cachefix';
 const APP_SHELL = [
   './',
   './index.html',
@@ -111,8 +111,14 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  const isCodeAsset = /\.(?:css|js)$/i.test(url.pathname);
+  const networkRequest = isCodeAsset
+    ? new Request(event.request, { cache: 'reload' })
+    : event.request;
+
   event.respondWith(
-    fetch(event.request)
+    fetch(networkRequest)
       .then(response => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
