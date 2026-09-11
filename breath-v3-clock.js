@@ -133,6 +133,7 @@
   function enhanceClock(card) {
     if (!card || card.querySelector('[data-breath-clock-v3]')) return true;
     const stage = $('#breathingStage', card);
+    const orb = $('#breathingOrb', card);
     const start = $('#startBreathing', card);
     const stop = $('#stopBreathing', card);
     const cue = $('#breathingCue', card);
@@ -151,6 +152,31 @@
     let startedAt = null;
     let raf = null;
     let completed = false;
+
+    // V2 already owns the original breathing-card click cycle on an existing card.
+    // Mirror its orb classes into V3 presentation state so the clock, larger cue,
+    // and completion artwork stay perfectly synchronized without adding a second timer.
+    const phaseLabels = Object.freeze({
+      inhaling: 'Breathe in · 4 seconds',
+      holding: 'Hold · 2 seconds',
+      exhaling: 'Breathe out · 6 seconds',
+      complete: 'There you are.'
+    });
+    const syncPhaseFromOrb = () => {
+      if (!orb) return;
+      const phase = orb.classList.contains('is-inhaling') ? 'inhaling'
+        : orb.classList.contains('is-holding') ? 'holding'
+          : orb.classList.contains('is-exhaling') ? 'exhaling'
+            : orb.classList.contains('is-complete') ? 'complete'
+              : 'idle';
+      stage.dataset.breathPhase = phase;
+      stage.classList.toggle('is-breath-complete', phase === 'complete');
+      if (phaseLabels[phase]) cue.textContent = phaseLabels[phase];
+    };
+    if (orb) {
+      new MutationObserver(syncPhaseFromOrb).observe(orb, { attributes: true, attributeFilter: ['class'] });
+      syncPhaseFromOrb();
+    }
 
     const formatElapsed = milliseconds => {
       const tenths = Math.max(0, Math.floor(milliseconds / 100));
