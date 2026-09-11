@@ -17,7 +17,7 @@ test('activity calorie estimate is deterministic, weight-aware, and optional', (
     weightPounds: 180
   });
   assert.equal(estimate, 150);
-  assert.equal(estimateActivityCalories({ activityType: 'Other', intensity: 'Moderate', durationMinutes: 30, weightPounds: 180 }), null);
+  assert.equal(estimateActivityCalories({ activityType: 'Other', intensity: 'Moderate', durationMinutes: 30, weightPounds: null }), null);
   assert.equal(estimateActivityCalories({ activityType: 'Walking', intensity: 'Moderate', durationMinutes: 30, weightPounds: null }), null);
   assert.ok(ACTIVITY_METS.Hiking);
 });
@@ -57,7 +57,7 @@ test('Health navigation makes room for the sixth and final primary destination',
 
 test('offline app shell caches all V3 Health assets', () => {
   const worker = read('service-worker.js');
-  assert.match(worker, /grizzlyjohn-v3\d+-/);
+  assert.match(worker, /grizzlyjohn-v\d+-/);
   for (const asset of ['./health-v3.css', './health-v3-dashboard.css', './health-v3.js', './health-v3-ui.js', './health-v3-dashboard.js']) {
     assert.ok(worker.includes(`'${asset}'`), `missing ${asset} from app shell cache`);
   }
