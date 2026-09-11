@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v43-campfire-cachefix';
+const CACHE_NAME = 'grizzlyjohn-v44-campfire-reflections';
 const APP_SHELL = [
   './',
   './index.html',
