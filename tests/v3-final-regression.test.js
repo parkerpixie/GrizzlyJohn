@@ -42,7 +42,7 @@ test('Health trends are wired after history and before Body plus Mind', () => {
 test('Wisdom Shelf uses the supplied Lakota and principle artwork paths', () => {
   const source = read('wisdom-v3-shelf.js');
   assert.match(source, /graphics\/Lakota Prayer\.png/);
-  assert.match(source, /graphics\/\$\{file\}/);
+  assert.match(source, /graphics\/\$\{item\.file\}/);
   assert.match(source, /name: 'Trust'/);
   assert.match(source, /Choose the work\. Keep choosing it\./);
 });
