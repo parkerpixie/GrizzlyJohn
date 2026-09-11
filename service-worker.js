@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v41-breath-sync';
+const CACHE_NAME = 'grizzlyjohn-v42-campfire-artwork';
 const APP_SHELL = [
   './',
   './index.html',
