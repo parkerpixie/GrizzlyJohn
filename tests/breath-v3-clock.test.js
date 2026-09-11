@@ -39,6 +39,37 @@ test('clock enhancement can attach to the existing breathing card and has a safe
   assert.match(source, /dataset\.breathClockV3/);
 });
 
+test('the visible cue and clock follow 4 seconds in, 2 hold, and 6 out', () => {
+  const source = read('breath-v3-clock.js');
+  const css = read('breath-v3-clock.css');
+  assert.match(source, /Breathe in · 4 seconds/);
+  assert.match(source, /Hold · 2 seconds/);
+  assert.match(source, /Breathe out · 6 seconds/);
+  assert.match(source, /stage\.dataset\.breathPhase/);
+  assert.match(css, /breathClockIn 4s/);
+  assert.match(css, /breathClockOut 6s/);
+  assert.match(css, /data-breath-phase="holding"/);
+});
+
+test('breathing cue is intentionally large and moves with the phase', () => {
+  const css = read('breath-v3-clock.css');
+  assert.match(css, /font-size: clamp\(1\.8rem, 7vw, 2\.75rem\)/);
+  assert.match(css, /data-breath-phase="inhaling"[^}]*\.breathing-cue/s);
+  assert.match(css, /data-breath-phase="exhaling"[^}]*\.breathing-cue/s);
+});
+
+test('completion swaps the clock back to the existing happy Grizz art', () => {
+  const source = read('breath-v3-clock.js');
+  const css = read('breath-v3-clock.css');
+  const art = read('art-upgrades.js');
+  assert.match(source, /setPhase\('complete', 'There you are\.'\)/);
+  assert.match(source, /center\.textContent = '🌿'/);
+  assert.match(css, /is-breath-complete \.breath-v3-clock[\s\S]*display: none/);
+  assert.match(css, /is-breath-complete \.breathing-orb[\s\S]*display: grid/);
+  assert.match(art, /breathComplete/);
+  assert.match(art, /GrizzlyJohn%20Breath%20Complete%2001\.png/);
+});
+
 test('stopping a breathing session resets the elapsed clock without saving personal data', () => {
   const source = read('breath-v3-clock.js');
   assert.match(source, /stop\.addEventListener\('click', resetTimer\)/);
@@ -46,10 +77,11 @@ test('stopping a breathing session resets the elapsed clock without saving perso
   assert.doesNotMatch(source, /localStorage\.setItem|sessionStorage\.setItem/);
 });
 
-test('reduced-motion preference keeps the exact timer while avoiding hand animation updates', () => {
+test('reduced-motion preference keeps the exact timer while avoiding hand and scale animation updates', () => {
   const source = read('breath-v3-clock.js');
   const css = read('breath-v3-clock.css');
   assert.match(source, /prefers-reduced-motion: reduce/);
   assert.match(source, /if \(!reducedMotion\)/);
   assert.match(css, /prefers-reduced-motion: reduce/);
+  assert.match(css, /animation: none !important/);
 });
