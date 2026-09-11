@@ -76,6 +76,8 @@
     const later = (fn, ms, token) => timers.push(window.setTimeout(() => { if (token === session) fn(); }, ms));
     const setPhase = (name, text) => {
       orb.classList.remove('is-inhaling', 'is-holding', 'is-exhaling', 'is-complete');
+      stage.dataset.breathPhase = name || 'idle';
+      stage.classList.toggle('is-breath-complete', name === 'complete');
       if (name) orb.classList.add(`is-${name}`);
       cue.textContent = text;
     };
@@ -90,11 +92,11 @@
     }
 
     function run(token) {
-      setPhase('inhaling', 'Breathe in.');
+      setPhase('inhaling', 'Breathe in · 4 seconds');
       later(() => {
-        setPhase('holding', 'Stay here.');
+        setPhase('holding', 'Hold · 2 seconds');
         later(() => {
-          setPhase('exhaling', 'Let it go.');
+          setPhase('exhaling', 'Breathe out · 6 seconds');
           later(() => {
             breath += 1;
             if (breath >= BREATHS_PER_SET) finish();
