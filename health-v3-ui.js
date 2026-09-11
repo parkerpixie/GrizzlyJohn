@@ -261,7 +261,7 @@
 
     function showChooser() {
       chooser.hidden = false;
-      forms.forEach(form => { form.hidden = true; formStatus(form, ''); });
+      forms.forEach(form => { form.hidden = true; formStatus(form, ''); form.reset(); });
       back.hidden = true;
       title.textContent = 'Log Health';
       setTimeout(() => chooser.querySelector('[data-health-log-type]')?.focus(), 20);
@@ -572,6 +572,7 @@
     dialog?.addEventListener('click', event => {
       if (event.target === dialog) closeDialog();
     });
+    dialog?.addEventListener('close', showChooser);
 
     document.addEventListener('click', event => {
       const healthNav = event.target.closest('[data-nav="health"]');

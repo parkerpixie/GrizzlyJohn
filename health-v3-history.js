@@ -355,6 +355,7 @@
       const check = checkInStatus(health.localDateKey(new Date()));
       const names = Object.fromEntries(CHECKIN_TYPES);
       if (!check.total) {
+        node.classList.remove('is-complete');
         node.innerHTML = `<div class="health-checkin-star">☆</div><div><strong>Choose your daily Health Check-In</strong><p>Pick the few things that mean “I showed up for my health today.”</p><button type="button" class="health-inline-link" data-open-health-goals>Choose items →</button></div>`;
         return;
       }
@@ -565,7 +566,16 @@
       form.elements.goalWeightEnabled.checked = Boolean(prefs.goals.weight.enabled); form.elements.goalWeightTarget.value = prefs.goals.weight.targetWeight ?? '';
       form.elements.goalVitalsEnabled.checked = Boolean(prefs.goals.vitals.enabled);
       form.elements.goalSysMin.value = prefs.goals.vitals.systolicMin ?? ''; form.elements.goalSysMax.value = prefs.goals.vitals.systolicMax ?? ''; form.elements.goalDiaMin.value = prefs.goals.vitals.diastolicMin ?? ''; form.elements.goalDiaMax.value = prefs.goals.vitals.diastolicMax ?? ''; form.elements.goalPulseMin.value = prefs.goals.vitals.pulseMin ?? ''; form.elements.goalPulseMax.value = prefs.goals.vitals.pulseMax ?? '';
-      updateGoalFieldVisibility(); document.getElementById('healthGoalsError').textContent = '';
+      updateGoalFieldVisibility();
+      const goalError = document.getElementById('healthGoalsError');
+      const submit = form.querySelector('[type="submit"]');
+      if (!prefsState.ok) {
+        if (goalError) goalError.textContent = `${prefsState.reason || 'Saved Health goals could not be read.'} Editing is disabled to protect the saved goal data.`;
+        if (submit) submit.disabled = true;
+      } else {
+        if (goalError) goalError.textContent = '';
+        if (submit) submit.disabled = false;
+      }
       if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
     }
 
@@ -588,6 +598,10 @@
     function saveGoals(event) {
       event.preventDefault();
       const form = event.currentTarget; const error = document.getElementById('healthGoalsError');
+      if (!prefsState.ok) {
+        error.textContent = `${prefsState.reason || 'Saved Health goals could not be read.'} Editing is disabled to protect the saved goal data.`;
+        return;
+      }
       const next = clone(prefs);
       next.checkInItems = [...form.querySelectorAll('[name="checkInItem"]:checked')].map(input => input.value);
       next.goals.activity = { enabled: form.elements.goalActivityEnabled.checked, targetMinutes: numberOrNull(form.elements.goalActivityMinutes.value) };

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v38-health-trends';
+const CACHE_NAME = 'grizzlyjohn-v39-final-regression';
 const APP_SHELL = [
   './',
   './index.html',
@@ -61,6 +61,19 @@ const APP_SHELL = [
   './GrizzlyJohn%20App%20Icon.png',
   './GrizzlyJohn%20Popup%20Background.png',
   './graphics/HALT%20Skill.png',
+  './graphics/Lakota%20Prayer.png',
+  './graphics/Honesty.png',
+  './graphics/Faith.png',
+  './graphics/Trust.png',
+  './graphics/Soul-Searching.png',
+  './graphics/Integrity.png',
+  './graphics/Acceptance.png',
+  './graphics/Humility.png',
+  './graphics/Willingness.png',
+  './graphics/Forgiveness.png',
+  './graphics/Maintenance.png',
+  './graphics/Making-Contact.png',
+  './graphics/Service.png',
   './graphics/Brene%20Brown%20Quote.png',
   './graphics/GrizzlyJohn%20Breathing%20Bear.png',
   './graphics/GrizzlyJohn%20Breath%20Complete%2001.png',
