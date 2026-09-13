@@ -183,7 +183,7 @@
 
       <dialog class="gold-star-editor" id="goldStarEditor">
         <div class="gold-star-editor-shell">
-          <div class="gold-star-editor-heading"><div><p class="eyebrow">MAKE THEM YOURS</p><h2>Edit Easy Gold Stars</h2><p>Keep the small things that make a day feel like yours. Archived Stars keep their old history.</p></div><button class="dialog-close" id="closeGoldStarEditor" type="button" aria-label="Close">×</button></div>
+          <div class="gold-star-editor-heading"><div><p class="eyebrow">MAKE THEM YOURS</p><h2>Edit Easy Gold Stars</h2><p>Change the wording, fix spelling, reorder, or delete a Star from future lists. Deleted Stars keep their past history.</p></div><button class="dialog-close" id="closeGoldStarEditor" type="button" aria-label="Close">×</button></div>
           <form class="today-inline-form" id="addGoldStarForm"><label class="visually-hidden" for="newGoldStarLabel">New Gold Star</label><input id="newGoldStarLabel" maxlength="120" placeholder="What counts as an easy win?" required><button class="button button-primary" type="submit">Add Star</button></form>
           <p class="today-form-status" id="goldStarEditorStatus" role="status" aria-live="polite"></p>
           <div id="goldStarEditorList"></div>
@@ -305,10 +305,10 @@
           <button type="button" data-star-move="up" ${index === 0 ? 'disabled' : ''} aria-label="Move ${escapeHtml(star.label)} up">↑</button>
           <button type="button" data-star-move="down" ${index === active.length - 1 ? 'disabled' : ''} aria-label="Move ${escapeHtml(star.label)} down">↓</button>
           <button type="button" data-star-save>Save</button>
-          <button type="button" data-star-active="false">Archive</button>
+          <button type="button" class="danger-text" data-star-active="false" aria-label="Delete ${escapeHtml(star.label)} from future Gold Star lists">Delete</button>
         </div>
       </div>`).join('');
-    const archivedRows = archived.length ? `<details class="archived-stars"><summary>Archived Stars (${archived.length})</summary>${archived.map(star => `<div class="archived-star-row"><span>${escapeHtml(star.label)}</span><button class="text-button" type="button" data-reactivate-star="${escapeHtml(star.id)}">Reactivate</button></div>`).join('')}</details>` : '';
+    const archivedRows = archived.length ? `<details class="archived-stars"><summary>Deleted Stars (${archived.length})</summary>${archived.map(star => `<div class="archived-star-row"><span>${escapeHtml(star.label)}</span><button class="text-button" type="button" data-reactivate-star="${escapeHtml(star.id)}">Restore</button></div>`).join('')}</details>` : '';
     holder.innerHTML = rows || '<div class="today-v2-empty"><strong>No active Stars yet.</strong><span>Add one above. John decides what counts.</span></div>';
     holder.insertAdjacentHTML('beforeend', archivedRows);
   }
@@ -438,10 +438,19 @@
       const row = event.target.closest('[data-star-editor-id]');
       const reactivate = event.target.closest('[data-reactivate-star]');
       let result;
-      if (reactivate) result = api.goldStars.setActive(reactivate.dataset.reactivateStar, true);
-      else if (row && event.target.closest('[data-star-save]')) result = api.goldStars.rename(row.dataset.starEditorId, $('input', row).value);
-      else if (row && event.target.closest('[data-star-active]')) result = api.goldStars.setActive(row.dataset.starEditorId, false);
-      else if (row && event.target.closest('[data-star-move]')) {
+      let successMessage = 'Stars updated. ✓';
+      if (reactivate) {
+        result = api.goldStars.setActive(reactivate.dataset.reactivateStar, true);
+        successMessage = 'Star restored. ✓';
+      } else if (row && event.target.closest('[data-star-save]')) {
+        result = api.goldStars.rename(row.dataset.starEditorId, $('input', row).value);
+        successMessage = 'Star wording saved. ✓';
+      } else if (row && event.target.closest('[data-star-active]')) {
+        const label = $('input', row)?.value?.trim() || 'this Star';
+        if (!window.confirm(`Delete “${label}” from future Gold Star lists? Past Gold Star history will stay intact.`)) return;
+        result = api.goldStars.setActive(row.dataset.starEditorId, false);
+        successMessage = 'Star deleted from future lists. Past history is safe. ✓';
+      } else if (row && event.target.closest('[data-star-move]')) {
         const active = api.goldStars.list().definitions;
         const index = active.findIndex(item => item.id === row.dataset.starEditorId);
         const direction = event.target.closest('[data-star-move]').dataset.starMove === 'up' ? -1 : 1;
@@ -449,10 +458,11 @@
         if (index >= 0 && swap >= 0 && swap < active.length) {
           [active[index], active[swap]] = [active[swap], active[index]];
           result = api.goldStars.reorder(active.map(item => item.id));
+          successMessage = 'Star order saved. ✓';
         }
       }
       if (!result) return;
-      $('#goldStarEditorStatus').textContent = result.ok ? 'Stars updated. ✓' : result.reason;
+      $('#goldStarEditorStatus').textContent = result.ok ? successMessage : result.reason;
       if (result.ok) { api.goldStarDays.get(todayLocalDate(), { syncActiveDefinitions: true }); renderGoldStarEditor(); renderTodayV2(); }
     });
   }
