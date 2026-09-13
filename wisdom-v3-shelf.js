@@ -396,8 +396,25 @@ Passing Season`;
     return true;
   }
 
+  function bindRecoveryToolboxLink() {
+    const button = document.querySelector('[data-open-recovery-toolbox]');
+    const toolbox = document.getElementById('dbtToolbox');
+    if (!button || !toolbox) return false;
+    if (button.dataset.recoveryToolboxBound === 'true') return true;
+
+    button.dataset.recoveryToolboxBound = 'true';
+    button.setAttribute('aria-controls', 'dbtToolbox');
+    button.setAttribute('aria-expanded', String(!toolbox.hidden));
+    button.addEventListener('click', () => {
+      toolbox.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
+      window.requestAnimationFrame(() => toolbox.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    });
+    return true;
+  }
+
   function init() {
-    const ready = () => buildShelf() && buildCampfireShortcut();
+    const ready = () => [buildShelf(), buildCampfireShortcut(), bindRecoveryToolboxLink()].every(Boolean);
     if (ready()) return;
     const observer = new MutationObserver(() => {
       if (ready()) observer.disconnect();
