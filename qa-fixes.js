@@ -45,6 +45,42 @@
     });
   }
 
+  function fixRandomToolButton() {
+    if (document.documentElement.dataset.randomToolFixReady === 'true') return;
+    document.documentElement.dataset.randomToolFixReady = 'true';
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest('#drawDbtSkill');
+      if (!button) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const tools = [...document.querySelectorAll('#dbtCardGrid [data-dbt-index]')];
+      const viewer = document.getElementById('dbtViewer');
+      const viewerImage = document.getElementById('dbtViewerImage');
+      const viewerTitle = document.getElementById('dbtViewerTitle');
+      if (!tools.length || !viewer || !viewerImage || !viewerTitle) return;
+
+      const chosen = tools[Math.floor(Math.random() * tools.length)];
+      const sourceImage = chosen.querySelector('img');
+      const sourceTitle = chosen.querySelector('.dbt-card-label strong')?.textContent?.trim()
+        || chosen.getAttribute('aria-label')?.replace(/^Open\s+/i, '').replace(/\s+skill card$/i, '')
+        || 'Recovery tool';
+
+      if (!sourceImage?.src) return;
+      viewerImage.src = sourceImage.src;
+      viewerImage.alt = `${sourceTitle} skill card`;
+      viewerTitle.textContent = sourceTitle;
+
+      if (!viewer.open) {
+        if (typeof viewer.showModal === 'function') viewer.showModal();
+        else viewer.setAttribute('open', '');
+      }
+    }, true);
+  }
+
   function loadQaStyles() {
     if (document.querySelector('link[data-qa-fixes]')) return;
     const link = document.createElement('link');
@@ -74,6 +110,7 @@
     loadQaStyles();
     expandQuestRewards();
     fixPodcastLinks();
+    fixRandomToolButton();
     loadBreneReflection();
     loadSkillRouting();
   }
