@@ -16,3 +16,8 @@
   for = "/dbt-button-fix.js"
   [headers.values]
     Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/campfire-daily-reflections.js"
+  [headers.values]
+    Cache-Control = "no-cache"
