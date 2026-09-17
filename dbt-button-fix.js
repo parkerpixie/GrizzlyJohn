@@ -34,12 +34,20 @@
     return String(path).split('/').map(part => encodeURIComponent(part)).join('/');
   }
 
+  function gridIsReady(grid) {
+    if (!grid || grid.dataset.dbtFixReady !== 'true') return false;
+    const buttons = [...grid.querySelectorAll('[data-dbt-fix-index]')];
+    if (buttons.length !== TOOLS.length) return false;
+    return buttons.every((button, index) => Number(button.dataset.dbtFixIndex) === index);
+  }
+
   function ensureTools() {
     const grid = document.getElementById('dbtCardGrid');
     const count = document.getElementById('dbtCount');
     if (!grid) return false;
 
-    if (count) count.textContent = `${TOOLS.length} tools`;
+    if (count && count.textContent !== `${TOOLS.length} tools`) count.textContent = `${TOOLS.length} tools`;
+    if (gridIsReady(grid)) return true;
 
     grid.innerHTML = TOOLS.map((tool, index) => `
       <button class="dbt-card-button${tool.title === 'HALT' ? ' is-go-to' : ''}" type="button" data-dbt-fix-index="${index}" aria-label="Open ${escapeHtml(tool.title)} skill card">
@@ -49,6 +57,7 @@
           <span>${tool.title === 'HALT' ? 'John’s go-to · Tap to read' : 'Tap to read'}</span>
         </span>
       </button>`).join('');
+    grid.dataset.dbtFixReady = 'true';
     return true;
   }
 
@@ -168,7 +177,10 @@
 
     const wisdom = document.getElementById('wisdom');
     if (wisdom) {
-      observer = new MutationObserver(() => ensureTools());
+      observer = new MutationObserver(() => {
+        const grid = document.getElementById('dbtCardGrid');
+        if (!gridIsReady(grid)) ensureTools();
+      });
       observer.observe(wisdom, { childList: true, subtree: true });
     }
 
