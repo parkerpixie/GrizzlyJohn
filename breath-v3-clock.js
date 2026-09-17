@@ -9,6 +9,65 @@
 
   const $ = (selector, root = document) => root.querySelector(selector);
 
+  const GUIDED_TOOL_PROMPTS = Object.freeze({
+    'WISE MIND': ['What is Emotion Mind saying?', 'What is Reasonable Mind saying?', 'What does Wise Mind say when both are allowed to be true?'],
+    STOP: ['What is happening right now?', 'What can you pause before acting on?', 'What is the next effective move?'],
+    'Self Soothe': ['Which sense could use some gentleness?', 'What is one soothing thing available right now?', 'What will you do for the next five minutes?'],
+    HALT: ['Are you hungry, angry, lonely, or tired?', 'Which need is loudest?', 'What small action would address that need?'],
+    TIPP: ['How intense is this from 0–10?', 'Which body-first reset will you try?', 'What changed after one minute?'],
+    'Opposite Action': ['What action urge is this feeling creating?', 'Does that urge fit the facts and help?', 'What small opposite action could you take?'],
+    'Radical Acceptance': ['What reality are you fighting?', 'What does accepting the fact—not approving it—sound like?', 'How can you soften the fight for this moment?'],
+    'DEAR MAN': ['What do you need to describe without judgment?', 'What do you want to ask for?', 'How can you stay mindful and reinforce the request?'],
+    FAST: ['What would protect your self-respect here?', 'What apology are you tempted to make that is not needed?', 'What truthful, fair response fits?'],
+    'Cope Ahead': ['What situation are you preparing for?', 'What skillful response do you want to rehearse?', 'What is your first step when it begins?'],
+    'Problem Solving': ['What is the specific problem you can influence?', 'What are two possible next steps?', 'Which smallest step will you try first?'],
+    'Check The Facts': ['What facts do you know for certain?', 'What story or prediction is your mind adding?', 'What response fits the facts you actually have?'],
+    'ABC Please': ['Which body or routine basic needs attention?', 'What positive or meaningful activity is available?', 'What is one small action for today?'],
+    IMPROVE: ['What part of this moment cannot change immediately?', 'What could make the next few minutes more bearable?', 'Which small improvement will you try?']
+  });
+
+  function escapeHtml(value = '') {
+    return String(value).replace(/[&<>'\"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '\"': '&quot;' })[char]);
+  }
+
+  function setupGuidedToolRestartFix() {
+    if (document.documentElement.dataset.guidedToolRestartFix === 'v32') return;
+    document.documentElement.dataset.guidedToolRestartFix = 'v32';
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest?.('[data-start-another-guided]');
+      if (!button) return;
+
+      const holder = button.closest('#feelingResult') || button.parentElement;
+      const select = holder?.querySelector('[data-another-guided-skill]');
+      const dialog = document.getElementById('guidedSkillDialog');
+      const skill = String(select?.value || '').trim();
+      const feeling = String(dialog?.dataset.feeling || '').trim();
+      const prompts = GUIDED_TOOL_PROMPTS[skill];
+      if (!dialog || !prompts || !feeling) return;
+
+      // app.js clears selectedFeelings after a saved check-in. Reuse the feeling
+      // already preserved on the guided dialog so this action never becomes a no-op.
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      dialog.dataset.skill = skill;
+      dialog.dataset.feeling = feeling;
+      const title = document.getElementById('guidedSkillTitle');
+      const feelingCopy = document.getElementById('guidedSkillFeeling');
+      const steps = document.getElementById('guidedSkillSteps');
+      const status = document.getElementById('guidedSkillStatus');
+      if (title) title.textContent = skill;
+      if (feelingCopy) feelingCopy.textContent = `A short ${skill} exercise for feeling ${feeling.toLowerCase()}.`;
+      if (steps) {
+        steps.innerHTML = prompts.map((prompt, index) => `<label class="guided-skill-step"><span class="guided-step-label">STEP ${index + 1}</span><span class="guided-step-prompt">${escapeHtml(prompt)}</span><textarea name="guidedResponse" rows="2" aria-label="Step ${index + 1}: ${escapeHtml(prompt)}"></textarea></label>`).join('');
+      }
+      if (status) status.textContent = '';
+      if (!dialog.open) dialog.showModal();
+      window.setTimeout(() => steps?.querySelector('textarea')?.focus(), 0);
+    }, true);
+  }
+
   function buildClockFace() {
     const ticks = Array.from({ length: 60 }, (_, index) => {
       const major = index % 5 === 0 ? ' is-major' : '';
@@ -241,6 +300,7 @@
   }
 
   function init() {
+    setupGuidedToolRestartFix();
     const result = ensureBreathingCard();
     if (result?.card && enhanceClock(result.card)) return;
     const observer = new MutationObserver(() => {
