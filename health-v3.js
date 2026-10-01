@@ -7,6 +7,7 @@
     weightEntries: 'grizzlyjohn:v3:health:weightEntries',
     activityEntries: 'grizzlyjohn:v3:health:activityEntries',
     medicationDays: 'grizzlyjohn:v3:health:medicationDays',
+    mealDays: 'grizzlyjohn:v3:health:mealDays',
     sleepEntries: 'grizzlyjohn:v3:health:sleepEntries',
     notes: 'grizzlyjohn:v3:health:notes',
     bodyFeels: 'grizzlyjohn:v3:health:bodyFeels'
@@ -192,11 +193,28 @@
       return errors;
     }
 
+    function inspectMeals(records) {
+      const errors = inspectObjects(records, ['date', 'updatedAt']);
+      const dates = new Set();
+      records.forEach((entry, index) => {
+        if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return;
+        try { if (typeof entry.date !== 'string' || !DATE_KEY.test(entry.date)) throw new Error(); localDateKey(entry.date); } catch { errors.push(`Meal record ${index} has an invalid date.`); }
+        if (dates.has(entry.date)) errors.push(`Duplicate meal date ${entry.date}.`);
+        dates.add(entry.date);
+        ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(name => {
+          if (name in entry && typeof entry[name] !== 'boolean') errors.push(`Meal ${name} must be boolean.`);
+        });
+        if ('note' in entry && typeof entry.note !== 'string') errors.push('Meal note must be text.');
+      });
+      return errors;
+    }
+
     const readers = Object.freeze({
       schemaVersion: () => validateJson(HEALTH_KEYS.schemaVersion, value => Boolean(value) && typeof value === 'object' && !Array.isArray(value)),
       vitals: () => validateJson(HEALTH_KEYS.vitals, Array.isArray, inspectVitals),
       weightEntries: () => validateJson(HEALTH_KEYS.weightEntries, Array.isArray, inspectWeights),
       activityEntries: () => validateJson(HEALTH_KEYS.activityEntries, Array.isArray, inspectActivities),
+      mealDays: () => validateJson(HEALTH_KEYS.mealDays, Array.isArray, inspectMeals),
       medicationDays: () => validateJson(HEALTH_KEYS.medicationDays, Array.isArray, inspectMedicationDays),
       sleepEntries: () => validateJson(HEALTH_KEYS.sleepEntries, Array.isArray, inspectSleep),
       notes: () => validateJson(HEALTH_KEYS.notes, Array.isArray, inspectNotes),
@@ -371,6 +389,29 @@
       }
     });
 
+    const mealDefaults = { breakfast: false, lunch: false, dinner: false, snacks: false, note: '' };
+    const meals = Object.freeze({
+      all: () => allFrom(HEALTH_KEYS.mealDays, readers.mealDays),
+      get(date = new Date()) {
+        const result = forDateFrom(HEALTH_KEYS.mealDays, readers.mealDays, date);
+        return result.ok ? { ok: true, date: result.date, entry: { ...mealDefaults, ...result.entries[0] } } : result;
+      },
+      set(date, patch = {}, options = {}) {
+        const when = timestampAndDate({ ...options, date });
+        if (!when.ok) return when;
+        for (const [name, value] of Object.entries(patch)) {
+          if (!Object.hasOwn(mealDefaults, name) || typeof value !== typeof mealDefaults[name]) return { ok: false, reason: 'Invalid meal value.' };
+        }
+        const records = mutableArray(HEALTH_KEYS.mealDays, readers.mealDays);
+        if (!records.ok) return records;
+        const index = records.value.findIndex(entry => entry.date === when.date);
+        const entry = { ...mealDefaults, ...(records.value[index] || {}), ...patch, date: when.date, updatedAt: when.timestamp };
+        if (index < 0) records.value.unshift(entry); else records.value[index] = entry;
+        const written = writeJson(HEALTH_KEYS.mealDays, records.value);
+        return written.ok ? { ok: true, entry } : written;
+      }
+    });
+
     const sleep = Object.freeze({
       all: () => allFrom(HEALTH_KEYS.sleepEntries, readers.sleepEntries),
       forDate: date => forDateFrom(HEALTH_KEYS.sleepEntries, readers.sleepEntries, date),
@@ -462,6 +503,7 @@
         latestWeight: latestWeight.entry,
         activityMinutes,
         activityCount: dailyActivities.entries.length,
+        meals: meals.get(dateKey),
         medication: medEntry,
         medicationCompleted,
         sleep: dailySleep.entries[0] || null,
@@ -497,6 +539,7 @@
       weights,
       activities,
       medication,
+      meals,
       sleep,
       notes,
       bodyFeel,

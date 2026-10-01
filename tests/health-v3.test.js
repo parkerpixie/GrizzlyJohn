@@ -174,3 +174,67 @@ test('snapshot is trend-ready: latest weight, total activity minutes, sleep, med
   assert.equal(snapshot.medicationCompleted, 1);
   assert.equal(snapshot.noteCount, 1);
 });
+
+
+test('meals persist independently by local day without changing existing Health records', () => {
+  const { storage, api } = makeLayer();
+  api.medication.setWindow('2026-09-10', 'morning', true);
+  api.sleep.set({ hours: 7, quality: 'Good' }, { date: '2026-09-10' });
+  const previous = Object.fromEntries(storage.values);
+  assert.deepEqual(api.meals.get('2026-09-10').entry, { breakfast: false, lunch: false, dinner: false, snacks: false, note: '' });
+  for (const name of ['breakfast', 'lunch', 'dinner', 'snacks']) {
+    assert.equal(api.meals.set('2026-09-10', { [name]: true }).ok, true);
+  }
+  api.meals.set('2026-09-10', { lunch: false, note: 'Soup & toast' });
+  api.meals.set('2026-09-09', { dinner: true });
+  const reopened = createHealthStore(storage);
+  const meal = reopened.snapshot('2026-09-10').meals.entry;
+  assert.equal(meal.breakfast, true);
+  assert.equal(meal.lunch, false);
+  assert.equal(meal.dinner, true);
+  assert.equal(meal.snacks, true);
+  assert.equal(meal.note, 'Soup & toast');
+  assert.equal(reopened.meals.get('2026-09-09').entry.breakfast, false);
+  assert.equal(reopened.meals.get('2026-09-09').entry.dinner, true);
+  for (const [key, value] of Object.entries(previous)) assert.equal(storage.getItem(key), value);
+  assert.equal(api.meals.set('2026-02-30', { breakfast: true }).ok, false);
+  assert.equal(api.meals.set('2026-09-10', { breakfast: 'yes' }).ok, false);
+});
+
+test('optional meal fields default safely and malformed meals remain untouched', () => {
+  const key = HEALTH_KEYS.mealDays;
+  const { api, storage } = makeLayer({ [key]: JSON.stringify([{ date: '2026-09-10', updatedAt: '2026-09-10T14:00:00Z' }]) });
+  assert.equal(api.meals.get('2026-09-10').entry.breakfast, false);
+  assert.equal(api.meals.get('2026-09-10').entry.note, '');
+  storage.setItem(key, '{broken');
+  assert.equal(api.meals.set('2026-09-10', { breakfast: true }).ok, false);
+  assert.equal(storage.getItem(key), '{broken');
+  assert.equal(api.snapshot('2026-09-10').ok, true);
+  assert.equal(api.snapshot('2026-09-10').meals.ok, false);
+});
+
+test('meal local dates and storage failures preserve data', () => {
+  const { api, storage } = makeLayer();
+  const local = new Date(2026, 8, 10, 23, 59);
+  assert.equal(api.meals.set(local, { snacks: true }).entry.date, '2026-09-10');
+  const before = storage.getItem(HEALTH_KEYS.mealDays);
+  storage.setItem = () => { throw new Error('Storage full'); };
+  assert.equal(api.meals.set('2026-09-10', { note: 'Unsaved' }).ok, false);
+  assert.equal(storage.getItem(HEALTH_KEYS.mealDays), before);
+});
+
+
+test('meals round-trip through the existing portable backup with older Health data', () => {
+  const { createStorageLayer } = require('../storage-v2.js');
+  const { api, storage } = makeLayer();
+  api.meals.set('2026-09-10', { breakfast: true, note: 'Oatmeal' });
+  api.medication.setWindow('2026-09-10', 'morning', true);
+  const backup = createStorageLayer(storage).createBackup();
+  assert.equal(backup.ok, true);
+  const restored = new MemoryStorage();
+  const result = createStorageLayer(restored).restoreBackup(backup.json);
+  assert.equal(result.ok, true);
+  const health = createHealthStore(restored);
+  assert.equal(health.meals.get('2026-09-10').entry.note, 'Oatmeal');
+  assert.equal(health.medication.get('2026-09-10').entry.morning, true);
+});

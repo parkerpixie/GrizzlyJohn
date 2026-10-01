@@ -12,7 +12,7 @@
     ['note', 'Note / symptom'],
     ['bodyFeel', 'Body feel']
   ]);
-  const TYPE_ICONS = Object.freeze({ vitals: '🩺', weight: '⚖️', activity: '🥾', medication: '💊', sleep: '🌙', note: '📝', bodyFeel: '🌤️' });
+  const TYPE_ICONS = Object.freeze({ vitals: '🩺', weight: '⚖️', activity: '🥾', medication: '💊', sleep: '🌙', note: '📝', bodyFeel: '🌤️', meals: '🍽️' });
   const DEFAULT_PREFS = Object.freeze({
     version: PREFS_VERSION,
     checkInItems: [],
@@ -197,15 +197,15 @@
   function browserData(health) {
     const sources = {
       vitals: health.vitals.all(), weights: health.weights.all(), activities: health.activities.all(),
-      medication: health.medication.all(), sleep: health.sleep.all(), notes: health.notes.all(), bodyFeels: health.bodyFeel.all()
+      meals: health.meals.all(), medication: health.medication.all(), sleep: health.sleep.all(), notes: health.notes.all(), bodyFeels: health.bodyFeel.all()
     };
-    const failed = Object.values(sources).find(result => !result.ok);
+    const failed = Object.entries(sources).find(([name, result]) => name !== 'meals' && !result.ok)?.[1];
     if (failed) return { ok: false, reason: failed.reason || 'Health history could not be read.' };
     return {
       ok: true,
       data: {
         vitals: sources.vitals.entries, weights: sources.weights.entries, activities: sources.activities.entries,
-        medication: sources.medication.entries, sleep: sources.sleep.entries, notes: sources.notes.entries, bodyFeels: sources.bodyFeels.entries
+        meals: sources.meals.entries || [], medication: sources.medication.entries, sleep: sources.sleep.entries, notes: sources.notes.entries, bodyFeels: sources.bodyFeels.entries
       }
     };
   }
@@ -427,7 +427,7 @@
         if (!map.has(entry.date)) map.set(entry.date, new Set());
         map.get(entry.date).add(type);
       });
-      add(data.vitals, 'vitals'); add(data.weights, 'weight'); add(data.activities, 'activity'); add(data.medication, 'medication'); add(data.sleep, 'sleep'); add(data.notes, 'note'); add(data.bodyFeels, 'bodyFeel');
+      add(data.meals, 'meals'); add(data.vitals, 'vitals'); add(data.weights, 'weight'); add(data.activities, 'activity'); add(data.medication, 'medication'); add(data.sleep, 'sleep'); add(data.notes, 'note'); add(data.bodyFeels, 'bodyFeel');
       return map;
     }
 
@@ -489,7 +489,7 @@
       for (let blank = 0; blank < first.getDay(); blank += 1) cells.push('<span class="health-calendar-blank"></span>');
       for (let day = 1; day <= lastDay; day += 1) {
         const key = keyFromDate(new Date(year, month, day, 12)); const types = [...(map.get(key) || [])]; const future = key > today;
-        const markers = types.slice(0, 3).map(type => `<span title="${escapeHtml(Object.fromEntries(CHECKIN_TYPES)[type])}">${TYPE_ICONS[type]}</span>`).join('') + (types.length > 3 ? `<small>+${types.length - 3}</small>` : '');
+        const markers = types.slice(0, 3).map(type => `<span title="${escapeHtml((type === 'meals' ? 'Meals' : Object.fromEntries(CHECKIN_TYPES)[type]))}">${TYPE_ICONS[type]}</span>`).join('') + (types.length > 3 ? `<small>+${types.length - 3}</small>` : '');
         cells.push(`<button type="button" class="health-calendar-day ${key === selectedDate ? 'is-selected' : ''} ${key === today ? 'is-today' : ''} ${types.length ? 'has-data' : ''}" data-health-date="${key}" ${future ? 'disabled' : ''}><strong>${day}</strong><span class="health-calendar-markers">${markers}</span></button>`);
       }
       grid.innerHTML = cells.join('');
@@ -528,7 +528,7 @@
         if (item.type === 'bodyFeel') { title = e.value; meta = 'Body feel'; }
         return `<div class="health-day-entry"><span>${TYPE_ICONS[item.type]}</span><div><strong>${escapeHtml(title)}</strong><small>${escapeHtml(meta)}</small></div><time>${item.timestamp ? new Date(item.timestamp).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : ''}</time></div>`;
       }).join('');
-      node.innerHTML = `<article class="health-day-card"><div class="health-day-card-heading"><div><p class="eyebrow">SELECTED DAY</p><h3>${escapeHtml(dayLabel(selectedDate))}</h3></div><span>${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}</span></div><div class="health-day-snapshot">${cards.map(([icon, value, meta]) => `<div><span>${icon}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(meta)}</small></div>`).join('')}</div>${entries.length ? `<details class="health-day-details"><summary>View all entries <span>⌄</span></summary><div>${detailRows}</div></details>` : '<p class="health-day-empty">Nothing was logged on this day.</p>'}</article>`;
+      node.innerHTML = `<article class="health-day-card"><div class="health-day-card-heading"><div><p class="eyebrow">SELECTED DAY</p><h3>${escapeHtml(dayLabel(selectedDate))}</h3></div><span>${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}</span></div><div class="health-day-snapshot">${cards.map(([icon, value, meta]) => `<div><span>${icon}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(meta)}</small></div>`).join('')}</div>${window.GrizzlyJohnHealthUIV3.mealsMarkup(selectedDate, snapshot.meals)}${entries.length ? `<details class="health-day-details"><summary>View all entries <span>⌄</span></summary><div>${detailRows}</div></details>` : '<p class="health-day-empty">No other entries on this day.</p>'}</article>`;
     }
 
     function renderAll() {

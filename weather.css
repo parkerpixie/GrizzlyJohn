@@ -141,3 +141,17 @@
     height: 42px;
   }
 }
+
+.weather-details[hidden], .weather-forecast[hidden] { display: none; }
+.weather-forecast { position: relative; z-index: 1; margin-top: 18px; }
+.weather-forecast h3 { font-size: .95rem; margin: 16px 0 10px; }
+.weather-hourly { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
+.weather-hour { flex: 0 0 96px; display: grid; gap: 5px; padding: 12px 8px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.46); text-align: center; font-size: .8rem; }
+.weather-hour > span { font-size: 1.5rem; }
+.weather-hour small { color: var(--muted); }
+.weather-day { display: grid; grid-template-columns: 1fr 1.3fr 1fr auto; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: .8rem; }
+.weather-day small { color: var(--muted); }
+@media (max-width: 520px) {
+  .weather-day { grid-template-columns: 1fr 1fr; }
+  .weather-day > :nth-child(even) { text-align: right; }
+}

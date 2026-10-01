@@ -43,6 +43,17 @@
     return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   }
 
+  function mealsMarkup(date, result) {
+    const entry = result?.ok ? result.entry : {};
+    const disabled = result?.ok ? '' : 'disabled';
+    return `<fieldset class="health-fieldset health-meals" data-meal-date="${escapeHtml(date)}" ${disabled}>
+      <legend>🍽️ Meals · ${escapeHtml(localDateLabel(date))}</legend>
+      <div class="health-meals-grid">${['breakfast', 'lunch', 'dinner', 'snacks'].map(name => `<label class="health-med-option"><input type="checkbox" data-meal-field="${name}" ${entry?.[name] ? 'checked' : ''}><span>${name[0].toUpperCase() + name.slice(1)}</span></label>`).join('')}</div>
+      <label class="health-field"><span>Anything worth remembering? <small>(optional)</small></span><input type="text" data-meal-field="note" maxlength="800" value="${escapeHtml(entry?.note || '')}"></label>
+      <p class="health-form-status" data-meal-status role="status">${result?.ok ? '' : escapeHtml(result?.reason || 'Meals could not be read.')}</p>
+    </fieldset>`;
+  }
+
   function installMarkup() {
     if (!document.getElementById('health')) {
       const main = document.querySelector('.app-shell main');
@@ -101,11 +112,15 @@
               </div>
             </div>
 
+            <div id="healthSnapshotMeals"></div>
             <button class="button button-primary health-log-main-button" id="openHealthLog" type="button">+ Log Health</button>
             <p class="health-main-status" id="healthMainStatus" role="status" aria-live="polite"></p>
             <p class="health-privacy-note">Health stays on this device and is included in GrizzlyJohn Backup.</p>
           </article>
 
+          <a class="card health-portal-link" href="https://mychart.ssmhc.com/mychart/Authentication/Login" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">🩺</span><span><strong>SSM/Dean MyChart ↗</strong><small>Open patient portal</small></span>
+          </a>
           <section class="health-today-section" aria-labelledby="healthTodayHeading">
             <div class="health-section-heading">
               <p class="eyebrow">TODAY</p>
@@ -457,6 +472,7 @@
         setMainStatus(result.reason || 'Health data could not be read. Existing data was left unchanged.');
         return false;
       }
+      $('#healthSnapshotMeals').innerHTML = mealsMarkup(result.date, result.meals);
       $('#healthSnapshotDate').textContent = localDateLabel(result.date) || 'Today';
 
       if (result.latestVitals) {
@@ -555,6 +571,22 @@
       renderTodayLog();
     }
 
+    document.addEventListener('input', event => {
+      const input = event.target.closest('[data-meal-field]');
+      const fieldset = input?.closest('[data-meal-date]');
+      if (!fieldset) return;
+      const field = input.dataset.mealField;
+      const result = health.meals.set(fieldset.dataset.mealDate, { [field]: field === 'note' ? input.value : input.checked });
+      fieldset.querySelector('[data-meal-status]').textContent = result.ok ? 'Saved.' : `Not saved. ${result.reason}`;
+      if (!result.ok && field !== 'note') input.checked = !input.checked;
+      // Keep both views in sync without replacing the focused editor.
+      if (result.ok) document.querySelectorAll('[data-meal-date]').forEach(other => {
+        if (other === fieldset || other.dataset.mealDate !== fieldset.dataset.mealDate) return;
+        const peer = other.querySelector(`[data-meal-field="${field}"]`);
+        if (field === 'note') peer.value = input.value; else peer.checked = input.checked;
+      });
+    });
+
     $('#openHealthLog')?.addEventListener('click', () => openDialog());
     $('#healthLogClose')?.addEventListener('click', closeDialog);
     back?.addEventListener('click', showChooser);
@@ -588,7 +620,7 @@
     if (!health) return;
     installMarkup();
     const ui = createUi(health);
-    window.GrizzlyJohnHealthUIV3 = Object.freeze({ ...ui, estimateActivityCalories, ACTIVITY_METS });
+    window.GrizzlyJohnHealthUIV3 = Object.freeze({ ...ui, mealsMarkup, estimateActivityCalories, ACTIVITY_METS });
   }
 
   const api = { estimateActivityCalories, ACTIVITY_METS };
