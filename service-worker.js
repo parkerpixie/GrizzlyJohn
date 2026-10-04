@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v35-sleep-tracker';
+const CACHE_NAME = 'grizzlyjohn-v34-meals-weather-sleep-v35';
 const APP_SHELL = [
   './',
   './index.html',
