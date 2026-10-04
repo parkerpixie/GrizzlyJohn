@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v34-meals-weather';
+const CACHE_NAME = 'grizzlyjohn-v34-meals-weather-sleep-v35';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const APP_SHELL = [
   './settings-v2.css',
   './roam-v2.css',
   './health-v3.css',
+  './sleep-tracker.css',
   './health-v3-dashboard.css',
   './health-v3-history.css',
   './health-v3-trends.css',
@@ -50,6 +51,7 @@ const APP_SHELL = [
   './brene-reflection.js',
   './roam-v2.js',
   './health-v3-ui.js',
+  './sleep-tracker.js',
   './health-v3-dashboard.js',
   './health-v3-history.js',
   './health-v3-trends.js',
