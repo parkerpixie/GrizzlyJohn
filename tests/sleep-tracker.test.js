@@ -162,5 +162,5 @@ test('app shell and offline cache include the sleep tracker assets', () => {
   assert.ok(html.indexOf('src="sleep-tracker.js"') > html.indexOf('src="health-v3-ui.js"'));
   assert.ok(worker.includes("'./sleep-tracker.css'"));
   assert.ok(worker.includes("'./sleep-tracker.js'"));
-  assert.match(worker, /grizzlyjohn-v35-sleep-tracker/);
+  assert.match(worker, /sleep-v35/);
 });
