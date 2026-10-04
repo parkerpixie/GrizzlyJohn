@@ -1,0 +1,328 @@
+.sleep-tracker-card {
+  margin-top: 16px;
+  border-color: rgba(47, 70, 54, .16);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(67, 77, 113, .12), transparent 16rem),
+    var(--paper);
+}
+
+.sleep-tracker-state {
+  display: grid;
+  gap: 14px;
+}
+
+.sleep-tracker-state > .eyebrow {
+  margin-bottom: -8px;
+}
+
+.sleep-tracker-state h3 {
+  margin: 0;
+  color: var(--pine-dark);
+  font-family: var(--serif);
+  font-size: 1.32rem;
+}
+
+.sleep-tracker-state > p:not(.eyebrow):not(.sleep-live-elapsed):not(.sleep-tracker-status) {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: .84rem;
+  line-height: 1.45;
+}
+
+.sleep-big-action {
+  width: 100%;
+  min-height: 54px;
+  font-size: .96rem;
+}
+
+.sleep-live-orb {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 20px;
+  background: rgba(67, 77, 113, .11);
+  font-size: 1.8rem;
+}
+
+.sleep-live-elapsed {
+  margin: -6px 0 0;
+  color: var(--pine-dark);
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.sleep-last-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.sleep-last-summary > div {
+  padding: 12px;
+  border: 1px solid rgba(43, 42, 39, .09);
+  border-radius: 15px;
+  background: rgba(255,255,255,.48);
+}
+
+.sleep-last-summary strong,
+.sleep-last-summary small {
+  display: block;
+}
+
+.sleep-last-summary strong {
+  color: var(--pine-dark);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+}
+
+.sleep-last-summary small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: .67rem;
+  font-weight: 700;
+}
+
+.sleep-empty-copy,
+.sleep-legacy-note {
+  padding: 12px 13px;
+  border-radius: 14px;
+  background: rgba(47, 70, 54, .06);
+}
+
+.sleep-quality-grid,
+.sleep-decision-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.sleep-quality-grid button {
+  min-height: 48px;
+  border: 1px solid rgba(43, 42, 39, .14);
+  border-radius: 15px;
+  background: rgba(255,255,255,.58);
+  color: var(--pine-dark);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.sleep-quality-grid button:hover,
+.sleep-quality-grid button:focus-visible {
+  border-color: rgba(47,70,54,.32);
+  background: rgba(47,70,54,.09);
+}
+
+.sleep-intervention-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sleep-intervention {
+  min-height: 84px;
+  padding: 12px 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,.54);
+  color: var(--pine-dark);
+  cursor: pointer;
+  text-align: left;
+}
+
+.sleep-intervention span,
+.sleep-intervention strong {
+  display: block;
+}
+
+.sleep-intervention span {
+  margin-bottom: 6px;
+  font-size: 1.3rem;
+}
+
+.sleep-intervention strong {
+  font-size: .76rem;
+  line-height: 1.2;
+}
+
+.sleep-section-heading h3 {
+  margin: 2px 0 4px;
+}
+
+.sleep-section-heading p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.sleep-action-editor {
+  display: grid;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid rgba(212,166,75,.28);
+  border-radius: 15px;
+  background: rgba(212,166,75,.10);
+}
+
+.sleep-action-editor label {
+  display: grid;
+  gap: 6px;
+}
+
+.sleep-action-editor label span {
+  color: var(--pine-dark);
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.sleep-action-editor input {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 1px solid rgba(43,42,39,.18);
+  border-radius: 12px;
+  outline: 0;
+  background: #fffdf7;
+  color: var(--ink);
+}
+
+.sleep-action-editor input:focus {
+  border-color: var(--pine);
+  box-shadow: 0 0 0 3px rgba(47,70,54,.1);
+}
+
+.sleep-action-editor-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sleep-action-editor small {
+  color: #6e521c;
+  font-size: .67rem;
+  line-height: 1.35;
+}
+
+.sleep-awake-events {
+  display: grid;
+  gap: 7px;
+  padding: 12px 0 2px;
+}
+
+.sleep-awake-events > strong {
+  color: var(--pine-dark);
+  font-size: .76rem;
+}
+
+.sleep-awake-events > div {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 9px;
+  align-items: baseline;
+}
+
+.sleep-awake-events span {
+  color: var(--muted);
+  font-size: .68rem;
+  font-weight: 800;
+}
+
+.sleep-awake-events p {
+  margin: 0;
+  color: var(--ink);
+  font-size: .77rem;
+}
+
+.sleep-text-action {
+  border: 0;
+  background: transparent;
+  color: var(--pine-dark);
+  cursor: pointer;
+  font-size: .76rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sleep-details {
+  padding: 2px 0 0;
+}
+
+.sleep-details summary {
+  cursor: pointer;
+  color: var(--pine-dark);
+  font-size: .76rem;
+  font-weight: 850;
+}
+
+.sleep-timeline {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  margin-top: 9px;
+}
+
+.sleep-timeline-row {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 13px;
+  background: rgba(255,255,255,.50);
+}
+
+.sleep-timeline-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(47,70,54,.07);
+}
+
+.sleep-timeline-row strong,
+.sleep-timeline-row small {
+  display: block;
+}
+
+.sleep-timeline-row strong {
+  color: var(--pine-dark);
+  font-size: .77rem;
+}
+
+.sleep-timeline-row small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: .68rem;
+}
+
+.sleep-timeline-awake {
+  background: rgba(212,166,75,.08);
+}
+
+.sleep-tracker-status {
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: rgba(47,70,54,.08);
+  color: var(--pine-dark);
+  font-size: .73rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+[data-health-form="sleep"] .sleep-tracker-surface {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 560px) {
+  .sleep-last-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sleep-intervention-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
