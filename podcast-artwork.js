@@ -144,7 +144,11 @@
 
   function artworkFor(podcast = {}) {
     const title = String(podcast.title || 'Podcast').trim() || 'Podcast';
-    const src = typeof podcast.artwork === 'string' ? podcast.artwork.trim() : '';
+    const bundledArtwork = typeof podcast.artwork === 'string' ? podcast.artwork.trim() : '';
+    const officialArtwork = podcast.id === 'ed-mylett'
+      ? 'https://m.media-amazon.com/images/S/dmp-catalog-images-prod/images/a4894e48-89a7-47b0-8b09-487f89d20ef5/a4894e48-89a7-47b0-8b09-487f89d20ef5--1396067766.png'
+      : '';
+    const src = bundledArtwork || officialArtwork;
     return { src, alt: `${title} podcast cover`, fallback: '🎙️' };
   }
 
