@@ -181,6 +181,14 @@ var GRIZZLY_DATA = window.GRIZZLY_DATA = {
       amazon: 'https://music.amazon.com/podcasts/72cc76f8-c4d0-4d99-b3bf-b3bc3cab506b/the-mel-robbins-podcast'
     },
     {
+      id: 'ed-mylett',
+      title: 'The Ed Mylett Show',
+      description: 'Peak performance, mindset, leadership, relationships, and practical ideas for becoming the best version of yourself.',
+      spotify: 'https://open.spotify.com/show/19TdDBlFkqh7uevYO0jFSW',
+      apple: 'https://podcasts.apple.com/us/podcast/the-ed-mylett-show/id1181233130',
+      amazon: 'https://music.amazon.com/podcasts/a4894e48-89a7-47b0-8b09-487f89d20ef5/the-ed-mylett-show'
+    },
+    {
       id: 'better-human',
       title: 'How to Be a Better Human',
       artwork: 'graphics/podcast-better-human.jpg',
