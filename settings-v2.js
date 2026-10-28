@@ -161,3 +161,22 @@
     else initializeSettings();
   }
 })();
+
+(() => {
+  'use strict';
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (!document.querySelector('link[data-choose-your-lane]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'choose-your-lane.css?v=20261028-1';
+    link.dataset.chooseYourLane = 'true';
+    document.head.appendChild(link);
+  }
+  if (!document.querySelector('script[data-choose-your-lane]')) {
+    const script = document.createElement('script');
+    script.src = 'choose-your-lane.js?v=20261028-1';
+    script.defer = true;
+    script.dataset.chooseYourLane = 'true';
+    document.head.appendChild(script);
+  }
+})();
