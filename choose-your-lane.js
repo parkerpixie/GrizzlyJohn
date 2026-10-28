@@ -291,14 +291,7 @@
 
   function start() {
     ensureFeature();
-    [120, 350, 800, 1600].forEach(delay => window.setTimeout(ensureFeature, delay));
-    const observer = new MutationObserver(() => {
-      renderTodayCard();
-      renderWisdomChooser();
-      renderRoadReport();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    window.setTimeout(() => observer.disconnect(), 7000);
+    [120, 350, 800, 1600, 3200].forEach(delay => window.setTimeout(ensureFeature, delay));
   }
 
   window.GrizzlyJohnLanes = Object.freeze({ LANES, readEntries, latestForDate, openLaneChooser, refresh: ensureFeature });
