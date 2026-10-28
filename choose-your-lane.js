@@ -2,7 +2,7 @@
   'use strict';
 
   const STORAGE_KEY = 'grizzlyjohn:laneCheckIns';
-  const ASSET_BASE = 'assets/';
+  const ASSET_BASE = 'graphics/';
   const LANES = Object.freeze([
     {
       id: 'express-weaving',
