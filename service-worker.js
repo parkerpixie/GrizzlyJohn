@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v34-meals-weather-sleep-v35';
+const CACHE_NAME = 'grizzlyjohn-v36-lane-commentary-history';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './today-v2.css',
   './wisdom-v2.css',
   './my-days.css',
+  './choose-your-lane.css',
   './settings-v2.css',
   './roam-v2.css',
   './health-v3.css',
@@ -35,6 +36,7 @@ const APP_SHELL = [
   './wisdom-thoughts.js',
   './podcast-artwork.js',
   './my-days.js',
+  './choose-your-lane.js',
   './data.js',
   './weather.js',
   './oracle-cards.js',

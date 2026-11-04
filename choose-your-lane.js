@@ -76,9 +76,9 @@
         <div><p class="eyebrow">THIS LANE?</p><h3>${escapeHtml(lane.label)}</h3></div>
       </div>
       <p>${escapeHtml(lane.description)}</p>
-      <label for="laneNote">What put you here? <small>Optional</small></label>
-      <textarea id="laneNote" rows="2" maxlength="500" placeholder="A few words is plenty..."></textarea>
-      <button class="button button-primary" type="button" id="saveLane">Save my lane</button>
+      <label for="laneNote">My lane commentary <small>Optional</small></label>
+      <textarea id="laneNote" rows="3" maxlength="2000" placeholder="What put you in this lane? Write whatever you want to remember..."></textarea>
+      <button class="button button-primary" type="button" id="saveLane">Save my lane &amp; commentary</button>
       <p class="lane-status" id="laneStatus" role="status" aria-live="polite"></p>
     </div>`;
   }
@@ -92,6 +92,46 @@
     </div>`;
   }
 
+  function todayLogMarkup(day = dateKey()) {
+    const entries = readEntries()
+      .filter(entry => entry.date === day)
+      .sort((a, b) => String(b.timestamp || '').localeCompare(String(a.timestamp || '')));
+    return `<section class="lane-day-history" aria-label="Today's saved lane check-ins">
+      <div class="lane-day-history-heading"><h3>Today's lane log</h3><span>${entries.length} check-in${entries.length === 1 ? '' : 's'}</span></div>
+      ${entries.length ? `<ol class="lane-day-list">${entries.map(entry => {
+        const lane = laneById(entry.laneId);
+        return `<li class="lane-day-entry" data-lane-entry="${escapeHtml(entry.id || '')}">
+          <div class="lane-day-entry-heading"><time datetime="${escapeHtml(entry.timestamp || '')}">${escapeHtml(timeLabel(entry.timestamp))}</time><strong>${escapeHtml(lane?.short || 'Lane')}</strong></div>
+          ${entry.note ? `<p class="lane-day-note">${escapeHtml(entry.note)}</p>` : '<p class="lane-day-empty-note">No commentary saved.</p>'}
+          <button class="text-button lane-edit-note-button" type="button" data-edit-lane-note>Edit commentary</button>
+          <div class="lane-inline-editor" hidden>
+            <label for="lane-edit-${escapeHtml(entry.id || '')}">Commentary for this check-in</label>
+            <textarea id="lane-edit-${escapeHtml(entry.id || '')}" rows="3" maxlength="2000"></textarea>
+            <div class="lane-edit-actions"><button class="button button-primary" type="button" data-save-lane-note>Save commentary</button><button class="button button-secondary" type="button" data-cancel-lane-note>Cancel</button></div>
+            <p class="lane-status" role="status" aria-live="polite"></p>
+          </div>
+        </li>`;
+      }).join('')}</ol>` : '<p class="lane-day-empty-note">Your lane choices will show up here as you save them throughout the day.</p>'}
+      <p class="lane-day-privacy">Saved on this device. Each choice keeps its own time and note, and appears in My Days.</p>
+    </section>`;
+  }
+
+  function editSavedLaneNote(button) {
+    const row = button.closest('[data-lane-entry]');
+    const entryId = row?.dataset.laneEntry;
+    const textarea = row?.querySelector('.lane-inline-editor textarea');
+    const entry = readEntries().find(item => item.id === entryId);
+    if (!entry || !textarea) return;
+    const updated = readEntries().map(item => item.id === entryId ? { ...item, note: textarea.value.trim() } : item);
+    if (!writeEntries(updated)) {
+      const status = row.querySelector('.lane-inline-editor .lane-status');
+      if (status) status.textContent = 'Could not save your edit. Your original note is still here.';
+      return;
+    }
+    renderTodayCard(true);
+    window.GrizzlyJohnMyDays?.refresh?.();
+  }
+
   function removeOldLaneUi() {
     $('#chooseYourLane')?.remove();
     $('#laneRoadReport')?.remove();
@@ -101,7 +141,9 @@
     if (card.dataset.laneEventsReady === 'true') return;
     card.dataset.laneEventsReady = 'true';
     card.addEventListener('click', event => {
-      const choice = event.target.closest('[data-lane-id]');
+      // Only actual lane-choice buttons select a lane. The note holder also has
+      // data-lane-id, but taps in its textarea must never reset the editor.
+      const choice = event.target.closest('.lane-mini-choice[data-lane-id]');
       if (choice) {
         const lane = laneById(choice.dataset.laneId);
         if (!lane) return;
@@ -119,11 +161,37 @@
         return;
       }
 
-      if (event.target.closest('#saveLane')) saveSelectedLane(card);
+      if (event.target.closest('#saveLane')) {
+        saveSelectedLane(card);
+        return;
+      }
+      const editButton = event.target.closest('[data-edit-lane-note]');
+      if (editButton) {
+        const row = editButton.closest('[data-lane-entry]');
+        const entry = readEntries().find(item => item.id === row?.dataset.laneEntry);
+        const editor = row?.querySelector('.lane-inline-editor');
+        if (entry && editor) {
+          editor.hidden = false;
+          editButton.hidden = true;
+          const textarea = editor.querySelector('textarea');
+          textarea.value = entry.note || '';
+          textarea.focus();
+        }
+        return;
+      }
+      if (event.target.closest('[data-save-lane-note]')) {
+        editSavedLaneNote(event.target);
+        return;
+      }
+      if (event.target.closest('[data-cancel-lane-note]')) {
+        const row = event.target.closest('[data-lane-entry]');
+        row.querySelector('.lane-inline-editor').hidden = true;
+        row.querySelector('[data-edit-lane-note]').hidden = false;
+      }
     });
   }
 
-  function renderTodayCard() {
+  function renderTodayCard(force = false) {
     const weather = $('#weatherCard');
     if (!weather) return false;
     let card = $('#todayLaneCard');
@@ -134,6 +202,8 @@
       weather.insertAdjacentElement('afterend', card);
     }
     setupCardEvents(card);
+    // Delayed app initialization must not destroy a focused textarea or draft.
+    if (!force && $('.lane-home-strip', card)) return true;
 
     const current = latestForDate();
     card.innerHTML = `
@@ -144,7 +214,8 @@
       <div class="lane-home-strip" role="group" aria-label="Choose your current lane">
         ${LANES.map(lane => laneTileMarkup(lane, current?.laneId || '')).join('')}
       </div>
-      <div class="lane-home-selection" id="laneHomeSelection" hidden></div>`;
+      <div class="lane-home-selection" id="laneHomeSelection" hidden></div>
+      <div id="laneTodayHistory">${todayLogMarkup()}</div>`;
     return true;
   }
 
@@ -167,7 +238,8 @@
       if (status) status.textContent = 'That did not save. Nothing was overwritten.';
       return;
     }
-    renderTodayCard();
+    renderTodayCard(true);
+    window.GrizzlyJohnMyDays?.refresh?.();
     window.dispatchEvent(new CustomEvent('grizzlyjohn:lane-saved', { detail: entry }));
   }
 

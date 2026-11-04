@@ -69,3 +69,11 @@
   .my-days-feeling-entry { grid-template-columns: 58px minmax(0,1fr); }
   .this-day-last-year { align-items: flex-start; flex-direction: column; }
 }
+
+.my-days-lane-entries { display: grid; gap: 9px; }
+.my-days-lane-entry { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.my-days-lane-entry:last-child { border-bottom: 0; }
+.my-days-lane-entry time { color: var(--muted); font-size: .74rem; }
+.my-days-lane-entry strong { color: var(--pine-dark); font-size: .83rem; }
+.my-days-lane-entry p { margin: 4px 0 0; font-size: .8rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 430px) { .my-days-lane-entry { grid-template-columns: 54px minmax(0, 1fr); } }

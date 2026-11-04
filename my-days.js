@@ -21,7 +21,7 @@
     const days = new Map();
     const ensureDay = date => {
       if (!date) return null;
-      if (!days.has(date)) days.set(date, { date, feelings: [], gratitude: [], goldStarDays: [], badgeAwards: [], sideQuestEvents: [], guidedSkillSessions: [] });
+      if (!days.has(date)) days.set(date, { date, feelings: [], gratitude: [], goldStarDays: [], badgeAwards: [], sideQuestEvents: [], guidedSkillSessions: [], laneCheckIns: [] });
       return days.get(date);
     };
     const dateFor = record => {
@@ -58,6 +58,12 @@
       if (day) day.guidedSkillSessions.push(entry);
     });
 
+    (Array.isArray(records.laneCheckIns) ? records.laneCheckIns : []).forEach(entry => {
+      if (!entry || typeof entry.laneId !== 'string') return;
+      const day = ensureDay(dateFor(entry));
+      if (day) day.laneCheckIns.push(entry);
+    });
+
     const definitions = new Map((Array.isArray(records.goldStarDefinitions) ? records.goldStarDefinitions : []).filter(item => item?.id).map(item => [item.id, item]));
     return [...days.values()].map(day => ({
       ...day,
@@ -72,7 +78,8 @@
       })),
       badgeAwards: [...day.badgeAwards].sort((a, b) => String(a?.awardedAt || '').localeCompare(String(b?.awardedAt || ''))),
       sideQuestEvents: [...day.sideQuestEvents].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || ''))),
-      guidedSkillSessions: [...day.guidedSkillSessions].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || '')))
+      guidedSkillSessions: [...day.guidedSkillSessions].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || ''))),
+      laneCheckIns: [...day.laneCheckIns].sort((a, b) => String(a?.timestamp || '').localeCompare(String(b?.timestamp || '')))
     })).sort((a, b) => b.date.localeCompare(a.date));
   }
 
@@ -156,6 +163,13 @@
 
   function readDays() {
     const storage = window.GrizzlyJohnStorageV2;
+    let laneCheckIns = [];
+    try {
+      const saved = JSON.parse(window.localStorage.getItem('grizzlyjohn:laneCheckIns') || '[]');
+      if (Array.isArray(saved)) laneCheckIns = saved;
+    } catch {
+      // Preserve the rest of My Days if lane data is unavailable.
+    }
     const gratitude = storage?.gratitude.all();
     const feelings = storage?.feelingCheckIns.all();
     const goldDays = storage?.readers.goldStarDays();
@@ -170,7 +184,8 @@
       goldStarDefinitions: goldDefinitions?.ok ? goldDefinitions.definitions : [],
       badgeAwards: awards?.ok ? awards.awards : [],
       sideQuestEvents: quests?.ok ? quests.events : [],
-      guidedSkillSessions: guided?.ok ? guided.sessions : []
+      guidedSkillSessions: guided?.ok ? guided.sessions : [],
+      laneCheckIns
     }, { localDateKey: storage?.localDateKey });
   }
 
@@ -189,6 +204,14 @@
     return day.feelings.flatMap(entry => Array.isArray(entry?.feelings) ? entry.feelings.map(feeling => typeof feeling === 'string' ? feeling : feeling?.word).filter(Boolean) : []);
   }
 
+  const LANE_LABELS = Object.freeze({
+    'express-weaving': 'Express Lane / Weaving',
+    'nascar-15mph': 'NASCAR Lane at 15–20 MPH',
+    'third-cruise': '3rd Lane / Cruise But Go-Go',
+    'rv-tow-mode': '2nd Lane / RV Tow Mode',
+    'wisconsin-nice': 'Far Right Lane / Wisconsin Nice'
+  });
+
   function daySummary(day) {
     const feelings = feelingWords(day);
     const stars = goldStarSummary(day);
@@ -198,7 +221,8 @@
       day.gratitude.length ? `${day.gratitude.length} gratitude${day.gratitude.length === 1 ? '' : 's'}` : '',
       stars.completedCount ? `Gold Stars: ${stars.completedCount}${stars.availableCount === null ? '' : ` of ${stars.availableCount}`}` : '',
       day.badgeAwards.length ? 'Gold Star Trail Day' : '',
-      day.sideQuestEvents.length ? `${day.sideQuestEvents.length} Side Quest${day.sideQuestEvents.length === 1 ? '' : 's'}` : ''
+      day.sideQuestEvents.length ? `${day.sideQuestEvents.length} Side Quest${day.sideQuestEvents.length === 1 ? '' : 's'}` : '',
+      day.laneCheckIns.length ? `${day.laneCheckIns.length} Lane check-in${day.laneCheckIns.length === 1 ? '' : 's'}` : ''
     ].filter(Boolean).map(label => `<small>${escapeHtml(label)}</small>`).join('');
     return `<div class="my-days-summary-chips">${preview}${extra}</div><div class="my-days-summary-signals">${signals}</div>`;
   }
@@ -236,9 +260,22 @@
     return `<section class="my-days-detail-group"><h4>Tools used</h4><div class="my-days-guided-entries">${day.guidedSkillSessions.map(entry => `<div class="my-days-guided-entry"><time>${escapeHtml(naturalTime(entry.timestamp))}</time><span><strong>${escapeHtml(entry.skill || 'Guided skill')}</strong>${entry.feeling ? ` · ${escapeHtml(entry.feeling)}` : ''}</span></div>`).join('')}</div></section>`;
   }
 
+  function laneDetails(day) {
+    if (!day.laneCheckIns?.length) return '';
+    return `<section class="my-days-detail-group">
+      <h4>Lane check-ins</h4>
+      <div class="my-days-lane-entries">${day.laneCheckIns.map(entry => `
+        <div class="my-days-lane-entry">
+          <time datetime="${escapeHtml(entry.timestamp || '')}">${escapeHtml(naturalTime(entry.timestamp))}</time>
+          <div><strong>${escapeHtml(LANE_LABELS[entry.laneId] || 'Lane')}</strong>${entry.note ? `<p>${escapeHtml(entry.note)}</p>` : ''}</div>
+        </div>`).join('')}
+      </div>
+    </section>`;
+  }
+
   function dayDetails(day) {
     if (!day) return '<p class="history-empty">No saved activity for this day.</p>';
-    return `${feelingDetails(day)}${gratitudeDetails(day)}${goldStarDetails(day)}${badgeDetails(day)}${sideQuestDetails(day)}${guidedSkillDetails(day)}`;
+    return `${feelingDetails(day)}${gratitudeDetails(day)}${goldStarDetails(day)}${badgeDetails(day)}${sideQuestDetails(day)}${guidedSkillDetails(day)}${laneDetails(day)}`;
   }
 
   function renderCalendar(days, today) {
@@ -357,6 +394,7 @@
     });
     renderMyDays();
     exported.refresh = renderMyDays;
+    window.addEventListener('grizzlyjohn:lane-saved', () => renderMyDays());
     exported.reveal = preferredDate => {
       renderMyDays(preferredDate);
       const heading = $('#myDaysHeading');

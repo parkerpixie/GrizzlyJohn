@@ -109,3 +109,39 @@
 /* Retired lane layouts from the first pass should never occupy Wisdom/My Days. */
 #chooseYourLane,
 #laneRoadReport { display: none !important; }
+
+/* Writable, touch-friendly lane commentary and timestamped daily log. */
+#laneNote, .lane-inline-editor textarea {
+  display: block;
+  width: 100%;
+  min-height: 90px;
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: auto;
+  pointer-events: auto;
+}
+#laneNote:focus-visible, .lane-inline-editor textarea:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 2px;
+}
+.lane-day-history { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(47,70,54,.15); }
+.lane-day-history-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.lane-day-history h3 { margin: 0; color: var(--pine-dark); font-size: 1rem; }
+.lane-day-history-heading span { color: var(--muted); font-size: .78rem; font-weight: 700; }
+.lane-day-list { display: grid; gap: 9px; padding: 0; margin: 12px 0 0; list-style: none; }
+.lane-day-entry { padding: 11px 12px; border: 1px solid rgba(47,70,54,.12); background: rgba(255,255,255,.6); border-radius: 13px; min-width: 0; }
+.lane-day-entry-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 9px; }
+.lane-day-entry-heading time { color: var(--rust); font-size: .77rem; font-weight: 800; }
+.lane-day-entry-heading strong { color: var(--pine-dark); font-size: .85rem; }
+.lane-day-entry .lane-day-note { margin: 6px 0 3px; font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lane-day-empty-note { color: var(--muted); font-size: .8rem; margin: 8px 0; }
+.lane-edit-note-button { padding: 5px 0; font-size: .8rem; }
+.lane-inline-editor { margin-top: 9px; }
+.lane-inline-editor[hidden] { display: none; }
+.lane-inline-editor label { font-size: .78rem; font-weight: 750; }
+.lane-inline-editor textarea { padding: 10px; margin: 6px 0; border: 1px solid var(--line); border-radius: 10px; background: white; color: var(--ink); resize: vertical; }
+.lane-edit-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.lane-edit-actions .button { width: auto; }
+.lane-day-privacy { color: var(--muted); font-size: .74rem; margin: 10px 2px 0; }
