@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v37-cloud-backup-foundation';
+const CACHE_NAME = 'grizzlyjohn-v38-sleep-journal';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL = [
   './roam-v2.css',
   './health-v3.css',
   './sleep-tracker.css',
+  './sleep-v5.css',
   './health-v3-dashboard.css',
   './health-v3-history.css',
   './health-v3-trends.css',
@@ -56,6 +57,7 @@ const APP_SHELL = [
   './roam-v2.js',
   './health-v3-ui.js',
   './sleep-tracker.js',
+  './sleep-v5.js',
   './health-v3-dashboard.js',
   './health-v3-history.js',
   './health-v3-trends.js',
