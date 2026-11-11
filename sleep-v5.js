@@ -67,6 +67,7 @@
       if (end.getTime()>now().getTime()+10*60000) throw new Error('The wake-up time cannot be in the future.');
       const next = prior || { formatVersion:5, id:idFactory(), nightDate, stretches:[], recordedAt:now().toISOString() };
       const item = { id:idFactory(), startedAt:start.toISOString(), endedAt:end.toISOString(), hours:hours(minutes(start,end)), manuallyEntered:true,
+        estimated:Boolean(input.estimated), note:String(input.note||'').trim().slice(0,160),
         localStartedAt:localDate(start)+'T'+input.startTime, localEndedAt:localDate(end)+'T'+input.endTime };
       write(DRAFT_KEY, { ...next, stretches:[...stretches,item] });
       return item;
@@ -185,7 +186,7 @@
     function timeline(stretches) {
       if (!stretches.length) return '';
       return '<div class="v5-stretches"><strong>Sleep stretches recorded</strong>'+
-        stretches.map((s,i)=>'<div class="v5-stretch"><span>🌙 '+timeLabel(s.startedAt)+' – '+timeLabel(s.endedAt)+'</span><b>'+duration(minutes(s.startedAt,s.endedAt))+'</b></div>').join('')+
+        stretches.map((s,i)=>'<div class="v5-stretch"><span>🌙 '+timeLabel(s.startedAt)+' – '+timeLabel(s.endedAt)+(s.estimated?' · approx.':'')+(s.note?' · '+escapeHtml(s.note):'')+'</span><b>'+duration(minutes(s.startedAt,s.endedAt))+'</b></div>').join('')+
         '<button type="button" class="v5-text-button" data-v5-action="undo">↶ Undo last stretch</button></div>';
     }
     function report(entry) {
@@ -240,6 +241,8 @@
             '<p>No need to touch your phone at 2 AM. Set the clocks anytime, even tomorrow morning.</p>'+
             '<label class="v5-night-date">Night starting <input type="date" data-v5-date value="'+nightDate+'" '+(current?.stretches?.length?'disabled':'')+'></label>'+
             '<div class="v5-clock-grid">'+clockCard('start','Fell Asleep',start)+clockCard('end','Woke Up',end)+'</div>'+
+            '<label class="v5-estimated"><input type="checkbox" data-v5-estimated> These times are approximate</label>'+ 
+            '<label class="v5-stretch-note">Anything about waking? (optional)<input type="text" maxlength="160" data-v5-stretch-note placeholder="e.g. Woke up and read for a while"></label>'+ 
             '<button type="button" class="button button-primary sleep-big-action" data-v5-action="add">＋ Save This Sleep Stretch</button>'+
             timeline(current?.stretches||[])+
             (current?.stretches?.length?'<button type="button" class="button button-secondary sleep-big-action" data-v5-action="rate">☀️ I’m Up for the Day</button>':'')+
@@ -285,7 +288,9 @@
         if(type==='add'){
           journal.addStretch({nightDate:root.querySelector('[data-v5-date]')?.value,
             startTime:root.querySelector('[data-v5-time="start"]').value,
-            endTime:root.querySelector('[data-v5-time="end"]').value});
+            endTime:root.querySelector('[data-v5-time="end"]').value,
+            estimated:Boolean(root.querySelector('[data-v5-estimated]')?.checked),
+            note:root.querySelector('[data-v5-stretch-note]')?.value||''});
           view='entry';status('Sleep stretch saved on this device.');
         }else if(type==='undo'){journal.undoLastStretch();status('Last stretch removed from this unfinished draft.');}
         else if(type==='rate'){view='rate';status('Choose how rested you feel. Your experience is part of the data.');}
