@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v36-lane-commentary-history';
+const CACHE_NAME = 'grizzlyjohn-v37-cloud-backup-foundation';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './my-days.css',
   './choose-your-lane.css',
   './settings-v2.css',
+  './cloud-backup-v5.css',
   './roam-v2.css',
   './health-v3.css',
   './sleep-tracker.css',
@@ -31,6 +32,7 @@ const APP_SHELL = [
   './storage-v2.js',
   './health-v3.js',
   './settings-v2.js',
+  './cloud-backup-v5.js',
   './feeling-families.js',
   './wisdom-patterns.js',
   './wisdom-thoughts.js',
@@ -116,6 +118,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
+  // Never cache encrypted backup responses or any Netlify function request.
+  if (url.pathname.startsWith('/.netlify/functions/')) return;
   const isCodeAsset = /\.(?:css|js)$/i.test(url.pathname);
   const networkRequest = isCodeAsset
     ? new Request(event.request, { cache: 'reload' })
