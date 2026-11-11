@@ -70,7 +70,8 @@
     function undoLastStretch() {
       const record = draft();
       if (!record || !record.stretches.length) throw new Error('Nothing to undo.');
-      write(DRAFT_KEY, { ...record, stretches:record.stretches.slice(0,-1) });
+      if (record.stretches.length === 1) storage.removeItem(DRAFT_KEY);
+      else write(DRAFT_KEY, { ...record, stretches:record.stretches.slice(0,-1) });
     }
     function finish(restfulness, note='') {
       const record = draft();
@@ -95,7 +96,11 @@
         interruptionCount:Math.max(0,record.stretches.length-1), manuallyEntered:true
       };
       const current = all.find(item=>item.id===record.id);
-      const updated = current ? { ...input, revisions:[...(current.revisions||[]),{editedAt:now().toISOString(),previous:current}] } : input;
+      // The audit trail is flat, so repeated edits cannot exponentially duplicate records.
+      const updated = current ? { ...input, revisions:[...(current.revisions||[]),{
+        editedAt:now().toISOString(),
+        previous:{ ...current, revisions:undefined }
+      }] } : input;
       const next = [updated, ...all.filter(item=>item.id!==record.id)];
       write(HISTORY_KEY, next);
       const check = entries().find(item=>item.id===record.id);
@@ -256,10 +261,12 @@
           view='report';
           status('Night saved. Your report is ready.');
           window.GrizzlyJohnHealthUIV3?.render?.();
+          render();
           if(window.GrizzlyJohnV5Backup?.enabled())window.GrizzlyJohnV5Backup.upload(true).then(result=>{if(!result.ok)status('Night is saved locally. Cloud backup will retry: '+result.reason,true);});
         }else if(type==='new'){view='entry';message='';render();}
         else if(type==='edit'){
-          journal.editNight(journal.latest().id);view='entry';status('Editing your saved V5 night. Original revision will be retained.');
+          const previous=journal.latest();
+          journal.editNight(previous.id);rating=previous.subjectiveRestfulness||3;view='entry';status('Editing your saved V5 night. Original revision will be retained.');
         }
       }catch(e){status(e.message||'Could not save sleep data.',true);}
     }
