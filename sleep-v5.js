@@ -120,18 +120,37 @@
         recordedAt:now().toISOString(), editing:true });
     }
     function latest() { return entries().slice().sort((a,b)=>String(b.endedAt||b.timestamp).localeCompare(String(a.endedAt||a.timestamp)))[0] || null; }
-    function overview() {
+    function overview(days=7) {
       const all=entries();
-      const since=now().getTime()-7*86400000;
-      const lastWeek=all.filter(e=>Date.parse(e.endedAt||e.timestamp)>=since);
-      const v5Rated=lastWeek.filter(e=>Number.isInteger(e.subjectiveRestfulness));
+      const since=now().getTime()-days*86400000;
+      const subset=all.filter(e=>Date.parse(e.endedAt||e.timestamp)>=since);
+      const v5Rated=subset.filter(e=>Number.isInteger(e.subjectiveRestfulness));
       return {
-        nights:lastWeek.length, avgHours:lastWeek.length?Math.round(lastWeek.reduce((s,e)=>s+Number(e.hours||0),0)/lastWeek.length*10)/10:null,
+        nights:subset.length, avgHours:subset.length?Math.round(subset.reduce((s,e)=>s+Number(e.hours||0),0)/subset.length*10)/10:null,
         rated:v5Rated.length, avgFeeling:v5Rated.length?Math.round(v5Rated.reduce((s,e)=>s+e.subjectiveRestfulness,0)/v5Rated.length*10)/10:null,
-        fragmented:lastWeek.filter(e=>Number(e.interruptionCount)>0).length
+        fragmented:subset.filter(e=>Number(e.interruptionCount)>0).length
       };
     }
-    return Object.freeze({draft,entries,addStretch,undoLastStretch,finish,editNight,latest,overview});
+    function moodPattern(days=30) {
+      // A same-day association is NOT a causal or medical conclusion.
+      let feelings;
+      try {feelings=read('grizzlyjohn:v2:feelingCheckIns',Array.isArray)||[];}
+      catch {return null;}
+      const since=now().getTime()-days*86400000;
+      const tired=entries().filter(e=>e.subjectiveRestfulness<=2 && Date.parse(e.endedAt||e.timestamp)>=since);
+      if(tired.length<3)return null;
+      const records=new Map();
+      tired.forEach(e=>records.set(e.date,new Set()));
+      feelings.forEach(e=>{
+        if(!records.has(e.date)||!Array.isArray(e.feelings))return;
+        e.feelings.forEach(f=>{if(f?.word)records.get(e.date).add(String(f.word).trim());});
+      });
+      const counts=new Map();
+      records.forEach(words=>words.forEach(word=>counts.set(word,(counts.get(word)||0)+1)));
+      const top=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];
+      return top?.[1]>=3?{feeling:top[0],days:top[1],lowRestDays:tired.length}:null;
+    }
+    return Object.freeze({draft,entries,addStretch,undoLastStretch,finish,editNight,latest,overview,moodPattern});
   }
 
   function timeLabel(iso) { return new Date(iso).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); }
@@ -172,7 +191,8 @@
     function report(entry) {
       if (!entry) return '';
       const historic=entry.formatVersion===5;
-      const overview=journal.overview();
+      const week=journal.overview(7), month=journal.overview(30), year=journal.overview(365);
+      const mood=journal.moodPattern(30);
       const sleepMinutes=Math.round(Number(entry.hours)*60);
       const insight=historic ?
         (entry.subjectiveRestfulness<=2 ? 'You reported feeling tired despite the time logged. That experience matters.' :
@@ -184,8 +204,12 @@
         '<div><b>'+ (historic?escapeHtml(entry.subjectiveLabel):escapeHtml(entry.quality||'—'))+'</b><small>Your sleep rating</small></div></div>'+
         '<p>'+escapeHtml(insight)+'</p>'+
         (historic && entry.subjectiveNote?'<p class="v5-user-note">“'+escapeHtml(entry.subjectiveNote)+'”</p>':'')+
-        (overview.nights>=2?'<p class="v5-trend">Past seven days: '+overview.nights+' recorded nights, averaging '+overview.avgHours+' hours of sleep.'+
-           (overview.rated>=2?' Average personal restfulness: '+overview.avgFeeling+'/5.':'')+'</p>':'<p class="v5-trend">Record more nights to unlock weekly patterns.</p>')+
+        '<div class="v5-trend-grid">'+[
+          ['7 DAYS',week],['30 DAYS',month],['365 DAYS',year]
+        ].map(item=>'<div class="v5-trend"><strong>'+item[0]+'</strong><b>'+item[1].nights+' nights</b><small>'+
+          (item[1].nights?item[1].avgHours+'h avg sleep':'No entries yet')+
+          (item[1].rated>=2?' • '+item[1].avgFeeling+'/5 rested':'')+'</small></div>').join('')+'</div>'+
+        (mood?'<p class="v5-pattern">On '+mood.days+' days with lower-rated sleep, you also logged “'+escapeHtml(mood.feeling)+'.” This is an association, not proof of a cause.</p>':'')+
         (historic?'<button type="button" class="v5-text-button" data-v5-action="edit">Edit this night</button>':'')+
         '</div>';
     }
