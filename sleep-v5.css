@@ -46,3 +46,8 @@
 .v5-trend-grid b{color:var(--pine-dark);font-size:.81rem;}
 .v5-trend-grid small{font-size:.66rem;line-height:1.4;}
 .v5-pattern{padding:10px 12px;border-radius:10px;background:rgba(47,70,54,.065);}
+
+.v5-estimated { display:flex; gap:9px; align-items:center; color:var(--pine-dark); font-size:.78rem; font-weight:700; }
+.v5-estimated input { width:17px; height:17px; accent-color:var(--pine); }
+.v5-stretch-note { display:grid; gap:6px; color:var(--pine-dark); font-size:.78rem; font-weight:700; }
+.v5-stretch-note input { min-height:42px; padding:10px; border:1px solid var(--line); border-radius:10px; background:#fffdf7; color:var(--pine-dark); font-size:.84rem; }
