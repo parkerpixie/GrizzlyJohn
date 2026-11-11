@@ -285,8 +285,10 @@
 
       const entries = [...entriesResult.entries];
       const existingIndex = entries.findIndex(item => item?.date === date);
-      if (existingIndex >= 0) entries[existingIndex] = entry;
-      else entries.unshift(entry);
+      if (existingIndex >= 0) {
+        return { ok: false, reason: 'A sleep record already exists for this date. Its history was preserved.' };
+      }
+      entries.unshift(entry);
 
       const written = writeJson(SLEEP_ENTRIES_KEY, entries);
       if (!written.ok) return written;
@@ -635,7 +637,10 @@
     const init = () => {
       const tracker = createSleepTracker(window.localStorage);
       window.GrizzlyJohnSleepTracker = tracker;
-      createBrowserUi(tracker, window.GrizzlyJohnHealthV3);
+      const safeToUseV5 = Boolean(window.GrizzlyJohnV5Backup?.hasVerified?.()) &&
+        !window.localStorage.getItem(ACTIVE_KEY);
+      if (safeToUseV5 && window.GrizzlyJohnSleepV5?.mount) window.GrizzlyJohnSleepV5.mount();
+      else createBrowserUi(tracker, window.GrizzlyJohnHealthV3);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
     else init();
