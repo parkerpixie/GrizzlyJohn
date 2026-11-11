@@ -1,0 +1,9 @@
+{
+  "name": "grizzlyjohn",
+  "private": true,
+  "version": "5.0.0",
+  "description": "GrizzlyJohn app with private, client-encrypted Netlify Blob backups",
+  "dependencies": {
+    "@netlify/blobs": "11.1.9"
+  }
+}
