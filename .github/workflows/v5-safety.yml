@@ -10,6 +10,7 @@ on:
   push:
     branches:
       - 'feature/v5-sleep-safe-backup'
+      - 'feature/v5-sleep-after-backup'
     paths:
       - 'sleep-v5.js'
       - 'sleep-tracker.js'
