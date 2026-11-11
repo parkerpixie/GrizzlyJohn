@@ -168,7 +168,7 @@
   }
   function clockCard(kind,title,value) {
     return '<label class="v5-clock-card"><strong>'+title+'</strong>'+clockSvg(kind,value)+
-      '<input type="time" data-v5-time="'+kind+'" value="'+value+'" step="300" aria-label="'+title+' time"/>'+
+      '<input type="time" data-v5-time="'+kind+'" value="'+value+'" step="60" aria-label="'+title+' time"/>'+
       '<small>Drag clock hands or set exact time</small></label>';
   }
 
