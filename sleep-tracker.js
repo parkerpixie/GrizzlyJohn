@@ -637,9 +637,12 @@
     const init = () => {
       const tracker = createSleepTracker(window.localStorage);
       window.GrizzlyJohnSleepTracker = tracker;
-      const safeToUseV5 = Boolean(window.GrizzlyJohnV5Backup?.hasVerified?.()) &&
-        !window.localStorage.getItem(ACTIVE_KEY);
-      if (safeToUseV5 && window.GrizzlyJohnSleepV5?.mount) window.GrizzlyJohnSleepV5.mount();
+      // V5 can start without a cloud backup: it does not run a destructive migration.
+      // But preserve an in-progress V3 night by allowing the old flow to finish first.
+      const previousNight = tracker.active();
+      const canUseV5 = previousNight.ok && !previousNight.value &&
+        typeof window.GrizzlyJohnSleepV5?.mount === 'function';
+      if (canUseV5) window.GrizzlyJohnSleepV5.mount();
       else createBrowserUi(tracker, window.GrizzlyJohnHealthV3);
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
