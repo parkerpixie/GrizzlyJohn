@@ -173,7 +173,7 @@
   }
 
   function mount(journal, health) {
-    let view='entry', rating=3, message='', isError=false;
+    let view='entry', rating=0, noteDraft='', message='', isError=false;
     const status=(text,error=false)=>{message=text;isError=error;render();};
     function suggestedTimes(stretches) {
       if (!stretches?.length) return ['21:00','07:00'];
@@ -210,7 +210,7 @@
           (item[1].nights?item[1].avgHours+'h avg sleep':'No entries yet')+
           (item[1].rated>=2?' • '+item[1].avgFeeling+'/5 rested':'')+'</small></div>').join('')+'</div>'+
         (mood?'<p class="v5-pattern">On '+mood.days+' days with lower-rated sleep, you also logged “'+escapeHtml(mood.feeling)+'.” This is an association, not proof of a cause.</p>':'')+
-        (historic?'<button type="button" class="v5-text-button" data-v5-action="edit">Edit this night</button>':'')+
+        (historic?'<button type="button" class="v5-text-button" data-v5-action="edit" data-v5-edit-id="'+escapeHtml(entry.id)+'">Edit this night</button>':'')+
         '</div>';
     }
     function surface() {
@@ -218,7 +218,7 @@
       try {current=journal.draft();latest=journal.latest();}
       catch(e){return '<div class="sleep-v5-surface"><h3>Sleep records need attention</h3><p>'+escapeHtml(e.message)+'</p></div>';}
       const today=new Date();
-      if (today.getHours()<12)today.setDate(today.getDate()-1);
+      if (today.getHours()<18)today.setDate(today.getDate()-1);
       const nightDate=current?.nightDate||localDate(today);
       const [start,end]=suggestedTimes(current?.stretches);
       let body='';
@@ -229,7 +229,7 @@
           '<div class="v5-rating" role="group" aria-label="How rested you feel">'+REST.map((text,i)=>
             '<button type="button" data-v5-rating="'+(i+1)+'" aria-pressed="'+(rating===i+1)+'">'+
             ['😫','😴','😐','🙂','😃'][i]+' '+text+'</button>').join('')+'</div>'+
-          '<label class="v5-notes">Anything you want to remember? (optional)<textarea maxlength="500" rows="3" data-v5-note placeholder="Dreams, medication, interruptions, how you felt…"></textarea></label>'+
+          '<label class="v5-notes">Anything you want to remember? (optional)<textarea maxlength="500" rows="3" data-v5-note placeholder="Dreams, medication, interruptions, how you felt…">'+escapeHtml(noteDraft)+'</textarea></label>'+ 
           '<button type="button" class="button button-primary sleep-big-action" data-v5-action="finish">☀️ Finish &amp; See My Sleep Report</button>'+
           '<button type="button" class="v5-text-button" data-v5-action="back">↶ Back to clocks</button>';
       } else {
@@ -243,7 +243,13 @@
             '<button type="button" class="button button-primary sleep-big-action" data-v5-action="add">＋ Save This Sleep Stretch</button>'+
             timeline(current?.stretches||[])+
             (current?.stretches?.length?'<button type="button" class="button button-secondary sleep-big-action" data-v5-action="rate">☀️ I’m Up for the Day</button>':'')+
-            (!current && latest ? '<details class="v5-last-night"><summary>Last completed night</summary>'+report(latest)+'</details>':'');
+            (!current && latest ? '<details class="v5-last-night"><summary>Last completed night</summary>'+report(latest)+'</details>':'')+
+            (!current ? '<details class="v5-last-night"><summary>Browse previous sleep nights</summary><div class="v5-stretches">'+
+              journal.entries().slice().sort((a,b)=>String(b.endedAt||b.timestamp).localeCompare(String(a.endedAt||a.timestamp))).slice(0,30).map(entry=>
+              '<div class="v5-stretch"><span>'+escapeHtml(entry.date)+' · '+escapeHtml(String(entry.hours||0))+'h'+
+              (Number.isInteger(entry.subjectiveRestfulness)?' · '+escapeHtml(entry.subjectiveLabel):'')+'</span>'+
+              (entry.formatVersion===5?'<button type="button" class="v5-text-button" data-v5-action="edit" data-v5-edit-id="'+escapeHtml(entry.id)+'">Edit</button>':'<small>Historical</small>')+'</div>').join('')+
+              '</div></details>':'');
         }
       }
       return '<div class="sleep-v5-surface">'+body+(message?'<p class="v5-status" data-error="'+isError+'" role="status">'+escapeHtml(message)+'</p>':'')+'</div>';
@@ -282,28 +288,42 @@
             endTime:root.querySelector('[data-v5-time="end"]').value});
           view='entry';status('Sleep stretch saved on this device.');
         }else if(type==='undo'){journal.undoLastStretch();status('Last stretch removed from this unfinished draft.');}
-        else if(type==='rate'){view='rate';status('Tell us how you slept. Your opinion is part of the data.');}
+        else if(type==='rate'){view='rate';status('Choose how rested you feel. Your experience is part of the data.');}
         else if(type==='back'){view='entry';status('Your clock entries are still saved.');}
         else if(type==='finish'){
-          const entry=journal.finish(rating,root.querySelector('[data-v5-note]')?.value||'');
+          const entry=journal.finish(rating,root.querySelector('[data-v5-note]')?.value||noteDraft||'');
           view='report';
           status('Night saved. Your report is ready.');
           window.GrizzlyJohnHealthUIV3?.render?.();
           render();
           if(window.GrizzlyJohnV5Backup?.enabled())window.GrizzlyJohnV5Backup.upload(true).then(result=>{if(!result.ok)status('Night is saved locally. Cloud backup will retry: '+result.reason,true);});
-        }else if(type==='new'){view='entry';message='';render();}
+        }else if(type==='new'){view='entry';rating=0;noteDraft='';message='';render();}
         else if(type==='edit'){
-          const previous=journal.latest();
-          journal.editNight(previous.id);rating=previous.subjectiveRestfulness||3;view='entry';status('Editing your saved V5 night. Original revision will be retained.');
+          const id=button.dataset.v5EditId || journal.latest()?.id;
+          const previous=journal.entries().find(entry=>entry.id===id);
+          if(!previous)throw new Error('That sleep entry was not found.');
+          journal.editNight(previous.id);rating=previous.subjectiveRestfulness||0;noteDraft=previous.subjectiveNote||'';
+          view='entry';status('Editing your saved V5 night. Original revision will be retained.');
         }
       }catch(e){status(e.message||'Could not save sleep data.',true);}
     }
     document.addEventListener('click',event=>{
+      const choice=event.target.closest('[data-v5-rating]');
+      if(choice){
+        event.preventDefault();
+        rating=Number(choice.dataset.v5Rating);
+        // Change the selected button without replacing the note text already entered.
+        document.querySelectorAll('[data-v5-rating]').forEach(button=>{
+          button.setAttribute('aria-pressed',String(Number(button.dataset.v5Rating)===rating));
+        });
+        return;
+      }
       const b=event.target.closest('[data-v5-action]');
       if(b){event.preventDefault();action(b);return;}
       if(event.target.closest('[data-health-log-type="sleep"]')||event.target.closest('[data-nav="health"]'))setTimeout(render,0);
     });
     document.addEventListener('input',event=>{
+      if(event.target.matches('[data-v5-note]'))noteDraft=event.target.value;
       if(event.target.matches('[data-v5-time]')) {
         const svg=event.target.closest('.sleep-v5-surface')?.querySelector('[data-v5-dial="'+event.target.dataset.v5Time+'"]');
         if(svg)redrawClock(svg);
