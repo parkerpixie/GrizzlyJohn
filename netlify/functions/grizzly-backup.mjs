@@ -5,7 +5,7 @@ import { getStore } from '@netlify/blobs';
 // Possession of the 256-bit derived access token permits upload and retrieval.
 // The server NEVER receives John's encryption key or his plaintext records.
 // No endpoint can delete or overwrite a stored snapshot.
-const LIMIT_BYTES = 1024 * 1024;
+const LIMIT_BYTES = 4 * 1024 * 1024;
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 const headers = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 const respond = (body, status = 200) => new Response(JSON.stringify(body), { status, headers });
