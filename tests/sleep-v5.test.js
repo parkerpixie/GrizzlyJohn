@@ -19,9 +19,10 @@ function makeJournal(initial={}) {
 
 test('retroactive 9 PM–2 AM plus 3 AM–7 AM logs 9h and 60 minutes awake',()=>{
   const {journal}=makeJournal();
-  const first=journal.addStretch({nightDate:'2026-11-09',startTime:'21:00',endTime:'02:00'});
+  const first=journal.addStretch({nightDate:'2026-11-09',startTime:'21:00',endTime:'02:00',estimated:true,note:'Woke at two'});
   const second=journal.addStretch({nightDate:'2026-11-09',startTime:'03:00',endTime:'07:00'});
   assert.equal(first.hours,5);assert.equal(second.hours,4);
+  assert.equal(first.estimated,true);assert.equal(first.note,'Woke at two');
   const result=journal.finish(2,'Felt groggy');
   assert.equal(result.hours,9);
   assert.equal(result.awakeMinutes,60);
