@@ -111,18 +111,42 @@
 
   async function restore(code) {
     const restored = await downloadAndValidate(code);
-    const entries = Object.entries(restored.backup.data).map(([key, raw]) => ({ key, raw }));
+    // A freshly installed app can seed [] or {} before recovery. Those are not
+    // meaningful user entries, so restore old history into empty placeholders only.
+    // Any nonempty local dataset always wins over an older cloud snapshot.
+    const isEmpty = value => {
+      if (value === null) return true;
+      try {
+        const parsed = JSON.parse(value);
+        return (Array.isArray(parsed) && parsed.length === 0) ||
+          (parsed && typeof parsed === 'object' && Object.keys(parsed).length === 0);
+      } catch { return false; }
+    };
+    const originalEntries = Object.entries(restored.backup.data)
+      .filter(([key]) => key.startsWith('grizzlyjohn:') && !key.startsWith(PREFIX))
+      .map(([key, raw]) => ({ key, raw }));
+    const entries = originalEntries.filter(({ key, raw }) => {
+      const local = localStorage.getItem(key);
+      return local === null || (isEmpty(local) && !isEmpty(raw));
+    });
     const data = { format: 'grizzlyjohn-localstorage-export-v1', exportedAt: restored.backup.createdAt, entries };
     const layer = window.GrizzlyJohnStorageV2;
-    const preview = layer.importData(data, { conflict: 'skip', dryRun: true });
+    const preview = layer.importData(data, { conflict: 'overwrite', dryRun: true });
     if (!preview.ok) throw new Error(preview.errors?.[0] || 'Restore validation failed.');
-    if (!preview.imported.length) return { ok: true, imported: 0, skipped: preview.skipped.length };
-    if (!confirm('Found ' + preview.imported.length + ' missing GrizzlyJohn data items. Restore them? Existing data will NOT be overwritten.')) {
+    const skippedCount = originalEntries.length - preview.imported.length;
+    if (!preview.imported.length) return { ok: true, imported: 0, skipped: skippedCount };
+    if (!confirm('Restore ' + preview.imported.length + ' missing or empty data categories? Existing nonempty information will NOT be overwritten.')) {
       return { ok: false, reason: 'Restore canceled. Nothing changed.' };
     }
-    const actual = layer.importData(data, { conflict: 'skip' });
+    // Re-check each key in case it changed while the confirmation dialog was open.
+    const stillSafe = entries.every(({ key, raw }) => {
+      const local = localStorage.getItem(key);
+      return local === null || (isEmpty(local) && !isEmpty(raw));
+    });
+    if (!stillSafe) throw new Error('Local data changed while restoring. Nothing was overwritten. Please try again.');
+    const actual = layer.importData(data, { conflict: 'overwrite' });
     if (!actual.ok) throw new Error(actual.errors?.[0] || 'Restore failed.');
-    return { ok: true, imported: actual.imported.length, skipped: actual.skipped.length };
+    return { ok: true, imported: actual.imported.length, skipped: skippedCount + actual.skipped.length };
   }
 
   function notice(message, error = false) {
@@ -154,9 +178,9 @@
           '<label class="v5-backup-consent"><input type="checkbox" id="v5CloudConsent"> I agree to store encrypted copies of my personal GrizzlyJohn data on Netlify.</label>' +
           '<button type="button" class="button button-primary" data-v5-backup="begin">Set Up Secure Backup</button>')) +
       '<details class="v5-recovery"><summary>Restore missing data from a backup</summary>' +
-      '<p>Paste your recovery code. Existing information on this device will not be replaced.</p>' +
+      '<p>Paste your recovery code. Existing nonempty information on this device will not be replaced.</p>' +
       '<input type="text" autocomplete="off" spellcheck="false" id="v5RecoveryInput" placeholder="Recovery code">' +
-      '<button type="button" class="button button-secondary" data-v5-backup="restore">Restore Missing Data</button></details>' +
+      '<button type="button" class="button button-secondary" data-v5-backup="restore">Restore Missing or Empty Data</button></details>' +
       '<p class="v5-backup-status" id="v5BackupStatus" aria-live="polite"></p>';
   }
 
