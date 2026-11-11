@@ -1,0 +1,48 @@
+.sleep-v5-surface {display:grid;gap:12px;}
+.sleep-v5-surface > .eyebrow{margin:0;color:var(--rust,#945c35);}
+.sleep-v5-surface h3{font-family:var(--serif);color:var(--pine-dark);font-size:1.35rem;margin:0;}
+.sleep-v5-surface > p:not(.eyebrow){margin:0;color:var(--muted);font-size:.87rem;line-height:1.55;}
+.v5-night-date{display:grid;gap:5px;font-size:.73rem;color:var(--pine-dark);font-weight:800;}
+.v5-night-date input{width:100%;border-radius:10px;border:1px solid var(--line);background:#fffdf7;padding:9px;color:var(--pine-dark);font:inherit;}
+.v5-clock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+.v5-clock-card{display:grid;gap:8px;align-content:start;text-align:center;padding:13px 8px;border-radius:17px;background:rgba(47,70,54,.04);border:1px solid rgba(47,70,54,.13);}
+.v5-clock-card strong{color:var(--pine-dark);font-family:var(--serif);font-size:.89rem;}
+.v5-clock-card svg{display:block;width:100%;max-width:190px;aspect-ratio:1;margin:auto;touch-action:none;cursor:grab;}
+.v5-clock-face{fill:#f8f5eb;stroke:rgba(47,70,54,.38);stroke-width:2.5;}
+.v5-clock-card svg text{fill:var(--pine-dark);font-size:12px;font-weight:750;user-select:none;pointer-events:none;}
+.v5-hour-hand{stroke:var(--pine-dark);stroke-width:5;stroke-linecap:round;pointer-events:none;}
+.v5-minute-hand{stroke:#a96b3c;stroke-width:3;stroke-linecap:round;pointer-events:none;}
+.v5-clock-pin{fill:var(--pine-dark);pointer-events:none;}
+.v5-clock-card input[type=time]{min-width:0;width:100%;box-sizing:border-box;border-radius:11px;border:1px solid var(--line);padding:7px 5px;color:var(--pine-dark);font-weight:800;font-size:1rem;text-align:center;background:#fffdf7;}
+.v5-clock-card small{color:var(--muted);font-size:.66rem;line-height:1.25;}
+.v5-stretches{padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.48);display:grid;gap:7px;}
+.v5-stretches>strong{font-size:.8rem;color:var(--pine-dark);}
+.v5-stretch{display:flex;justify-content:space-between;gap:8px;font-size:.76rem;line-height:1.45;}
+.v5-stretch b{white-space:nowrap;}
+.v5-text-button{padding:5px 0;border:none;background:transparent;color:var(--pine-dark);font-weight:800;text-decoration:underline;cursor:pointer;text-align:left;font-size:.76rem;}
+.v5-rating{display:grid;gap:7px;}
+.v5-rating button{padding:12px;text-align:left;border:1px solid var(--line);border-radius:12px;background:#fffdf7;color:var(--pine-dark);font-size:.84rem;font-weight:750;}
+.v5-rating button[aria-pressed=true]{border:2px solid var(--pine);background:rgba(47,70,54,.11);}
+.v5-notes{display:grid;gap:8px;color:var(--pine-dark);font-size:.81rem;font-weight:800;}
+.v5-notes textarea{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid var(--line);padding:12px;background:#fffdf7;color:var(--pine-dark);font-size:.84rem;font-weight:400;}
+.v5-report{display:grid;gap:12px;}
+.v5-report h3{margin-bottom:2px;}
+.v5-report p{font-size:.82rem;line-height:1.5;color:var(--muted);margin:0;}
+.v5-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.v5-metrics>div{padding:10px 5px;text-align:center;border-radius:12px;background:rgba(47,70,54,.065);}
+.v5-metrics b{display:block;color:var(--pine-dark);font-size:.88rem;font-family:var(--serif);}
+.v5-metrics small{display:block;font-size:.61rem;color:var(--muted);margin-top:5px;}
+.v5-last-night{border-top:1px solid var(--line);padding-top:8px;}
+.v5-last-night summary{color:var(--pine-dark);font-size:.8rem;font-weight:800;cursor:pointer;margin-bottom:8px;}
+.v5-user-note{font-style:italic;color:var(--pine-dark)!important;}
+.v5-trend{background:rgba(212,166,75,.09);padding:10px;border-radius:10px;}
+.v5-status{font-size:.75rem;line-height:1.45;padding:9px;border-radius:10px;background:rgba(47,70,54,.08);font-weight:700;color:var(--pine-dark);}
+.v5-status[data-error=true]{background:rgba(139,47,47,.07);color:#8b2f2f;}
+@media(max-width:360px){.v5-clock-grid{gap:5px}.v5-clock-card{padding:9px 4px}.v5-clock-card input[type=time]{font-size:.85rem}.v5-clock-card small{font-size:.59rem}}
+
+.v5-trend-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.v5-trend-grid .v5-trend{padding:10px 7px;display:grid;gap:4px;align-content:start;}
+.v5-trend-grid strong{color:#925837;font-size:.59rem;letter-spacing:.08em;}
+.v5-trend-grid b{color:var(--pine-dark);font-size:.81rem;}
+.v5-trend-grid small{font-size:.66rem;line-height:1.4;}
+.v5-pattern{padding:10px 12px;border-radius:10px;background:rgba(47,70,54,.065);}
