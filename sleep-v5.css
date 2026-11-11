@@ -39,3 +39,10 @@
 .v5-status{font-size:.75rem;line-height:1.45;padding:9px;border-radius:10px;background:rgba(47,70,54,.08);font-weight:700;color:var(--pine-dark);}
 .v5-status[data-error=true]{background:rgba(139,47,47,.07);color:#8b2f2f;}
 @media(max-width:360px){.v5-clock-grid{gap:5px}.v5-clock-card{padding:9px 4px}.v5-clock-card input[type=time]{font-size:.85rem}.v5-clock-card small{font-size:.59rem}}
+
+.v5-trend-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.v5-trend-grid .v5-trend{padding:10px 7px;display:grid;gap:4px;align-content:start;}
+.v5-trend-grid strong{color:#925837;font-size:.59rem;letter-spacing:.08em;}
+.v5-trend-grid b{color:var(--pine-dark);font-size:.81rem;}
+.v5-trend-grid small{font-size:.66rem;line-height:1.4;}
+.v5-pattern{padding:10px 12px;border-radius:10px;background:rgba(47,70,54,.065);}
