@@ -59,7 +59,6 @@ export default async function handler(request, context) {
 }
 
 export const config = {
-  path: '/.netlify/functions/grizzly-backup',
-  method: ['GET', 'POST'],
+  // Let Netlify expose the function at its standard /.netlify/functions/grizzly-backup route.
   rateLimit: { action: 'rate_limit', aggregateBy: 'ip', windowSize: 60, windowLimit: 30 }
 };
