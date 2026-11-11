@@ -40,7 +40,7 @@ function harness(initial = {}, fetch = async () => { throw new Error('Unexpected
       return {ok:true,imported,skipped};
     }
   } };
-  const doc = { readyState:'loading', addEventListener(){} };
+  const doc = { readyState:'loading', addEventListener(){}, getElementById(){return null;} };
   const source=fs.readFileSync(path.join(__dirname,'..','cloud-backup-v5.js'),'utf8');
   const context={window,document:doc,localStorage,crypto:webcrypto,TextEncoder,TextDecoder,btoa,atob,fetch,
     navigator:{clipboard:{writeText:async()=>{}}},setInterval:()=>0,setTimeout:()=>0,confirm:()=>true,console};
