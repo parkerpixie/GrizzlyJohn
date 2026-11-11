@@ -1,0 +1,17 @@
+.v5-cloud-backup { border-top: 1px solid var(--line); }
+.v5-cloud-backup h3 small { color: var(--rust, #925837); font-size: .7rem; letter-spacing: .1em; }
+.v5-cloud-backup > p { color: var(--muted); font-size: .85rem; line-height: 1.55; }
+.v5-backup-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); gap: 8px; margin: 12px 0; }
+.v5-backup-consent, .v5-backup-code label { display:flex; align-items:baseline; gap:9px; padding:12px; font-size:.82rem; line-height:1.45; }
+.v5-cloud-backup input[type="checkbox"] { accent-color: var(--pine); width:17px; height:17px; flex-shrink:0; }
+.v5-cloud-backup textarea,.v5-cloud-backup input[type="text"] {
+ width:100%; display:block; padding:10px; border:1px solid var(--line);
+ border-radius:12px; color:var(--pine-dark); background:#fffdf7; font: .84rem/1.45 ui-monospace,monospace; margin:8px 0;
+ box-sizing:border-box; overflow-wrap:anywhere;
+}
+.v5-backup-code,.v5-recovery { padding:12px; border:1px solid var(--line); border-radius:14px; background:rgba(47,70,54,.035); margin:12px 0; }
+.v5-recovery summary { cursor:pointer; color:var(--pine-dark); font-weight:700; }
+.v5-recovery p { color:var(--muted); font-size:.8rem; line-height:1.45; }
+.v5-backup-good { color:var(--pine-dark)!important; font-weight:750; }
+.v5-backup-status { min-height:1em; font-weight:700; font-size:.77rem; color:var(--pine-dark); margin-top:8px; }
+.v5-backup-status[data-error="true"] { color:#8b2f2f; }
