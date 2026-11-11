@@ -51,14 +51,18 @@
       if (last) {
         const previousEnd = new Date(last.endedAt).getTime();
         for (let attempts=0; start.getTime()<=previousEnd && attempts<3; attempts++) {
-          start.setDate(start.getDate()+1);
+          const nextDay=new Date(start.getFullYear(),start.getMonth(),start.getDate()+1);
+          start=parseDateTime(localDate(nextDay),input.startTime);
         }
         if (start.getTime()<=previousEnd || start.getTime()-previousEnd>24*3600000) {
           throw new Error('Sleep stretches must be in order with at most 24 hours awake between them.');
         }
       }
       let end = parseDateTime(localDate(start), input.endTime);
-      if (end.getTime()<=start.getTime()) end.setDate(end.getDate()+1);
+      if (end.getTime()<=start.getTime()) {
+        const nextDay=new Date(start.getFullYear(),start.getMonth(),start.getDate()+1);
+        end=parseDateTime(localDate(nextDay),input.endTime);
+      }
       if (end.getTime()-start.getTime()>18*3600000) throw new Error('A single sleep stretch cannot exceed 18 hours.');
       if (end.getTime()>now().getTime()+10*60000) throw new Error('The wake-up time cannot be in the future.');
       const next = prior || { formatVersion:5, id:idFactory(), nightDate, stretches:[], recordedAt:now().toISOString() };
@@ -70,7 +74,7 @@
     function undoLastStretch() {
       const record = draft();
       if (!record || !record.stretches.length) throw new Error('Nothing to undo.');
-      if (record.stretches.length === 1) storage.removeItem(DRAFT_KEY);
+      if (record.stretches.length === 1 && !record.editing) storage.removeItem(DRAFT_KEY);
       else write(DRAFT_KEY, { ...record, stretches:record.stretches.slice(0,-1) });
     }
     function finish(restfulness, note='') {
