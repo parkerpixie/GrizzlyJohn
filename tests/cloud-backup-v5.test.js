@@ -26,11 +26,24 @@ function harness(initial = {}, fetch = async () => { throw new Error('Unexpected
       'grizzlyjohn:v5:cloud:enabled': 'yes'
     }
   };
-  const window = { crypto: webcrypto, GrizzlyJohnStorageV2: { createBackup:()=>({ ok:true, backup: structuredClone(backup) }) } };
+  const window = { crypto: webcrypto, GrizzlyJohnStorageV2: {
+    createBackup:()=>({ ok:true, backup: structuredClone(backup) }),
+    validateBackup: remote => remote?.app === 'GrizzlyJohn' && remote?.data && typeof remote.data==='object'
+      ? {ok:true} : {ok:false,errors:['Invalid backup']},
+    importData(payload, opts={}) {
+      const imported=[],skipped=[];
+      for(const entry of payload.entries){
+        if(values.has(entry.key) && opts.conflict !== 'overwrite') {skipped.push({key:entry.key});continue;}
+        imported.push(entry.key);
+        if(!opts.dryRun)values.set(entry.key,entry.raw);
+      }
+      return {ok:true,imported,skipped};
+    }
+  } };
   const doc = { readyState:'loading', addEventListener(){} };
   const source=fs.readFileSync(path.join(__dirname,'..','cloud-backup-v5.js'),'utf8');
   const context={window,document:doc,localStorage,crypto:webcrypto,TextEncoder,TextDecoder,btoa,atob,fetch,
-    navigator:{clipboard:{writeText:async()=>{}}},setInterval:()=>0,setTimeout:()=>0,console};
+    navigator:{clipboard:{writeText:async()=>{}}},setInterval:()=>0,setTimeout:()=>0,confirm:()=>true,console};
   vm.runInNewContext(source,context,{timeout:1000});
   return { api:window.GrizzlyJohnV5Backup, values, backup };
 }
@@ -84,4 +97,33 @@ test('a failed remote verification never marks data as backed up',async()=>{
   const result=await api.upload(true);
   assert.equal(result.ok,false);
   assert.equal(values.has('grizzlyjohn:v5:cloud:lastVerifiedAt'),false);
+});
+
+
+test('recovery fills empty bootstrapped data while leaving meaningful local records untouched',async()=>{
+  const secret=Buffer.alloc(32,12).toString('base64url');
+  let snapshot;
+  const fetch=async(url,options={})=>{
+    if(options.method==='POST'){
+      snapshot=JSON.parse(options.body);
+      return {ok:true,json:async()=>({ok:true,verified:true})};
+    }
+    return {ok:true,json:async()=>({ok:true,envelope:snapshot})};
+  };
+  const source=harness({
+    'grizzlyjohn:v5:cloud:recoverySecret':secret,
+    'grizzlyjohn:v5:cloud:enabled':'yes'
+  },fetch);
+  assert.equal((await source.api.upload(true)).ok,true);
+
+  const target=harness({
+    'grizzlyjohn:v3:health:sleepEntries':'[]', // app's empty starter state
+    'grizzlyjohn:questCount':'55' // meaningful newer record must remain
+  },fetch);
+  const result=await target.api.restore(secret);
+  assert.equal(result.ok,true);
+  assert.equal(target.values.get('grizzlyjohn:v3:health:sleepEntries'),
+    '[{"id":"old-sleep","hours":6}]');
+  assert.equal(target.values.get('grizzlyjohn:questCount'),'55');
+  assert.equal(target.values.has('grizzlyjohn:v5:cloud:recoverySecret'),false);
 });
