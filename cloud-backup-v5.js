@@ -158,11 +158,14 @@
     const section = document.getElementById('v5CloudBackup');
     if (!section) return;
     const isOn = enabled();
+    const verified = Boolean(localStorage.getItem(LAST_AT));
     const secret = localStorage.getItem(SECRET) || '';
     section.innerHTML = '<h3>Secure Cloud Backup <small>V5</small></h3>' +
       '<p>Your personal GrizzlyJohn history stays on this phone, with optional encrypted safety copies on Netlify. No Supabase, no JSON downloads.</p>' +
       (isOn ?
-        '<p class="v5-backup-good">✓ Cloud backup enabled</p><p>Last verified: <strong>' + formatDate(localStorage.getItem(LAST_AT)) + '</strong></p>' +
+        (verified ? '<p class="v5-backup-good">✓ Encrypted cloud backup verified</p>' :
+          '<p class="v5-backup-warning">⚠ Backup not verified yet. Your phone is still the only confirmed copy.</p>') +
+        '<p>Last verified: <strong>' + formatDate(localStorage.getItem(LAST_AT)) + '</strong></p>' +
         '<div class="v5-backup-actions"><button type="button" class="button button-primary" data-v5-backup="now">Back Up Now</button>' +
         '<button type="button" class="button button-secondary" data-v5-backup="show-code">Show Recovery Code</button></div>' +
         '<div id="v5RecoveryCode" hidden><p>Keep this code somewhere safe. Without it, a new phone cannot decrypt your history.</p><textarea readonly rows="3">' + secret + '</textarea>' +
