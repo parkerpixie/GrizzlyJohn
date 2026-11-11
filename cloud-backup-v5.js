@@ -174,7 +174,7 @@
       if (!result.ok) {
         // Keep the secret and consent, but do not claim that a backup exists.
         notice('Not yet backed up: ' + result.reason, true);
-      } else notice('✓ Your first encrypted backup was verified.');
+      } else notice('✓ Backup verified! Reopen GrizzlyJohn to activate your V5 sleep clocks.');
     }
     if (action === 'show-code') {
       const code = document.getElementById('v5RecoveryCode');
@@ -216,7 +216,10 @@
     setInterval(() => { if (enabled() && document.visibilityState === 'visible') upload(false); }, 15 * 60 * 1000);
     if (enabled()) setTimeout(() => upload(false), 1500);
   }
-  window.GrizzlyJohnV5Backup = { enabled, upload, restore, getBackup };
+  window.GrizzlyJohnV5Backup = {
+    enabled, upload, restore, getBackup,
+    hasVerified: () => enabled() && !!localStorage.getItem(LAST_AT)
+  };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
   else init();
 })();
