@@ -10,7 +10,14 @@
   const utf8 = new TextEncoder();
   let busy = false;
 
-  const b64 = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  function b64(bytes) {
+    // Use bounded chunks: spreading a long ciphertext into one call overflows mobile JS argument limits.
+    let binary = '';
+    for (let start = 0; start < bytes.length; start += 16384) {
+      binary += String.fromCharCode(...bytes.subarray(start, start + 16384));
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  }
   function unb64(value) {
     if (!/^[A-Za-z0-9_-]{43}$/.test(value)) throw new Error('That recovery code is not valid.');
     const str = atob(value.replace(/-/g, '+').replace(/_/g, '/') + '=');
