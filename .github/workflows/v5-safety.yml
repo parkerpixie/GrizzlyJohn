@@ -1,0 +1,31 @@
+name: GrizzlyJohn V5 safety regression
+on:
+  pull_request:
+    paths:
+      - 'sleep-v5.js'
+      - 'sleep-tracker.js'
+      - 'cloud-backup-v5.js'
+      - 'tests/**'
+      - '.github/workflows/v5-safety.yml'
+  push:
+    branches:
+      - 'feature/v5-sleep-safe-backup'
+    paths:
+      - 'sleep-v5.js'
+      - 'sleep-tracker.js'
+      - 'cloud-backup-v5.js'
+      - 'tests/**'
+      - '.github/workflows/v5-safety.yml'
+permissions:
+  contents: read
+jobs:
+  safety-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run GrizzlyJohn V5 regression suite
+        run: node --test tests/sleep-v5.test.js tests/sleep-tracker.test.js tests/cloud-backup-v5.test.js
