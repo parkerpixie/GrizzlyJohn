@@ -637,13 +637,19 @@
     const init = () => {
       const tracker = createSleepTracker(window.localStorage);
       window.GrizzlyJohnSleepTracker = tracker;
-      // V5 can start without a cloud backup: it does not run a destructive migration.
-      // But preserve an in-progress V3 night by allowing the old flow to finish first.
-      const previousNight = tracker.active();
-      const canUseV5 = previousNight.ok && !previousNight.value &&
-        typeof window.GrizzlyJohnSleepV5?.mount === 'function';
-      if (canUseV5) window.GrizzlyJohnSleepV5.mount();
-      else createBrowserUi(tracker, window.GrizzlyJohnHealthV3);
+      // Prefer the V5 journal even when a V3 timer was left unfinished.
+      // V5 uses a separate draft key and never clears the old activeSleep record.
+      // Keeping the legacy timer from blocking V5 is a UI-only change.
+      if (typeof window.GrizzlyJohnSleepV5?.mount === 'function') {
+        try {
+          window.GrizzlyJohnSleepV5.mount();
+        } catch (error) {
+          console.error('GrizzlyJohn V5 sleep screen failed to initialize:', error);
+          createBrowserUi(tracker, window.GrizzlyJohnHealthV3);
+        }
+      } else {
+        createBrowserUi(tracker, window.GrizzlyJohnHealthV3);
+      }
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
     else init();
