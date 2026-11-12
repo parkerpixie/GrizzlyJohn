@@ -221,6 +221,8 @@
       const today=new Date();
       if (today.getHours()<18)today.setDate(today.getDate()-1);
       const nightDate=current?.nightDate||localDate(today);
+      // Explain what happened to an unfinished V3 timer without modifying it.
+      const legacyTimerStored=Boolean(localStorage.getItem('grizzlyjohn:v3:health:activeSleep'));
       const [start,end]=suggestedTimes(current?.stretches);
       let body='';
       if (view==='rate' && current?.stretches?.length) {
@@ -239,6 +241,7 @@
         else {
           body='<p class="eyebrow">SLEEP JOURNAL · V5</p><h3>Let the bear do the remembering.</h3>'+
             '<p>No need to touch your phone at 2 AM. Set the clocks anytime, even tomorrow morning.</p>'+
+            (legacyTimerStored?'<p class="v5-legacy-preserved">An older unfinished sleep timer is still saved. It was not deleted, and it will not prevent you from using your new clocks.</p>':'')+
             '<label class="v5-night-date">Night starting <input type="date" data-v5-date value="'+nightDate+'" '+(current?.stretches?.length?'disabled':'')+'></label>'+
             '<div class="v5-clock-grid">'+clockCard('start','Fell Asleep',start)+clockCard('end','Woke Up',end)+'</div>'+
             '<label class="v5-estimated"><input type="checkbox" data-v5-estimated> These times are approximate</label>'+ 
