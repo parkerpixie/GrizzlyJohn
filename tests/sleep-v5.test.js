@@ -33,6 +33,15 @@ test('retroactive 9 PM–2 AM plus 3 AM–7 AM logs 9h and 60 minutes awake',()=
   assert.equal(journal.draft(),null);
 });
 
+test('an unfinished previous-version timer remains exactly as stored',()=>{
+  const legacyActive='{"id":"old-timer","status":"sleeping","startedAt":"2026-11-09T03:00:00Z"}';
+  const storage=new MemoryStorage({'grizzlyjohn:v3:health:activeSleep':legacyActive});
+  const journal=createJournal(storage,{now,idFactory:()=> 'v5-new'});
+  journal.addStretch({nightDate:'2026-11-09',startTime:'21:00',endTime:'07:00'});
+  journal.finish(3,'Okay sleep');
+  assert.equal(storage.getItem('grizzlyjohn:v3:health:activeSleep'),legacyActive);
+});
+
 test('older sleep history and unrelated app keys remain unchanged',()=>{
   const legacy={id:'old',date:'2026-11-08',timestamp:'2026-11-08T12:00:00.000Z',hours:6,quality:'Okay'};
   const init={ [HISTORY_KEY]:JSON.stringify([legacy]),'grizzlyjohn:questCount':'19'};
