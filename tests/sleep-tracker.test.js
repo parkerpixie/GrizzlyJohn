@@ -162,5 +162,13 @@ test('app shell and offline cache include the sleep tracker assets', () => {
   assert.ok(html.indexOf('src="sleep-tracker.js"') > html.indexOf('src="health-v3-ui.js"'));
   assert.ok(worker.includes("'./sleep-tracker.css'"));
   assert.ok(worker.includes("'./sleep-tracker.js'"));
-  assert.match(worker, /grizzlyjohn-v38-sleep-journal/);
+  assert.match(worker, /grizzlyjohn-v39-sleep-journal-legacy-fix/);
+});
+
+test('V5 journal is not blocked by an unfinished legacy sleep timer', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const text = fs.readFileSync(path.resolve(__dirname, '../sleep-tracker.js'), 'utf8');
+  assert.match(text, /window\.GrizzlyJohnSleepV5\.mount\(\)/);
+  assert.doesNotMatch(text, /!previousNight\.value/);
 });
