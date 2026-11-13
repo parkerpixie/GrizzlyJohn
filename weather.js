@@ -3,6 +3,7 @@
   if (!card) return;
 
   const button = document.getElementById('loadWeather');
+  const changeLocationButton = document.getElementById('changeWeatherLocation');
   const status = document.getElementById('weatherStatus');
   const locationLabel = document.getElementById('weatherLocation');
   const condition = document.getElementById('weatherCondition');
@@ -104,36 +105,94 @@
     }));
   }
 
-  function requestWeather({ automatic = false } = {}) {
-    if (!navigator.geolocation) {
-      status.textContent = 'This device cannot share its location with the bear.';
-      button.hidden = true;
-      return;
-    }
 
-    setBusy(true);
-    status.textContent = automatic ? 'Checking the trail outside…' : 'Finding John on the map…';
+  const SAVED_LOCATION = 'grizzlyjohn:weatherLocation';
 
-    navigator.geolocation.getCurrentPosition(async position => {
-      try {
-        try { localStorage.setItem('grizzlyjohn:weatherEnabled', 'true'); } catch {}
-        const data = await loadForecast(position.coords.latitude, position.coords.longitude);
-        renderWeather(data);
-      } catch {
-        status.textContent = details.hidden ? 'The weather wandered off. Try again in a minute.' : 'Could not update. Showing the previous forecast; try again in a minute.';
-      } finally {
-        setBusy(false);
-      }
-    }, error => {
-      setBusy(false);
-      if (error.code === 1) status.textContent = 'Location is off. Turn it on if you want trail weather here.';
-      else status.textContent = 'Couldn’t find John. Even bears lose the trail sometimes.';
-      button.textContent = 'Use my location';
-    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 15 * 60 * 1000 });
+  function getSavedLocation() {
+    try {
+      const p = JSON.parse(localStorage.getItem(SAVED_LOCATION) || 'null');
+      if (p && Number.isFinite(p.latitude) && Number.isFinite(p.longitude) &&
+          Math.abs(p.latitude) <= 90 && Math.abs(p.longitude) <= 180) return p;
+    } catch {}
+    return null;
   }
 
-  button.addEventListener('click', () => requestWeather());
-  try {
-    if (localStorage.getItem('grizzlyjohn:weatherEnabled') === 'true') requestWeather({ automatic: true });
-  } catch {}
+  function syncButtons() {
+    const saved = Boolean(getSavedLocation());
+    button.textContent = saved ? 'Refresh forecast' : 'Use my location';
+    if (changeLocationButton) changeLocationButton.hidden = !saved || !navigator.geolocation;
+  }
+
+  async function updateWeather({ coords = null, save = false } = {}) {
+    const position = coords || getSavedLocation();
+    if (!position) return;
+    setBusy(true);
+    if (changeLocationButton) changeLocationButton.disabled = true;
+    status.textContent = save ? 'Finding the weather at your new location…' : 'Updating the forecast from your saved location…';
+    try {
+      const data = await loadForecast(position.latitude, position.longitude);
+      if (save) {
+        try {
+          // Approximately 1 km precision is enough for a forecast; keep it on this device.
+          localStorage.setItem(SAVED_LOCATION, JSON.stringify({
+            latitude: Number(position.latitude.toFixed(2)),
+            longitude: Number(position.longitude.toFixed(2))
+          }));
+          localStorage.setItem('grizzlyjohn:weatherEnabled', 'true');
+        } catch {}
+      }
+      renderWeather(data);
+      if (getSavedLocation()) {
+        locationLabel.textContent = 'Weather near John’s saved location';
+        status.textContent = save
+          ? 'Location saved. Future forecasts will not ask for location permission.'
+          : 'Updated without checking your location. Traveling? Tap Change location.';
+      } else {
+        status.textContent = 'Updated. Browser storage is off, so this location cannot be remembered.';
+      }
+    } catch {
+      status.textContent = details.hidden
+        ? 'Weather is unavailable right now. Please try again.'
+        : 'Could not update. Showing the previous forecast.';
+    } finally {
+      setBusy(false);
+      if (changeLocationButton) changeLocationButton.disabled = false;
+      syncButtons();
+    }
+  }
+
+  function askForLocation() {
+    if (!navigator.geolocation) {
+      status.textContent = 'This device cannot share its location with the bear.';
+      return;
+    }
+    setBusy(true);
+    if (changeLocationButton) changeLocationButton.disabled = true;
+    status.textContent = 'Finding John on the map…';
+    navigator.geolocation.getCurrentPosition(
+      position => updateWeather({ coords: position.coords, save: true }),
+      error => {
+        setBusy(false);
+        if (changeLocationButton) changeLocationButton.disabled = false;
+        syncButtons();
+        status.textContent = error.code === 1
+          ? getSavedLocation()
+            ? 'Location not allowed. The saved weather location still works.'
+            : 'Location is off. Allow it once to save your weather location.'
+          : 'Couldn’t find John. Even bears lose the trail sometimes.';
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 15 * 60 * 1000 }
+    );
+  }
+
+  button.addEventListener('click', () => {
+    if (getSavedLocation()) updateWeather();
+    else askForLocation();
+  });
+  if (changeLocationButton) changeLocationButton.addEventListener('click', askForLocation);
+
+  syncButtons();
+  // Never request geolocation automatically, including for prior weatherEnabled users.
+  if (getSavedLocation()) updateWeather();
+  else status.textContent = 'Tap Use my location once. GrizzlyJohn will save it and stop asking on startup.';
 })();
