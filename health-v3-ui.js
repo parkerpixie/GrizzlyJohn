@@ -153,7 +153,7 @@
                   <button class="health-log-choice" type="button" data-health-log-type="vitals"><span>🩺</span><strong>Vitals</strong><small>Blood pressure + pulse</small></button>
                   <button class="health-log-choice" type="button" data-health-log-type="weight"><span>⚖️</span><strong>Weight</strong><small>One number</small></button>
                   <button class="health-log-choice" type="button" data-health-log-type="activity"><span>🥾</span><strong>Activity</strong><small>What you did + how long</small></button>
-                  <button class="health-log-choice" type="button" data-health-log-type="medication"><span>💊</span><strong>Medication</strong><small>Morning / midday / evening</small></button>
+                  <button class="health-log-choice" type="button" data-health-log-type="medication"><span>💊</span><strong>Medication</strong><small>Morning / Nap / evening</small></button>
                   <button class="health-log-choice" type="button" data-health-log-type="sleep"><span>🌙</span><strong>Sleep</strong><small>Hours + simple quality</small></button>
                   <button class="health-log-choice" type="button" data-health-log-type="note"><span>📝</span><strong>Note / symptom</strong><small>Capture the weird human stuff</small></button>
                   <button class="health-log-choice" type="button" data-health-log-type="bodyFeel"><span>🌤️</span><strong>Body feel</strong><small>Optional broad signal</small></button>
@@ -194,7 +194,7 @@
                 <div class="health-form-intro"><h3>Medication windows</h3><p>Just whether the window is complete. No medication names or doses.</p></div>
                 <fieldset class="health-fieldset"><legend>Completed today</legend><div class="health-med-grid">
                   <label class="health-med-option"><input name="morning" type="checkbox"><span>Morning</span></label>
-                  <label class="health-med-option"><input name="midday" type="checkbox"><span>Midday</span></label>
+                  <label class="health-med-option"><input name="midday" type="checkbox"><span>Nap</span></label>
                   <label class="health-med-option"><input name="evening" type="checkbox"><span>Evening</span></label>
                 </div></fieldset>
                 <p class="health-form-status" data-health-form-status></p>
@@ -547,7 +547,7 @@
           return { title: `${escapeHtml(entry.activityType)} • ${compactNumber(entry.durationMinutes, 0)} min`, body: `${intensity.replace(/^ • /, '')}${estimate}`.replace(/^ • /, '') || 'Activity' };
         }
         if (item.type === 'medication') {
-          const completed = ['morning', 'midday', 'evening'].filter(name => entry[name]).map(name => name[0].toUpperCase() + name.slice(1));
+          const completed = ['morning', 'midday', 'evening'].filter(name => entry[name]).map(name => name === 'midday' ? 'Nap' : name[0].toUpperCase() + name.slice(1));
           return { title: completed.length ? `${completed.length} of 3 medication windows` : 'Medication windows', body: completed.length ? completed.join(' • ') : 'No windows marked complete' };
         }
         if (item.type === 'sleep') return { title: `${compactNumber(entry.hours)} hr • ${escapeHtml(entry.quality)}`, body: 'Sleep' };
