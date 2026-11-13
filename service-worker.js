@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v40-weather-saved-location';
+const CACHE_NAME = 'grizzlyjohn-v41-nap-label';
 const APP_SHELL = [
   './',
   './index.html',
