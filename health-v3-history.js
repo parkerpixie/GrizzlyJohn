@@ -522,7 +522,7 @@
         if (item.type === 'vitals') { title = `${fmt(e.systolic, 0)} / ${fmt(e.diastolic, 0)} • pulse ${fmt(e.pulse, 0)}`; meta = e.note || 'Vitals'; }
         if (item.type === 'weight') { title = `${fmt(e.weight)} lb`; meta = 'Weight'; }
         if (item.type === 'activity') { title = `${e.activityType} • ${fmt(e.durationMinutes, 0)} min`; meta = e.intensity || 'Activity'; }
-        if (item.type === 'medication') { const names = ['morning','midday','evening'].filter(name => e[name]).map(name => name[0].toUpperCase() + name.slice(1)); title = `${names.length}/3 medication windows`; meta = names.join(' • ') || 'No windows marked complete'; }
+        if (item.type === 'medication') { const names = ['morning','midday','evening'].filter(name => e[name]).map(name => name === 'midday' ? 'Nap' : name[0].toUpperCase() + name.slice(1)); title = `${names.length}/3 medication windows`; meta = names.join(' • ') || 'No windows marked complete'; }
         if (item.type === 'sleep') { title = `${fmt(e.hours)} hr • ${e.quality}`; meta = 'Sleep'; }
         if (item.type === 'note') { title = e.text; meta = [e.severity, ...(e.tags || [])].filter(Boolean).join(' • ') || 'Health note'; }
         if (item.type === 'bodyFeel') { title = e.value; meta = 'Body feel'; }
