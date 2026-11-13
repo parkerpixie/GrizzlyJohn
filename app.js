@@ -127,7 +127,7 @@
           <h3>Rest of today</h3><div class="weather-hourly" id="weatherHourly" tabindex="0" aria-label="Hourly forecast, scroll for later hours"></div>
           <h3>Next 5 days</h3><div id="weatherDaily"></div>
         </section>
-        <div class="weather-actions"><p class="weather-status" id="weatherStatus" role="status">Tap once to let GrizzlyJohn use this device’s location for local weather.</p><button class="button button-secondary" id="loadWeather" type="button">Use my location</button></div>
+        <div class="weather-actions"><p class="weather-status" id="weatherStatus" role="status">Choose a weather location once. GrizzlyJohn will remember it on this device.</p><button class="button button-secondary" id="loadWeather" type="button">Use my location</button><button class="button button-secondary" id="changeWeatherLocation" type="button" hidden>Change location</button></div>
       </article>
 
       <section class="keep-close-section" aria-labelledby="keepCloseHeading">
