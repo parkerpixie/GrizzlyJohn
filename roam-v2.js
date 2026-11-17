@@ -3,9 +3,10 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   const ROAM_SITES = [
-    { name: 'The Dyrt', url: 'https://thedyrt.com/', icon: '🏕️', note: 'Campgrounds, reviews, maps, and trip research.' },
-    { name: 'Campendium', url: 'https://www.campendium.com/', icon: '🚐', note: 'Campground reviews, RV-friendly stops, and places worth investigating.' },
-    { name: 'AllStays', url: 'https://www.allstays.com/', icon: '🗺️', note: 'Camping and road-trip research in one familiar starting place.' }
+    { name: 'The Dyrt', url: 'https://thedyrt.com/', domain: 'thedyrt.com', icon: '🏕️', note: 'Campgrounds, reviews, maps, and trip research.' },
+    { name: 'Campendium', url: 'https://www.campendium.com/', domain: 'campendium.com', icon: '🚐', note: 'Campground reviews, RV-friendly stops, and places worth investigating.' },
+    { name: 'AllStays', url: 'https://www.allstays.com/', domain: 'allstays.com', icon: '🗺️', note: 'Camping and road-trip research in one familiar starting place.' },
+    { name: 'AllTrails', url: 'https://www.alltrails.com/', domain: 'alltrails.com', icon: '🥾', note: 'Find hiking trails, see route maps, and plan the next outdoor adventure.' }
   ];
 
   function escapeHtml(value = '') {
@@ -48,9 +49,17 @@
     hub.innerHTML = `
       <section class="roam-v2-section trailhead-tools" aria-labelledby="trailheadToolsHeading">
         <div class="roam-v2-heading"><div><p class="eyebrow">TRAILHEAD TOOLS</p><h2 id="trailheadToolsHeading">John’s favorite places to start looking</h2></div></div>
-        <div class="roam-resource-grid">${ROAM_SITES.map(site => `<a class="roam-resource-card" href="${site.url}" target="_blank" rel="noopener noreferrer"><span class="roam-resource-icon" aria-hidden="true">${site.icon}</span><span><strong>${site.name}</strong><p>${site.note}</p></span><span class="roam-resource-cta">OPEN ${site.name.toUpperCase()} ↗</span></a>`).join('')}</div>
+        <div class="roam-resource-grid">${ROAM_SITES.map(site => `<a class="roam-resource-card" href="${site.url}" target="_blank" rel="noopener noreferrer"><span class="roam-resource-icon" aria-hidden="true"><img class="roam-resource-logo" src="https://www.google.com/s2/favicons?domain=${site.domain}&amp;sz=128" width="48" height="48" loading="lazy" alt=""><span class="roam-resource-fallback" hidden>${site.icon}</span></span><span class="roam-resource-details"><strong>${site.name}</strong><p>${site.note}</p></span><span class="roam-resource-cta">OPEN ${site.name.toUpperCase()} ↗</span></a>`).join('')}</div>
       </section>`;
     intro.insertAdjacentElement('afterend', hub);
+    // Retain the old emoji when a site logo is unavailable, including offline.
+    $('.roam-resource-logo', hub).forEach(image => {
+      image.addEventListener('error', () => {
+        image.hidden = true;
+        const fallback = image.nextElementSibling;
+        if (fallback) fallback.hidden = false;
+      });
+    });
     return true;
   }
 
