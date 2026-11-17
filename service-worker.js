@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v41-nap-label';
+const CACHE_NAME = 'grizzlyjohn-v42-rain-guided';
 const APP_SHELL = [
   './',
   './index.html',
@@ -45,6 +45,7 @@ const APP_SHELL = [
   './oracle-cards.js',
   './install.js',
   './dbt-cards.js',
+  './rain-practice.js',
   './john-skill-routing.js',
   './park-badges.js',
   './qa-fixes.js',
