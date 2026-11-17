@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v41-nap-label';
+const CACHE_NAME = 'grizzlyjohn-v42-alltrails-places';
 const APP_SHELL = [
   './',
   './index.html',
