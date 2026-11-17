@@ -1,13 +1,16 @@
 .roam-v2-section { margin: 18px 0 26px; }
 .roam-v2-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
 .roam-v2-heading h2 { margin: 3px 0 0; font-size: 1.4rem; }
-.roam-resource-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.roam-resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .roam-resource-card { display: flex; flex-direction: column; gap: 10px; min-height: 176px; padding: 16px; border: 1px solid rgba(47,70,54,.14); border-radius: 19px; background: var(--paper, #fff); color: inherit; text-decoration: none; box-shadow: 0 8px 24px rgba(47,70,54,.06); }
-.roam-resource-card > span:nth-child(2) { display: grid; gap: 5px; }
-.roam-resource-icon { font-size: 1.7rem; }
+.roam-resource-details { display: grid; gap: 5px; }
+.roam-resource-icon { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 16px; border: 1px solid rgba(47,70,54,.12); background: #f3f5ef; font-size: 1.7rem; overflow: hidden; }
+.roam-resource-logo { display: block; width: 48px; height: 48px; object-fit: contain; }
+.roam-resource-logo[hidden], .roam-resource-fallback[hidden] { display: none; }
 .roam-resource-card strong { color: var(--pine-dark, #2f4636); font-size: 1.05rem; }
 .roam-resource-card p { margin: 0; line-height: 1.45; }
 .roam-resource-cta { margin-top: auto; color: var(--pine-dark, #2f4636); font-size: .78rem; font-weight: 900; }
+.roam-resource-card:hover, .roam-resource-card:focus-visible { border-color: rgba(47,70,54,.42); box-shadow: 0 9px 26px rgba(47,70,54,.13); }
 .quest-side-quest-card { padding: 18px; }
 .quest-side-quest-main { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 13px; align-items: start; }
 .quest-side-quest-emoji { font-size: 2.3rem; line-height: 1; }
