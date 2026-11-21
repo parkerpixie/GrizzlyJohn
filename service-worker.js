@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v42-alltrails-places';
+const CACHE_NAME = 'grizzlyjohn-v43-footprints-opt-in';
 const APP_SHELL = [
   './',
   './index.html',
@@ -34,6 +34,7 @@ const APP_SHELL = [
   './health-v3.js',
   './settings-v2.js',
   './cloud-backup-v5.js',
+  './grizzly-usage.js',
   './feeling-families.js',
   './wisdom-patterns.js',
   './wisdom-thoughts.js',
@@ -121,7 +122,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   // Never cache encrypted backup responses or any Netlify function request.
-  if (url.pathname.startsWith('/.netlify/functions/')) return;
+  if (url.pathname.startsWith('/.netlify/functions/') || url.pathname === '/developer.html') return;
   const isCodeAsset = /\.(?:css|js)$/i.test(url.pathname);
   const networkRequest = isCodeAsset
     ? new Request(event.request, { cache: 'reload' })
