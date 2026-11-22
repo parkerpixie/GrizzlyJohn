@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v44-rain-guide';
+const CACHE_NAME = 'grizzlyjohn-v45-grounding-guide';
 const APP_SHELL = [
   './',
   './index.html',
@@ -71,6 +71,7 @@ const APP_SHELL = [
   './GrizzlyJohn%20Popup%20Background.png',
   './graphics/HALT%20Skill.png',
   './RAIN%20Skill.png',
+  './5-4-3-2-1%20Grounding%20Skill.png',
   './graphics/Lakota%20Prayer.png',
   './graphics/Honesty.png',
   './graphics/Faith.png',

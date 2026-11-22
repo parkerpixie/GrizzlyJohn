@@ -17,7 +17,8 @@
     'TIPP Skill.png',
     'What Skill.png',
     'WISE MIND Skill.png',
-    'RAIN Skill.png'
+    'RAIN Skill.png',
+    '5-4-3-2-1 Grounding Skill.png'
   ];
 
   const GO_TO_SKILL = 'HALT';
