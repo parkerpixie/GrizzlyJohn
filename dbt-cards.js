@@ -16,7 +16,8 @@
     'STOP Skill.png',
     'TIPP Skill.png',
     'What Skill.png',
-    'WISE MIND Skill.png'
+    'WISE MIND Skill.png',
+    'RAIN Skill.png'
   ];
 
   const GO_TO_SKILL = 'HALT';
@@ -347,7 +348,7 @@
     }).join('');
 
     grid.querySelectorAll('[data-dbt-index]').forEach(button => {
-      button.addEventListener('click', () => openViewer(Number(button.dataset.dbtIndex));
+      button.addEventListener('click', () => openViewer(Number(button.dataset.dbtIndex)));
     });
   }
 

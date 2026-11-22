@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v43-footprints-opt-in';
+const CACHE_NAME = 'grizzlyjohn-v44-rain-guide';
 const APP_SHELL = [
   './',
   './index.html',
@@ -70,6 +70,7 @@ const APP_SHELL = [
   './GrizzlyJohn%20App%20Icon.png',
   './GrizzlyJohn%20Popup%20Background.png',
   './graphics/HALT%20Skill.png',
+  './RAIN%20Skill.png',
   './graphics/Lakota%20Prayer.png',
   './graphics/Honesty.png',
   './graphics/Faith.png',
