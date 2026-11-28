@@ -1,4 +1,4 @@
-const CACHE_NAME = 'grizzlyjohn-v45-grounding-guide';
+const CACHE_NAME = 'grizzlyjohn-v46-recovery-taps';
 const APP_SHELL = [
   './',
   './index.html',
