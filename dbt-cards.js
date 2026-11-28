@@ -132,7 +132,11 @@
     image.src = skill.path;
     image.alt = `${cleanName(skill.name)} skill card`;
     title.textContent = cleanName(skill.name);
-    if (!viewer.open) viewer.showModal();
+    if (!viewer.open) {
+      try { viewer.showModal(); } catch (error) { viewer.setAttribute('open', ''); }
+    }
+    viewer.style.setProperty('display', 'block', 'important');
+    viewer.style.setProperty('visibility', 'visible', 'important');
   }
 
   function setToolboxExpanded(expanded) {
@@ -348,9 +352,7 @@
         </button>`;
     }).join('');
 
-    grid.querySelectorAll('[data-dbt-index]').forEach(button => {
-      button.addEventListener('click', () => openViewer(Number(button.dataset.dbtIndex)));
-    });
+
   }
 
   function enhanceFeelingResult() {
@@ -424,8 +426,15 @@
   setupToolboxAccess();
   setupWisdomHaltQuickCheck();
 
-  randomButton?.addEventListener('click', () => openViewer(Math.floor(Math.random() * state.skills.length)));
-  closeButton?.addEventListener('click', () => viewer.close());
+  document.addEventListener('click', event => {
+    const button = event.target.closest('#dbtCardGrid [data-dbt-index], #drawDbtSkill');
+    if (!button) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    openViewer(button.id === 'drawDbtSkill' ? Math.floor(Math.random() * state.skills.length) : Number(button.dataset.dbtIndex));
+  }, true);
+  viewer.addEventListener('close', () => { viewer.style.removeProperty('display'); viewer.style.removeProperty('visibility'); });
+  closeButton?.addEventListener('click', () => { viewer.close(); viewer.style.removeProperty('display'); viewer.style.removeProperty('visibility'); });
   prevButton?.addEventListener('click', () => openViewer(state.index - 1));
   nextButton?.addEventListener('click', () => openViewer(state.index + 1));
   shareButton?.addEventListener('click', shareSkill);
