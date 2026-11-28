@@ -30,7 +30,9 @@
     { title: 'STOP', path: 'STOP Skill.png' },
     { title: 'TIPP', path: 'TIPP Skill.png' },
     { title: 'What', path: 'What Skill.png' },
-    { title: 'WISE MIND', path: 'WISE MIND Skill.png' }
+    { title: 'WISE MIND', path: 'WISE MIND Skill.png' },
+    { title: 'RAIN', path: 'RAIN Skill.png' },
+    { title: '5-4-3-2-1 Grounding', path: '5-4-3-2-1 Grounding Skill.png' }
   ];
 
   function readQuestCount() {
@@ -183,7 +185,8 @@
     loadQaStyles();
     expandQuestRewards();
     fixPodcastLinks();
-    fixRandomToolButton();
+    // The primary DBT module owns card clicks and viewer state. Do not intercept them.
+    if (!document.querySelector('#dbtCardGrid [data-dbt-index]')) fixRandomToolButton();
     loadBreneReflection();
     loadSkillRouting();
   }
